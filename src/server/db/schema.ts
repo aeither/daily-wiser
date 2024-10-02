@@ -1,68 +1,52 @@
 import {
+  bigserial,
   boolean,
-  integer,
+  numeric,
   pgTable,
   text,
   timestamp,
-  uuid,
 } from "drizzle-orm/pg-core";
 
-export const users = pgTable("users", {
-  id: text("id").unique().primaryKey(),
+export const users = pgTable("web3_users", {
+  address: text("address").primaryKey(),
   lastActive: timestamp("last_active", { withTimezone: true }),
-  totalCredits: integer("total_credits").default(0),
-  xp: integer("xp").default(0),
+  totalCredits: numeric("total_credits").default("0"),
+  xp: numeric("xp").default("0"),
 });
 
 export const creditPurchases = pgTable("credit_purchases", {
-  id: text("id").unique().primaryKey(),
-  userAddress: text("user_address").notNull(),
-  ethPaid: text("eth_paid").notNull(),
-  creditsReceived: integer("credits_received").notNull(),
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  userAddress: text("user_address").references(() => users.address),
+  txHash: text("tx_hash").notNull().unique(),
+  ethPaid: numeric("eth_paid").notNull(),
+  creditsReceived: numeric("credits_received").notNull(),
   purchasedAt: timestamp("purchased_at", { withTimezone: true }).defaultNow(),
 });
 
+export const creditUsage = pgTable("credit_usage", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  userAddress: text("user_address").references(() => users.address),
+  creditAmount: numeric("credit_amount").notNull(),
+  usageType: text("usage_type").notNull(), // e.g., "chat", "image_generation", etc.
+  usedAt: timestamp("used_at", { withTimezone: true }).defaultNow(),
+});
+
 export const customBots = pgTable("custom_bots", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  creatorAddress: text("creator_address").notNull(),
-  nftAddress: text("nft_address").notNull(),
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  creatorAddress: text("creator_address").references(() => users.address),
   name: text("name").notNull(),
   description: text("description"),
   prompt: text("prompt").notNull(),
   imageUrl: text("image_url"),
-  likes: integer("likes").default(0),
-  tags: text("tags").array(),
+  likes: numeric("likes").default("0"),
   isPublic: boolean("is_public").default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
 export const nftMetadata = pgTable("nft_metadata", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: bigserial("id", { mode: "number" }).primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
   image: text("image").notNull(),
 });
-
-// // Define relationships
-// export const web3UsersRelations = relations(web3Users, ({ many }) => ({
-//   creditPurchases: many(creditPurchases),
-//   customBots: many(customBots),
-// }))
-
-// export const creditPurchasesRelations = relations(
-//   creditPurchases,
-//   ({ one }) => ({
-//     user: one(web3Users, {
-//       fields: [creditPurchases.userId],
-//       references: [web3Users.id],
-//     }),
-//   })
-// )
-
-// export const customBotsRelations = relations(customBots, ({ one }) => ({
-//   creator: one(web3Users, {
-//     fields: [customBots.creatorId],
-//     references: [web3Users.id],
-//   }),
-// }))

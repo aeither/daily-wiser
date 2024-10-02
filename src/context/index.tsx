@@ -33,11 +33,16 @@ const metadata = {
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
+  themeMode: "light",
   networks: [mainnet, arbitrum, avalanche, base, optimism, polygon],
   defaultNetwork: mainnet,
   metadata: metadata,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
+    email: true, // default to true
+    socials: ["google", "discord"],
+    emailShowWallets: true, // default to true
+    allWallets: false,
   },
 });
 

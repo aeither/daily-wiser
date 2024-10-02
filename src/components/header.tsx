@@ -41,23 +41,23 @@ const Header = () => {
           </div>
         </Link>
         <nav className="flex items-center space-x-4">
-          {isConnected && user && <XpBar xp={user.xp ?? 0} />}
+          {isConnected && user && <XpBar xp={user.xp ?? "0"} />}
           {/* <Link href="/select-meme" passHref>
             <Button variant="link" className="text-black">
               Create Meme
             </Button>
           </Link> */}
-          <Link href="/image" passHref>
+          {/* <Link href="/image" passHref>
             <Button variant="link" className="text-black">
               AI Image
             </Button>
           </Link>
-          {/* <Link href="/resume" passHref>
+           <Link href="/resume" passHref>
             <Button variant="link">Resume Builder</Button>
-          </Link>
+          </Link> */}
           <Link href="/select-quiz" passHref>
             <Button variant="link">Quiz</Button>
-          </Link> */}
+          </Link>
         </nav>
       </div>
       <div className="flex items-center space-x-4">

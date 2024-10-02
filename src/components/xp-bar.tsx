@@ -3,7 +3,7 @@
 import { calculateLevelAndMaxXp } from "@/lib/utils";
 import { motion } from "framer-motion";
 
-export default function XpBar({ xp }: { xp: number }) {
+export default function XpBar({ xp }: { xp: string }) {
   const { level, currentXp, maxXp } = calculateLevelAndMaxXp(Number(xp));
   const progress = (currentXp / maxXp) * 100;
 

@@ -46,10 +46,10 @@ export const userRouter = createTRPCRouter({
         const ethPaid = String(decodedLog.args.ethPaid);
         const creditsReceived = Number(decodedLog.args.creditsReceived);
         await db.insert(creditPurchases).values({
-          id: input.txHash.toString(),
-          creditsReceived,
           userAddress,
-          ethPaid,
+          txHash: input.txHash.toString(),
+          ethPaid: ethPaid.toString(),
+          creditsReceived: creditsReceived.toString(),
         });
 
         await db
@@ -58,7 +58,7 @@ export const userRouter = createTRPCRouter({
             totalCredits: sql`${users.totalCredits} + ${creditsReceived}`,
             lastActive: new Date(),
           })
-          .where(eq(users.id, userAddress));
+          .where(eq(users.address, userAddress));
 
         return {
           userAddress,
@@ -79,16 +79,16 @@ export const userRouter = createTRPCRouter({
       const user = await db
         .select({ totalCredits: users.totalCredits })
         .from(users)
-        .where(eq(users.id, input.address))
+        .where(eq(users.address, input.address))
         .limit(1);
 
       if (user.length === 0) {
         const newUser = await db
           .insert(users)
           .values({
-            id: input.address,
+            address: input.address,
             lastActive: new Date(),
-            xp: 0,
+            xp: "0",
           })
           .returning();
         return { credits: newUser[0].totalCredits };
@@ -108,7 +108,7 @@ export const userRouter = createTRPCRouter({
         isPublic: z.boolean(),
         tags: z.array(z.string().min(1).max(50)).min(1).max(3),
         imageUrl: z.string().optional(),
-        likes: z.number().optional(),
+        likes: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -129,7 +129,7 @@ export const userRouter = createTRPCRouter({
       const result = await db
         .select()
         .from(customBots)
-        .where(eq(customBots.id, input.id))
+        .where(eq(customBots.id, Number.parseInt(input.id)))
         .limit(1);
       return result[0];
     }),
@@ -140,13 +140,13 @@ export const userRouter = createTRPCRouter({
       const result = await db
         .insert(users)
         .values({
-          id: input.address,
+          address: input.address,
           lastActive: new Date(),
-          xp: 0,
-          totalCredits: 20,
+          xp: "0",
+          totalCredits: "20",
         })
         .onConflictDoUpdate({
-          target: users.id,
+          target: users.address,
           set: { lastActive: new Date() },
         })
         .returning();
@@ -174,7 +174,7 @@ export const userRouter = createTRPCRouter({
       const result = await db
         .update(users)
         .set({ xp: sql`${users.xp} + ${input.xpToAdd}` })
-        .where(eq(users.id, input.address))
+        .where(eq(users.address, input.address))
         .returning();
       return result[0];
     }),
@@ -185,7 +185,7 @@ export const userRouter = createTRPCRouter({
       const result = await db
         .select()
         .from(users)
-        .where(eq(users.id, input.address));
+        .where(eq(users.address, input.address));
       return result[0];
     }),
 
@@ -199,7 +199,7 @@ export const userRouter = createTRPCRouter({
         })
         .where(
           and(
-            eq(users.id, input.address),
+            eq(users.address, input.address),
             sql`CAST(${users.totalCredits} AS INTEGER) >= ${input.creditsToSpend}`
           )
         )
@@ -222,7 +222,7 @@ export const userRouter = createTRPCRouter({
           image: nftMetadata.image,
         })
         .from(nftMetadata)
-        .where(eq(nftMetadata.id, input.id));
+        .where(eq(nftMetadata.id, Number.parseInt(input.id)));
       return result[0];
     }),
 
