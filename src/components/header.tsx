@@ -1,7 +1,6 @@
 "use client";
 
 import { apiReact } from "@/trpc/react";
-import { ConnectKitButton } from "connectkit";
 import { Coins, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -79,8 +78,7 @@ const Header = () => {
             )}
           </Link>
         </div>
-        {/* <w3m-button /> */}
-        <ConnectKitButton />
+        <w3m-button />
       </div>
     </header>
   );

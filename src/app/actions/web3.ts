@@ -1,6 +1,6 @@
 "use server";
 
-import { getPublicClient, morphHolesky } from "@/utils/config";
+import { getPublicClient } from "@/config";
 import {
   FACTORY_CONTRACT_ABI,
   FACTORY_CONTRACT_ADDRESS,
@@ -9,6 +9,7 @@ import { FACTORY_NFT_CONTRACT_ABI } from "@/utils/constants/factory-nft";
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { waitForTransactionReceipt } from "viem/actions";
+import { morphHolesky } from "viem/chains";
 
 export async function deployNFTContractAndMint(
   name: string,

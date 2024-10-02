@@ -1,3 +1,4 @@
+import { getPublicClient } from "@/config";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db/drizzle";
 import {
@@ -6,7 +7,6 @@ import {
   nftMetadata,
   users,
 } from "@/server/db/schema";
-import { getPublicClient } from "@/utils/config";
 import { TOPUP_CONTRACT_ADDRESS } from "@/utils/constants/topup";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { decodeEventLog, parseAbiItem } from "viem";
