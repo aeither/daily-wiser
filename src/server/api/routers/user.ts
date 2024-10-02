@@ -1,4 +1,4 @@
-import { getPublicClient } from "@/config";
+import { getWagmiPublicClient } from "@/config";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db/drizzle";
 import {
@@ -18,12 +18,16 @@ export const userRouter = createTRPCRouter({
   }),
 
   extractEvent: publicProcedure
-    .input(z.object({ txHash: z.string(), chain: z.string().optional() }))
+    .input(z.object({ txHash: z.string(), chainId: z.number() }))
     .mutation(async ({ input }) => {
       try {
-        const receipt = await getPublicClient().getTransactionReceipt({
+        const publicClient = getWagmiPublicClient(input.chainId);
+        const receipt = await publicClient?.waitForTransactionReceipt({
           hash: input.txHash as `0x${string}`,
         });
+        if (!receipt) {
+          throw new Error("Transaction receipt not found");
+        }
         if (
           receipt.to?.toLowerCase() !== TOPUP_CONTRACT_ADDRESS.toLowerCase()
         ) {

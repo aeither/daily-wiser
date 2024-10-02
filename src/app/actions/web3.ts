@@ -1,6 +1,5 @@
 "use server";
 
-import { getPublicClient } from "@/config";
 import {
   FACTORY_CONTRACT_ABI,
   FACTORY_CONTRACT_ADDRESS,
@@ -49,7 +48,7 @@ export async function deployNFTContractAndMint(
     });
 
     const createNFTDeployerReceipt = await waitForTransactionReceipt(
-      getPublicClient(),
+      walletClient,
       {
         hash: createNFTDeployerHash,
       }

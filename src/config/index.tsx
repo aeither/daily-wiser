@@ -1,43 +1,64 @@
-import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { arbitrum, mainnet } from "@reown/appkit/networks";
-import { cookieStorage, createStorage } from "@wagmi/core";
-import { createPublicClient, http } from "viem";
-import { morphHolesky } from "viem/chains";
+import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+import { cookieStorage, createStorage } from "wagmi";
+import { getPublicClient } from "wagmi/actions";
+import { type Chain, morphHolesky } from "wagmi/chains";
 
-/**
- * Reown
- */
-
-// Get projectId from https://cloud.reown.com
+// Get projectId from https://cloud.walletconnect.com
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
-if (!projectId) {
-  throw new Error("Project ID is not defined");
-}
+if (!projectId) throw new Error("Project ID is not defined");
 
-export const networks = [mainnet, arbitrum];
+export const metadata = {
+  name: "AppKit",
+  description: "AppKit Example",
+  url: "https://web3modal.com", // origin must match your domain & subdomain
+  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+};
 
-//Set up the Wagmi Adapter (Config)
-export const wagmiAdapter = new WagmiAdapter({
+// Define Open Campus Codex chain
+const openCampusCodex: Chain = {
+  id: 656476,
+  testnet: true,
+  name: "Open Campus Codex",
+  nativeCurrency: {
+    decimals: 18,
+    name: "EDU",
+    symbol: "EDU",
+  },
+  rpcUrls: {
+    public: { http: ["https://rpc.open-campus-codex.gelato.digital"] },
+    default: { http: ["https://rpc.open-campus-codex.gelato.digital"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Blockscout",
+      url: "https://opencampus-codex.blockscout.com/",
+    },
+  },
+};
+
+// Create wagmiConfig
+const chains = [openCampusCodex, morphHolesky] as const;
+export const wagmiConfig = defaultWagmiConfig({
+  chains,
+  projectId,
+  metadata,
+  ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
-  ssr: true,
-  projectId,
-  networks,
+  auth: {
+    email: true,
+    socials: ["google", "discord", "x"],
+    showWallets: true,
+    walletFeatures: true,
+  },
 });
-
-export const config = wagmiAdapter.wagmiConfig;
 
 /**
  * Public Client
  */
 
-const publicClient = createPublicClient({
-  chain: morphHolesky,
-  transport: http(),
-});
-
-export function getPublicClient() {
-  return publicClient;
+export function getWagmiPublicClient(chainId: number) {
+  return getPublicClient(wagmiConfig, { chainId });
 }

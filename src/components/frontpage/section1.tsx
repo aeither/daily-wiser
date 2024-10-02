@@ -22,7 +22,7 @@ export default function Component() {
     }
   };
 
-  const handleCardClick = (tutorId: string) => {
+  const handleCardClick = (tutorId: number) => {
     router.push(`/chat?botId=${tutorId}`);
   };
 
