@@ -1,7 +1,8 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+import { defineChain } from "viem";
 import { cookieStorage, createStorage } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
-import { type Chain, morphHolesky } from "wagmi/chains";
+import { morphHolesky } from "wagmi/chains";
 
 // Get projectId from https://cloud.walletconnect.com
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
@@ -14,9 +15,8 @@ export const metadata = {
   url: "https://web3modal.com", // origin must match your domain & subdomain
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
-
 // Define Open Campus Codex chain
-const openCampusCodex: Chain = {
+const openCampusCodex = defineChain({
   id: 656476,
   testnet: true,
   name: "Open Campus Codex",
@@ -35,10 +35,32 @@ const openCampusCodex: Chain = {
       url: "https://opencampus-codex.blockscout.com/",
     },
   },
-};
+});
+
+// Define Neo X chain
+const neoX = defineChain({
+  id: 12227332,
+  testnet: true,
+  name: "Neo X Testnet T4",
+  nativeCurrency: {
+    decimals: 18,
+    name: "GAS",
+    symbol: "GAS",
+  },
+  rpcUrls: {
+    public: { http: ["https://testnet.rpc.banelabs.org"] },
+    default: { http: ["https://testnet.rpc.banelabs.org"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Neo X Testnet T4",
+      url: "https://xt4scan.ngd.network",
+    },
+  },
+});
 
 // Create wagmiConfig
-const chains = [openCampusCodex, morphHolesky] as const;
+const chains = [openCampusCodex, morphHolesky, neoX] as const;
 export const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
@@ -62,3 +84,9 @@ export const wagmiConfig = defaultWagmiConfig({
 export function getWagmiPublicClient(chainId: number) {
   return getPublicClient(wagmiConfig, { chainId });
 }
+
+export const topUpContractAddresses = {
+  [openCampusCodex.id]: "0xc3914bfD49e030B3a2c975B33947aDC338919A60",
+  [morphHolesky.id]: "0xc3914bfD49e030B3a2c975B33947aDC338919A60",
+  [neoX.id]: "0x9abc...",
+};
