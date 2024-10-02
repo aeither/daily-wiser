@@ -18,16 +18,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { topUpContractAddresses } from "@/config";
 import { apiReact } from "@/trpc/react";
-import {
-  TOPUP_CONTRACT_ABI,
-  TOPUP_CONTRACT_ADDRESS,
-} from "@/utils/constants/topup";
+import { TOPUP_CONTRACT_ABI } from "@/utils/constants/topup";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
 import {
   useAccount,
+  useChainId,
   useConnect,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -40,6 +39,7 @@ export function CreditPurchaseComponent() {
   const { isConnected, chain } = useAccount();
   const { connect, connectors } = useConnect();
   const utils = apiReact.useUtils();
+  const chainId = useChainId();
 
   const { writeContract, data: hash, isPending } = useWriteContract();
   const {
@@ -80,7 +80,7 @@ export function CreditPurchaseComponent() {
 
     const cost = calculateCost(credits);
     await writeContract({
-      address: TOPUP_CONTRACT_ADDRESS,
+      address: topUpContractAddresses[chainId],
       abi: TOPUP_CONTRACT_ABI,
       functionName: "topUpCredits",
       args: [],

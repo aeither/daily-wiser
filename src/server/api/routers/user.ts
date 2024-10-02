@@ -1,4 +1,4 @@
-import { getWagmiPublicClient } from "@/config";
+import { getWagmiPublicClient, topUpContractAddresses } from "@/config";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db/drizzle";
 import {
@@ -7,7 +7,6 @@ import {
   nftMetadata,
   users,
 } from "@/server/db/schema";
-import { TOPUP_CONTRACT_ADDRESS } from "@/utils/constants/topup";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { decodeEventLog, parseAbiItem } from "viem";
 import { z } from "zod";
@@ -28,11 +27,19 @@ export const userRouter = createTRPCRouter({
         if (!receipt) {
           throw new Error("Transaction receipt not found");
         }
+
+        // Check if receipt.to is defined before comparing
+        if (!receipt.to) {
+          throw new Error("Transaction 'to' address is undefined");
+        }
+
         if (
-          receipt.to?.toLowerCase() !== TOPUP_CONTRACT_ADDRESS.toLowerCase()
+          receipt.to.toLowerCase() !==
+          topUpContractAddresses[input.chainId].toLowerCase()
         ) {
           throw new Error("Invalid contract address");
         }
+
         if (receipt.logs.length === 0) {
           throw new Error("No logs found in the transaction");
         }

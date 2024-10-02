@@ -1,6 +1,3 @@
-export const TOPUP_CONTRACT_ADDRESS =
-  "0xc3914bfD49e030B3a2c975B33947aDC338919A60";
-
 export const TOPUP_CONTRACT_ABI = [
   {
     inputs: [
