@@ -6,19 +6,19 @@ import ContextProvider from "@/context";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import { headers } from "next/headers";
 import type { ReactNode } from "react";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
 
-const fontHeading = Manrope({
+const fontHeading = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-heading",
 });
 
-const fontBody = Manrope({
+const fontBody = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-body",

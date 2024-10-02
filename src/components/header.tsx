@@ -37,7 +37,7 @@ const Header = () => {
         <Link href="/" passHref>
           <div className="text-2xl font-bold flex items-center cursor-pointer mr-6">
             <Sparkles className="mr-2" />
-            DW
+            DailyWiser
           </div>
         </Link>
         <nav className="flex items-center space-x-4">
