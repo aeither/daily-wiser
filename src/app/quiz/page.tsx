@@ -6,14 +6,15 @@ import { Progress } from "@/components/ui/progress";
 import { certificateContractAddresses } from "@/config";
 import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
 import { quizDatas } from "@/utils/constants/quiz";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import {
   useAccount,
   useChainId,
   useWaitForTransactionReceipt,
-  useWriteContract
+  useWriteContract,
 } from "wagmi";
 
 export default function Component() {
@@ -25,7 +26,7 @@ export default function Component() {
   const [showConfetti, setShowConfetti] = useState(false);
   const searchParams = useSearchParams();
   const quizId = Number(searchParams.get("id"));
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const {
     writeContract,
     data: hash,
@@ -33,20 +34,20 @@ export default function Component() {
   } = useWriteContract();
   const { isSuccess } = useWaitForTransactionReceipt({ hash });
   const router = useRouter();
-const chainId =useChainId()
-
-  useEffect(() => {
-    if (isSuccess) {
-      console.log("NFT minted successfully:", hash);
-      router.push("/profile");
-    }
-  }, [isSuccess, router, hash]);
+  const chainId = useChainId();
 
   const quizData = quizDatas.find((quiz) => quiz.id === quizId)?.slides || [];
+  const quizName = quizDatas.find((quiz) => quiz.id === quizId)?.name || "Quiz";
+  const quizQuestionCount = quizData.filter(
+    (slide) => slide.type === "quiz"
+  ).length;
+
+  const baseUrl = chain?.blockExplorers?.default.url;
+  const txLink = hash ? `${baseUrl}/tx/${hash}` : "";
 
   useEffect(() => {
     if (timeLeft > 0 && !quizEnded) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearTimeout(timer);
     }
     if (timeLeft === 0) {
@@ -55,37 +56,33 @@ const chainId =useChainId()
   }, [timeLeft, quizEnded]);
 
   useEffect(() => {
-    if (
-      quizEnded &&
-      correctAnswers ===
-        quizData.filter((slide) => slide.type === "quiz").length
-    ) {
+    if (quizEnded && correctAnswers === quizQuestionCount) {
       setShowConfetti(true);
       const timer = setTimeout(() => setShowConfetti(false), 5000);
       return () => clearTimeout(timer);
     }
-  }, [quizEnded, correctAnswers, quizData]);
+  }, [quizEnded, correctAnswers, quizQuestionCount]);
 
-  const handleAnswerSelect = (answer: string) => {
+  const handleAnswerSelect = useCallback((answer: string) => {
     setSelectedAnswer(answer);
-  };
+  }, []);
 
-  const handleNextSlide = () => {
+  const handleNextSlide = useCallback(() => {
     const currentQuizSlide = quizData[currentSlide];
     if (
       currentQuizSlide.type === "quiz" &&
       selectedAnswer === currentQuizSlide.correctAnswer
     ) {
-      setCorrectAnswers(correctAnswers + 1);
+      setCorrectAnswers((prev) => prev + 1);
     }
 
     if (currentSlide < quizData.length - 1) {
-      setCurrentSlide(currentSlide + 1);
+      setCurrentSlide((prev) => prev + 1);
       setSelectedAnswer(null);
     } else {
       setQuizEnded(true);
     }
-  };
+  }, [currentSlide, quizData, selectedAnswer]);
 
   const handlePlayAgain = () => {
     setCurrentSlide(0);
@@ -96,22 +93,20 @@ const chainId =useChainId()
     setShowConfetti(false);
   };
 
-  const mintNFTCredential = async () => {
-    console.log(
-      "🚀 ~ mintNFTCredential ~ mintNFTCredential:",
-      mintNFTCredential
-    );
-
+  const mintNFTCredential = useCallback(async () => {
     const tokenURI =
       "https://gateway.irys.xyz/FFyoky1LPR8Q3cFNFu2vN5CaywHFrKRVpZSEZDNeFejQ";
-
     writeContract({
       address: certificateContractAddresses[chainId],
       abi: CERTIFICATE_CONTRACT_ABI,
       functionName: "mintNFT",
       args: [address, tokenURI],
     });
-  };
+  }, [address, chainId, writeContract]);
+
+  const handlePlayAnotherQuiz = useCallback(() => {
+    router.push("/select-quiz");
+  }, [router]);
 
   if (quizData.length === 0) {
     return <div>No quiz data available.</div>;
@@ -123,9 +118,7 @@ const chainId =useChainId()
         {showConfetti && <Confetti />}
         <Card className="flex flex-col w-full max-w-2xl">
           <CardHeader>
-            <CardTitle className="text-xl sm:text-2xl">
-              {quizDatas.find((quiz) => quiz.id === quizId)?.name || "Quiz"}
-            </CardTitle>
+            <CardTitle className="text-xl sm:text-2xl">{quizName}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-grow flex-col h-auto justify-between p-4 sm:p-6">
             {!quizEnded && (
@@ -163,12 +156,10 @@ const chainId =useChainId()
                     Quiz Completed!
                   </h2>
                   <p className="mb-4">
-                    You got {correctAnswers} out of{" "}
-                    {quizData.filter((slide) => slide.type === "quiz").length}{" "}
+                    You got {correctAnswers} out of {quizQuestionCount}{" "}
                     questions correct.
                   </p>
-                  {correctAnswers ===
-                  quizData.filter((slide) => slide.type === "quiz").length ? (
+                  {correctAnswers === quizQuestionCount ? (
                     <p className="mb-4">
                       Congratulations! You answered all questions correctly!
                     </p>
@@ -197,9 +188,7 @@ const chainId =useChainId()
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {correctAnswers ===
-                    quizData.filter((slide) => slide.type === "quiz")
-                      .length && (
+                  {correctAnswers === quizQuestionCount && !isSuccess && (
                     <Button
                       onClick={mintNFTCredential}
                       disabled={isPendingTx}
@@ -208,13 +197,37 @@ const chainId =useChainId()
                       {isPendingTx ? "Minting..." : "Mint NFT Credential"}
                     </Button>
                   )}
-                  <Button
-                    variant={"secondary"}
-                    onClick={handlePlayAgain}
-                    className="w-full"
-                  >
-                    Play Again
-                  </Button>
+                  {isSuccess && (
+                    <>
+                      <p className="mb-4">
+                        NFT minted successfully!{" "}
+                        <Link
+                          href={txLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          View transaction
+                        </Link>
+                      </p>
+                      <Button
+                        variant="secondary"
+                        onClick={handlePlayAnotherQuiz}
+                        className="w-full"
+                      >
+                        Play Another Quiz
+                      </Button>
+                    </>
+                  )}
+                  {!isSuccess && (
+                    <Button
+                      variant={"secondary"}
+                      onClick={handlePlayAgain}
+                      className="w-full"
+                    >
+                      Play Again
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
