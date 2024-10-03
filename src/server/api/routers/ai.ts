@@ -8,7 +8,7 @@ const groq = createGroq({
 });
 
 export const aiRouter = createTRPCRouter({
-  getDailyQuote: publicProcedure.query(async () => {
+  getDailyQuote: publicProcedure.mutation(async () => {
     const today = new Date();
     const dateString = today.toISOString().split("T")[0]; // YYYY-MM-DD format
     const prompt = `Generate an inspiring daily quote for ${dateString}. The quote should be concise, thought-provoking, and suitable for motivation or reflection.`;
