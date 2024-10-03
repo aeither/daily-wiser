@@ -40,7 +40,7 @@ const Header = () => {
   }, [isConnected, address, refetch]);
 
   return (
-    <header className="fixed z-50 top-0 left-0 w-full flex justify-between items-center p-2 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
+    <header className="sticky z-50 top-0 left-0 w-full flex justify-between items-center p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden">

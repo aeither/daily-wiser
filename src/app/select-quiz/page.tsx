@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lightbulb, Code, Clock, FlaskConical } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Clock, Code, FlaskConical, Lightbulb } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const botQuizzes = [
@@ -37,7 +36,7 @@ export default function SelectQuiz() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 text-center">Select Your Quiz</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {botQuizzes.map((quiz, index) => (

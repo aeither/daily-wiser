@@ -2,14 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import {
   CERTIFICATE_CONTRACT_ABI,
   CERTIFICATE_CONTRACT_ADDRESS,
 } from "@/utils/constants/certificate";
 import { quizDatas } from "@/utils/constants/quiz";
-// import { createNFTMetadataAction } from "../actions/db";
-import { useMutation } from "@tanstack/react-query";
+import { Progress } from "@radix-ui/react-progress";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
@@ -18,19 +16,10 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import { processGlifAction } from "../actions/tools";
-
-function useProcessGlif() {
-  const CERTIFICATE_GLIF = "cm09imbfh00004dbzfcch2w61";
-  return useMutation({
-    mutationFn: async (variables: { name: string; quiz: string }) =>
-      processGlifAction(CERTIFICATE_GLIF, [variables.name, variables.quiz]),
-  });
-}
 
 export default function Component() {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(60);
   const [quizEnded, setQuizEnded] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -43,27 +32,17 @@ export default function Component() {
     data: hash,
     isPending: isPendingTx,
   } = useWriteContract();
-  const { isSuccess } = useWaitForTransactionReceipt({
-    hash,
-  });
+  const { isSuccess } = useWaitForTransactionReceipt({ hash });
   const router = useRouter();
-  const {
-    mutateAsync: genCertificateImageAsync,
-    isPending: isGenCertificate,
-    error,
-    isError,
-  } = useProcessGlif();
-  const [certificateName, setCertificateName] = useState("");
 
   useEffect(() => {
     if (isSuccess) {
       console.log("NFT minted successfully:", hash);
       router.push("/profile");
     }
-  }, [isSuccess]);
+  }, [isSuccess, router, hash]);
 
-  const quizData =
-    quizDatas.find((quiz) => quiz.id === quizId)?.questions || [];
+  const quizData = quizDatas.find((quiz) => quiz.id === quizId)?.slides || [];
 
   useEffect(() => {
     if (timeLeft > 0 && !quizEnded) {
@@ -76,23 +55,32 @@ export default function Component() {
   }, [timeLeft, quizEnded]);
 
   useEffect(() => {
-    if (quizEnded && correctAnswers === quizData.length) {
+    if (
+      quizEnded &&
+      correctAnswers ===
+        quizData.filter((slide) => slide.type === "quiz").length
+    ) {
       setShowConfetti(true);
-      const timer = setTimeout(() => setShowConfetti(false), 5000); // Stop confetti after 5 seconds
+      const timer = setTimeout(() => setShowConfetti(false), 5000);
       return () => clearTimeout(timer);
     }
-  }, [quizEnded, correctAnswers, quizData.length]);
+  }, [quizEnded, correctAnswers, quizData]);
 
-  const handleAnswerSelect = (index: number) => {
-    setSelectedAnswer(index);
+  const handleAnswerSelect = (answer: string) => {
+    setSelectedAnswer(answer);
   };
 
-  const handleNextQuestion = () => {
-    if (selectedAnswer === quizData[currentQuestion]?.correctAnswer) {
+  const handleNextSlide = () => {
+    const currentQuizSlide = quizData[currentSlide];
+    if (
+      currentQuizSlide.type === "quiz" &&
+      selectedAnswer === currentQuizSlide.correctAnswer
+    ) {
       setCorrectAnswers(correctAnswers + 1);
     }
-    if (currentQuestion < quizData.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+
+    if (currentSlide < quizData.length - 1) {
+      setCurrentSlide(currentSlide + 1);
       setSelectedAnswer(null);
     } else {
       setQuizEnded(true);
@@ -100,7 +88,7 @@ export default function Component() {
   };
 
   const handlePlayAgain = () => {
-    setCurrentQuestion(0);
+    setCurrentSlide(0);
     setSelectedAnswer(null);
     setTimeLeft(60);
     setQuizEnded(false);
@@ -109,28 +97,9 @@ export default function Component() {
   };
 
   const mintNFTCredential = async () => {
-    const quizTitle = quizDatas.find((quiz) => quiz.id === quizId)?.title;
-    if (!quizTitle || !certificateName.trim()) {
-      throw new Error("Invalid quiz data or certificate name");
-    }
-
-    // Step 1: Create image URL
-    const imageData = await genCertificateImageAsync({
-      name: certificateName,
-      quiz: quizTitle ?? "AI TUTOR",
-    });
-
-    // Step 2: Create metadata URI
-    // const { id: tokenId } = await createNFTMetadataAction(
-    //   `${quizTitle} Completion Certificate`,
-    //   `Congratulations to ${certificateName} on completing the ${quizTitle} quiz!`,
-    //   imageData.output
-    // );
-    // const tokenURI = `${BASE_URL}/api/?id=${tokenId}`;
     const tokenURI =
       "https://gateway.irys.xyz/FFyoky1LPR8Q3cFNFu2vN5CaywHFrKRVpZSEZDNeFejQ";
 
-    // Step 3: Mint NFT
     writeContract({
       address: CERTIFICATE_CONTRACT_ADDRESS,
       abi: CERTIFICATE_CONTRACT_ABI,
@@ -139,115 +108,111 @@ export default function Component() {
     });
   };
 
-  // Early return if quizData is empty
   if (quizData.length === 0) {
     return <div>No quiz data available.</div>;
   }
 
   return (
-    <>
-      {showConfetti && <Confetti />}
-      <div className="pt-10">
-        <Card className="w-full max-w-3xl mx-auto">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-2xl font-bold">
-              Awesome Quiz Application
+    <main className="mx-auto flex h-[calc(100vh-57px)] w-full max-w-lg flex-col items-center justify-center px-4 py-2">
+      <div className="h-screen grid grid-cols-1 grid-rows-1 gap-4">
+        {showConfetti && <Confetti />}
+        <Card className="flex flex-col w-full max-w-2xl">
+          <CardHeader>
+            <CardTitle className="text-xl sm:text-2xl">
+              {quizDatas.find((quiz) => quiz.id === quizId)?.name || "Quiz"}
             </CardTitle>
-            {!quizEnded && (
-              <div className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">
-                Time Left {timeLeft}
-              </div>
-            )}
           </CardHeader>
-          <CardContent>
-            {!quizEnded ? (
-              <>
-                <h2 className="text-xl font-semibold mb-4">
-                  {currentQuestion + 1}. {quizData[currentQuestion].question}
-                </h2>
-                <div className="space-y-2">
-                  {quizData[currentQuestion].options.map((option, index) => (
-                    <div
-                      key={index}
-                      className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                        selectedAnswer === index
-                          ? "bg-green-100 dark:bg-green-800"
-                          : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      }`}
-                      onClick={() => handleAnswerSelect(index)}
-                      onKeyUp={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          handleAnswerSelect(index);
-                        }
-                      }}
-                    >
-                      {option}
+          <CardContent className="flex flex-grow flex-col h-auto justify-between p-4 sm:p-6">
+            {!quizEnded && (
+              <Progress value={(timeLeft / 60) * 100} className="w-full mb-4" />
+            )}
+            <div className="mb-6">
+              {!quizEnded ? (
+                <>
+                  <h2 className="text-lg sm:text-xl font-bold mb-4">
+                    {currentSlide + 1}. {quizData[currentSlide].content}
+                  </h2>
+                  {quizData[currentSlide].type === "quiz" && (
+                    <div className="space-y-2">
+                      {quizData[currentSlide].options?.map((option, index) => (
+                        <Button
+                          key={index}
+                          variant={
+                            selectedAnswer === option ? "default" : "outline"
+                          }
+                          className="w-full text-left justify-start"
+                          onClick={() => handleAnswerSelect(option)}
+                        >
+                          {option}
+                        </Button>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                <div className="mt-4 flex justify-between items-center">
-                  <div className="text-sm text-gray-500">
-                    {currentQuestion + 1} of {quizData.length} Questions
-                  </div>
-                  <Button
-                    onClick={handleNextQuestion}
-                    disabled={selectedAnswer === null}
-                  >
-                    {currentQuestion === quizData.length - 1
-                      ? "Finish"
-                      : "Next Question"}
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="text-center">
-                <h2 className="text-2xl font-bold mb-4">Quiz Ended!</h2>
-                <p className="mb-4">
-                  You got {correctAnswers} out of {quizData.length} questions
-                  correct.
-                </p>
-                {correctAnswers === quizData.length ? (
-                  <div className="mb-4">
-                    <p className="text-green-600 font-semibold mb-2">
+                  )}
+                </>
+              ) : (
+                <div className="text-center">
+                  <h2 className="text-xl sm:text-2xl font-bold mb-4">
+                    Quiz Completed!
+                  </h2>
+                  <p className="mb-4">
+                    You got {correctAnswers} out of{" "}
+                    {quizData.filter((slide) => slide.type === "quiz").length}{" "}
+                    questions correct.
+                  </p>
+                  {correctAnswers ===
+                  quizData.filter((slide) => slide.type === "quiz").length ? (
+                    <p className="mb-4">
                       Congratulations! You answered all questions correctly!
                     </p>
-                    <input
-                      type="text"
-                      placeholder="Enter name for the certificate"
-                      className="mb-2 p-2 border border-gray-300 rounded w-full"
-                      value={certificateName}
-                      onChange={(e) => setCertificateName(e.target.value)}
-                    />
+                  ) : (
+                    <p className="mb-4">
+                      Keep practicing to improve your score!
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="mt-auto">
+              {!quizEnded ? (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm sm:text-base">
+                    {currentSlide + 1} of {quizData.length} Slides
+                  </span>
+                  <Button
+                    onClick={handleNextSlide}
+                    disabled={
+                      quizData[currentSlide].type === "quiz" && !selectedAnswer
+                    }
+                  >
+                    {currentSlide === quizData.length - 1 ? "Finish" : "Next"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {correctAnswers ===
+                    quizData.filter((slide) => slide.type === "quiz")
+                      .length && (
                     <Button
                       onClick={mintNFTCredential}
-                      disabled={
-                        isGenCertificate ||
-                        isPendingTx ||
-                        !certificateName.trim()
-                      }
+                      disabled={isPendingTx}
+                      className="w-full"
                     >
-                      {isGenCertificate || isPendingTx
-                        ? "Minting..."
-                        : "Mint NFT Credential"}
+                      {isPendingTx ? "Minting..." : "Mint NFT Credential"}
                     </Button>
-                  </div>
-                ) : (
-                  <p className="text-yellow-600 mb-4">
-                    Keep practicing to improve your score!
-                  </p>
-                )}
-                <Button onClick={handlePlayAgain}>Play Again</Button>
-              </div>
-            )}
+                  )}
+                  <Button
+                    onClick={handlePlayAgain}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Play Again
+                  </Button>
+                </div>
+              )}
+            </div>
           </CardContent>
-          {!quizEnded && (
-            <Progress
-              value={((currentQuestion + 1) / quizData.length) * 100}
-              className="mt-4"
-            />
-          )}
         </Card>
       </div>
-    </>
+    </main>
   );
 }

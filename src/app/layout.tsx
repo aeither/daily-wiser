@@ -25,7 +25,7 @@ const fontBody = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "dailywiser",
+  title: "DailyWiser",
   description: "",
 };
 
@@ -53,7 +53,7 @@ export default function RootLayout(props: { children: ReactNode }) {
           >
             <ContextProvider initialState={initialState}>
               <Header />
-              <div className="pt-20">{props.children}</div>
+              {props.children}
               <Toaster />
             </ContextProvider>
           </ThemeProvider>
