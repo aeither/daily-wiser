@@ -110,13 +110,15 @@ export default function StudentProfile() {
     enabled: !!user?.xp,
     staleTime: Number.POSITIVE_INFINITY,
   });
-  const nftsQuery = useQuery<Item[], Error>({
-    queryKey: ["nfts", address],
-    queryFn: () => fetchNFTs(address!).then((response) => response.items),
-    enabled: !!address, // Only run the query if address is defined
-  });
   const { chain } = useAccount();
   const baseUrl = chain?.blockExplorers?.default.url;
+
+  const nftsQuery = useQuery<Item[], Error>({
+    queryKey: ["nfts", address],
+    queryFn: () =>
+      fetchNFTs(address!, baseUrl!).then((response) => response.items),
+    enabled: !!address, // Only run the query if address is defined
+  });
 
   useEffect(() => {
     if (address) {
@@ -135,9 +137,7 @@ export default function StudentProfile() {
   };
 
   const fetchAddressCounters = async () => {
-    const response = await fetch(
-      `${baseUrl}/addresses/${address}/counters`
-    );
+    const response = await fetch(`${baseUrl}/addresses/${address}/counters`);
     const data = await response.json();
     setAddressCounters(data);
   };

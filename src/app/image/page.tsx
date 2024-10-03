@@ -67,11 +67,11 @@ export default function AIImageGenerator() {
 
     if (user) {
       await spendCreditsAction.mutateAsync({
-        address: user.id,
+        address: user.address,
         creditsToSpend: GENERATE_IMAGE_COST,
       });
       await addXpAction.mutateAsync({
-        address: user.id,
+        address: user.address,
         xpToAdd: CREATE_CHAT_COST * 5,
       });
     }
