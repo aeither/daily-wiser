@@ -40,7 +40,7 @@ export default function TutorCarousel() {
   };
 
   const handleCardClick = (tutorId: number) => {
-    router.push(`/chat?botId=${tutorId}`);
+    router.push(`/chat-room?botId=${tutorId}`);
   };
 
   if (!tutors || tutors.length === 0) {
@@ -50,13 +50,13 @@ export default function TutorCarousel() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-full overflow-hidden">
       <div
         ref={containerRef}
-        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide space-x-4 p-4"
+        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide space-x-4 p-4 w-full"
       >
         <AnimatePresence initial={false}>
-          {tutors.map((tutor, index) => (
+          {tutors.map((tutor) => (
             <motion.div
               key={tutor.id}
               className="flex-shrink-0 w-full sm:w-72 snap-center"
@@ -65,7 +65,10 @@ export default function TutorCarousel() {
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.5 }}
             >
-              <Card className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white overflow-hidden h-[28rem] sm:h-96 cursor-pointer hover:shadow-xl transition-shadow duration-300">
+              <Card
+                className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white overflow-hidden h-[28rem] sm:h-96 cursor-pointer hover:shadow-xl transition-shadow duration-300"
+                onClick={() => handleCardClick(tutor.id)}
+              >
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="relative h-1/2">
                     {tutor.imageUrl && (
@@ -87,10 +90,7 @@ export default function TutorCarousel() {
                   </div>
                   <div className="p-4 flex-grow flex flex-col justify-between">
                     <p className="text-sm line-clamp-3">{tutor.description}</p>
-                    <Button
-                      onClick={() => handleCardClick(tutor.id)}
-                      className="mt-4 bg-white text-purple-700 hover:bg-purple-100 transition-colors duration-300"
-                    >
+                    <Button className="mt-4 bg-white text-purple-700 hover:bg-purple-100 transition-colors duration-300">
                       Chat with {tutor.name}
                     </Button>
                   </div>
@@ -106,7 +106,7 @@ export default function TutorCarousel() {
             variant="outline"
             size="icon"
             onClick={() => handleScroll("left")}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full hidden sm:block"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full z-10"
             disabled={currentIndex === 0}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -115,32 +115,13 @@ export default function TutorCarousel() {
             variant="outline"
             size="icon"
             onClick={() => handleScroll("right")}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full hidden sm:block"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full z-10"
             disabled={currentIndex === tutors.length - 1}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </>
       )}
-      <div className="flex justify-center mt-4 space-x-2">
-        {tutors.map((_, index) => (
-          <Button
-            key={index}
-            className={`w-2 h-2 rounded-full ${
-              index === currentIndex ? "bg-purple-600" : "bg-purple-300"
-            }`}
-            onClick={() => {
-              const container = containerRef.current;
-              if (container) {
-                container.scrollTo({
-                  left: index * container.offsetWidth,
-                  behavior: "smooth",
-                });
-              }
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 }

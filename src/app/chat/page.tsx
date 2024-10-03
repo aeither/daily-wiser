@@ -1,13 +1,15 @@
+import FrontPage from "@/components/frontpage/index";
 import { Suspense } from "react";
+import Loading from "./loading";
 
-import ChatClientPage from "./client";
-
-export default function Chat() {
+function App() {
   return (
     <>
-      <Suspense fallback={<>loading</>}>
-        <ChatClientPage />
+      <Suspense fallback={<Loading />}>
+        <FrontPage />
       </Suspense>
     </>
   );
 }
+
+export default App;
