@@ -94,7 +94,7 @@ export const topUpContractAddresses: { [key: string]: `0x${string}` } = {
 export const certificateContractAddresses: { [key: string]: `0x${string}` } = {
   [openCampusCodex.id]: "0x1a6Fc72588770c6fef0985525930F2337Db4DCD8",
   [morphHolesky.id]: "0xE936c41FfeFce0ebF26d512eB4aCc6CAb39b50f9",
-  [neoX.id]: "0x9abc...",
+  [neoX.id]: "0x56C66e07f669A04C21Fb376Ead3eFbAE4f9440AC",
 };
 
 export const feedbackContractAddresses: { [key: string]: `0x${string}` } = {
