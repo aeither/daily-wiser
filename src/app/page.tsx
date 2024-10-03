@@ -1,22 +1,19 @@
 "use client";
 
-import { FeedbackModal } from "@/components/feedback-modal";
+import { FeedbackModalButton } from "@/components/feedback-modal";
+import RevealWisdom from "@/components/reveal-wisdom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Bookmark, MessageCircle, Star, Trophy, Twitter } from "lucide-react";
+import { MessageCircle, Trophy, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function HomePage() {
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const router = useRouter();
 
   return (
     <div className="min-h-screen p-4">
-      <FeedbackModal open={feedbackOpen} onOpenChange={setFeedbackOpen} />
-
       <main className="max-w-md mx-auto space-y-6">
         <header className="text-center space-y-2">
           <Badge className="bg-purple-500 text-white hover:bg-purple-600">
@@ -31,7 +28,7 @@ export default function HomePage() {
           </Badge>
           <h1 className="text-3xl font-bold text-purple-800">DailyWiser</h1>
           <p className="text-purple-600">
-            Level up your life, one quiz at a time!
+            Micro-learning, macro impact!
           </p>
         </header>
 
@@ -65,37 +62,10 @@ export default function HomePage() {
             </Button>
           </Card>
 
-          <Button
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={() => setFeedbackOpen(true)}
-          >
-            <Star className="mr-2 h-4 w-4" />
-            Provide Feedback
-          </Button>
+          <FeedbackModalButton />
         </div>
 
-        <Card className="p-4 shadow-lg rounded-xl">
-          <h2 className="text-xl font-semibold mb-2 text-purple-700">
-            Daily Token Claim
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Bookmark this web app to come back and claim more juice tokens!
-          </p>
-          <div className="grid grid-cols-7 gap-2">
-            {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-full bg-purple-200 flex items-center justify-center text-purple-700 font-semibold"
-              >
-                {day}
-              </div>
-            ))}
-          </div>
-          <Button className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-white">
-            <Bookmark className="mr-2 h-4 w-4" />
-            Claim Tokens
-          </Button>
-        </Card>
+        <RevealWisdom />
 
         <Card className="p-4 shadow-lg rounded-xl">
           <Trophy className="h-12 w-12 text-purple-500 mx-auto mb-2" />
