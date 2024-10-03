@@ -7,7 +7,6 @@ import Confetti from "react-confetti";
 import { Card } from "./ui/card";
 
 const RevealWisdom = () => {
-  const [showQuote, setShowQuote] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [today, setToday] = useState("");
   const [canAdd, setCanAdd] = useState(false);
@@ -16,6 +15,7 @@ const RevealWisdom = () => {
   const [claimedDays, setClaimedDays] = useState<boolean[]>(
     Array(7).fill(false)
   );
+  const [isTransactionPending, setIsTransactionPending] = useState(false);
   const { mutateAsync } = apiReact.ai.getDailyQuote.useMutation();
   const { addWisdom, isPendingTx } = useAddWisdom();
   const { canAddWisdom, timeUntilNextWisdom, getLatestWisdom } =
@@ -29,7 +29,6 @@ const RevealWisdom = () => {
 
     const checkWisdomStatus = async () => {
       const canAddNow = await canAddWisdom();
-      console.log("🚀 ~ checkWisdomStatus ~ canAddNow:", canAddNow);
       setCanAdd(canAddNow);
 
       if (!canAddNow) {
@@ -37,10 +36,8 @@ const RevealWisdom = () => {
         setNextWisdomTime(Number(timeUntilNext));
 
         const wisdom = await getLatestWisdom();
-        console.log("🚀 ~ checkWisdomStatus ~ wisdom:", wisdom);
         setLatestWisdom(wisdom[2]);
 
-        // Mark today as claimed if we can't add wisdom
         const newClaimedDays = [...claimedDays];
         newClaimedDays[now.getDay()] = true;
         setClaimedDays(newClaimedDays);
@@ -51,18 +48,16 @@ const RevealWisdom = () => {
   }, []);
 
   const handleRevealWisdom = async (day: string, index: number) => {
-    if (day === today && canAdd) {
+    if (day === today && canAdd && !isTransactionPending) {
       try {
-        setShowQuote(true);
+        setIsTransactionPending(true);
         const { quote, date } = await mutateAsync();
         await addWisdom(quote);
 
-        // Mark the day as claimed
         const newClaimedDays = [...claimedDays];
         newClaimedDays[index] = true;
         setClaimedDays(newClaimedDays);
 
-        // Refresh the wisdom status after adding
         const canAddNow = await canAddWisdom();
         setCanAdd(canAddNow);
         if (!canAddNow) {
@@ -72,9 +67,13 @@ const RevealWisdom = () => {
         }
 
         setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 5000); // Stop confetti after 5 seconds
+        setTimeout(() => setShowConfetti(false), 5000);
       } catch (error) {
         console.error("Error revealing wisdom:", error);
+        // Reset states if transaction fails or is rejected
+        setCanAdd(true);
+      } finally {
+        setIsTransactionPending(false);
       }
     }
   };
@@ -95,18 +94,25 @@ const RevealWisdom = () => {
             key={index}
             onClick={() => handleRevealWisdom(day, index)}
             disabled={
-              day !== today || claimedDays[index] || !canAdd || isPendingTx
+              day !== today ||
+              claimedDays[index] ||
+              !canAdd ||
+              isTransactionPending ||
+              isPendingTx
             }
             className={`aspect-square rounded-full flex items-center justify-center text-purple-700 font-semibold 
               ${
-                day === today && !claimedDays[index] && canAdd
+                day === today &&
+                !claimedDays[index] &&
+                canAdd &&
+                !isTransactionPending
                   ? "bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transform hover:scale-110 transition-all"
-                  : claimedDays[index]
+                  : claimedDays[index] || isTransactionPending
                     ? "bg-gray-300 cursor-not-allowed"
                     : "bg-purple-200"
               }`}
           >
-            {day === today ? "🏆" : day}
+            {day === today ? (isTransactionPending ? "⏳" : "🏆") : day}
           </button>
         ))}
       </div>
