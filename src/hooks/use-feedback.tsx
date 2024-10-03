@@ -125,6 +125,7 @@ export const useCanAddWisdom = () => {
       throw new Error("Public client is not available");
     }
     const response = await publicClient.readContract({
+      account: address,
       address: feedbackContractAddresses[chainId],
       abi: FEEDBACK_CONTRACT_ABI,
       functionName: "canAddWisdom",
@@ -138,6 +139,7 @@ export const useCanAddWisdom = () => {
       throw new Error("Public client is not available");
     }
     return await publicClient.readContract({
+      account: address,
       address: feedbackContractAddresses[chainId],
       abi: FEEDBACK_CONTRACT_ABI,
       functionName: "timeUntilNextWisdom",
@@ -153,6 +155,7 @@ export const useCanAddWisdom = () => {
       throw new Error("Address is not available");
     }
     return await publicClient.readContract({
+      account: address,
       address: feedbackContractAddresses[chainId],
       abi: FEEDBACK_CONTRACT_ABI,
       functionName: "wisdomByUser",
