@@ -1,39 +1,22 @@
 "use client";
 
+import { FeedbackModal } from "@/components/feedback-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { Bookmark, MessageCircle, Star, Trophy, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Label } from "recharts";
 
 export default function HomePage() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackTitle, setFeedbackTitle] = useState("");
-  const [feedbackDescription, setFeedbackDescription] = useState("");
   const router = useRouter();
-
-  const handleFeedbackSubmit = () => {
-    // TODO: Implement on-chain feedback submission
-    console.log("Submitting feedback:", { feedbackTitle, feedbackDescription });
-    setFeedbackOpen(false);
-    setFeedbackTitle("");
-    setFeedbackDescription("");
-  };
 
   return (
     <div className="min-h-screen p-4">
+      <FeedbackModal open={feedbackOpen} onOpenChange={setFeedbackOpen} />
+
       <main className="max-w-md mx-auto space-y-6">
         <header className="text-center space-y-2">
           <Badge className="bg-purple-500 text-white hover:bg-purple-600">
@@ -122,12 +105,6 @@ export default function HomePage() {
 
         <footer className="text-center space-y-4">
           <div className="flex justify-center space-x-4">
-            {/* <Link
-              href="https://t.me/dailywiser"
-              className="text-blue-500 hover:text-blue-600"
-            >
-              Join our Telegram
-            </Link> */}
             <Link
               href="https://twitter.com/AITutor3"
               className="text-blue-400 hover:text-blue-500 flex items-center"
@@ -141,41 +118,6 @@ export default function HomePage() {
           </p>
         </footer>
       </main>
-
-      <Dialog open={feedbackOpen} onOpenChange={setFeedbackOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Share Your Thoughts</DialogTitle>
-            <DialogDescription>
-              Help us shape the ultimate platform for building smart habits and
-              continuous learning.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleFeedbackSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>Your Feedback</Label>
-                <Textarea
-                  id="feedbackDescription"
-                  className="min-h-[200px]"
-                  placeholder={`Please share your thoughts on: \n\n
-• Features you'd love to see \n
-• Challenges you're facing \n
-• How our platform fits into your daily routine \n
-• Improvements to user experience \n
-• Any 'aha!' moments you've had while using the app`}
-                  value={feedbackDescription}
-                  onChange={(e) => setFeedbackDescription(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Submit Feedback</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
