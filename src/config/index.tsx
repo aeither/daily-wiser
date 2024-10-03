@@ -88,7 +88,7 @@ export function getWagmiPublicClient(chainId: number) {
 export const topUpContractAddresses: { [key: string]: `0x${string}` } = {
   [openCampusCodex.id]: "0xd74a7CC422443ed6606a953B5428305Df23b1047",
   [morphHolesky.id]: "0xc3914bfD49e030B3a2c975B33947aDC338919A60",
-  [neoX.id]: "0x9abc...",
+  [neoX.id]: "0xd74a7CC422443ed6606a953B5428305Df23b1047",
 };
 
 export const certificateContractAddresses: { [key: string]: `0x${string}` } = {
@@ -100,5 +100,5 @@ export const certificateContractAddresses: { [key: string]: `0x${string}` } = {
 export const feedbackContractAddresses: { [key: string]: `0x${string}` } = {
   [openCampusCodex.id]: "0xBD0E22Ce639acbbb3Ef3a1AB0b3A14724AD33505",
   [morphHolesky.id]: "0x1DCce73F023eE23512da1d4092891578c9a3F3E4",
-  [neoX.id]: "0x9abc...",
+  [neoX.id]: "0xA2DD26D1e1b87975692ab9efdD84177BC16fcA98",
 };
