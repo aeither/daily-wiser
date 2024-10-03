@@ -11,16 +11,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Bookmark, MessageCircle, Star, Trophy, Twitter } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Label } from "recharts";
 
 export default function HomePage() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackTitle, setFeedbackTitle] = useState("");
   const [feedbackDescription, setFeedbackDescription] = useState("");
+  const router = useRouter();
 
   const handleFeedbackSubmit = () => {
     // TODO: Implement on-chain feedback submission
@@ -39,6 +41,7 @@ export default function HomePage() {
             <Link
               href="https://medium.com/edu-chain/introducing-oc-points-testnet-16617ee0cc4c"
               className="underline hover:text-purple-200"
+              target="_blank"
             >
               Learn More
             </Link>
@@ -54,7 +57,10 @@ export default function HomePage() {
           <p className="text-gray-600 mb-4">
             Challenge yourself with our quiz and earn OC Points!
           </p>
-          <Button className="w-full bg-purple-500 hover:bg-purple-600 text-white">
+          <Button
+            className="w-full bg-purple-500 hover:bg-purple-600 text-white"
+            onClick={() => router.push("/select-quiz")}
+          >
             Start Quiz
           </Button>
         </Card>
@@ -67,7 +73,10 @@ export default function HomePage() {
             <p className="text-gray-600 mb-4">
               Learn any subject easily with personalized AI assistants.
             </p>
-            <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
+            <Button
+              className="w-full bg-green-500 hover:bg-green-600 text-white"
+              onClick={() => router.push("/chat")}
+            >
               <MessageCircle className="mr-2 h-4 w-4" />
               Start Chat
             </Button>
@@ -134,37 +143,37 @@ export default function HomePage() {
       </main>
 
       <Dialog open={feedbackOpen} onOpenChange={setFeedbackOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Provide Feedback</DialogTitle>
+            <DialogTitle>Share Your Thoughts</DialogTitle>
             <DialogDescription>
-              Your feedback will be registered on-chain. Please share your
-              thoughts with us.
+              Help us shape the ultimate platform for building smart habits and
+              continuous learning.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Input
-                id="feedbackTitle"
-                className="col-span-4"
-                placeholder="Title"
-                value={feedbackTitle}
-                onChange={(e) => setFeedbackTitle(e.target.value)}
-              />
+          <form onSubmit={handleFeedbackSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label>Your Feedback</Label>
+                <Textarea
+                  id="feedbackDescription"
+                  className="min-h-[200px]"
+                  placeholder={`Please share your thoughts on: \n\n
+• Features you'd love to see \n
+• Challenges you're facing \n
+• How our platform fits into your daily routine \n
+• Improvements to user experience \n
+• Any 'aha!' moments you've had while using the app`}
+                  value={feedbackDescription}
+                  onChange={(e) => setFeedbackDescription(e.target.value)}
+                  required
+                />
+              </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Textarea
-                id="feedbackDescription"
-                className="col-span-4"
-                placeholder="Description"
-                value={feedbackDescription}
-                onChange={(e) => setFeedbackDescription(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={handleFeedbackSubmit}>Send Feedback</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button type="submit">Submit Feedback</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

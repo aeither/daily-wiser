@@ -96,3 +96,9 @@ export const certificateContractAddresses: { [key: string]: `0x${string}` } = {
   [morphHolesky.id]: "0xE936c41FfeFce0ebF26d512eB4aCc6CAb39b50f9",
   [neoX.id]: "0x9abc...",
 };
+
+export const feedbackContractAddresses: { [key: string]: `0x${string}` } = {
+  [openCampusCodex.id]: "0xe4A0682A04bF47b455A69C04F893a9Cd5b09fF4C",
+  [morphHolesky.id]: "0x021f096E46bD5309bB978A91DF13154f6015dBD5",
+  [neoX.id]: "0x9abc...",
+};
