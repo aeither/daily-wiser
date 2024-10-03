@@ -34,7 +34,7 @@ const Header = () => {
   }, [isConnected, address, refetch]);
 
   return (
-    <header className="fixed z-50 top-0 left-0 w-full flex justify-between items-center p-4 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
+    <header className="fixed z-50 top-0 left-0 w-full flex justify-between items-center p-2 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
       <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden">
@@ -94,6 +94,11 @@ const Header = () => {
         <Link href="/select-quiz" passHref>
           <Button variant="ghost" className="hidden md:flex items-center">
             Quiz
+          </Button>
+        </Link>
+        <Link href="/chat" passHref>
+          <Button variant="ghost" className="hidden md:flex items-center">
+            Chat
           </Button>
         </Link>
       </div>

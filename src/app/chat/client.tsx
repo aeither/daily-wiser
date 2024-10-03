@@ -4,27 +4,17 @@ import { useChat } from "ai/react";
 import { SendHorizontalIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { formatEther } from "viem";
 import {
-  useAccount,
-  useReadContract,
-  useWaitForTransactionReceipt,
-  useWriteContract,
+  useAccount
 } from "wagmi";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "@/components/ui/use-toast";
 
 import CopyToClipboard from "@/components/copy-to-clipboard";
 import { apiReact } from "@/trpc/react";
-import {
-  SHARES_CONTRACT_ABI,
-  SHARES_CONTRACT_ADDRESS,
-} from "@/utils/constants/shares";
 
 export const maxDuration = 30;
 
@@ -82,87 +72,6 @@ export default function ChatClientPage() {
     e.preventDefault();
     handleSubmit(e);
   }
-
-  // Trading functionality
-  const { data: sharesBalance } = useReadContract({
-    address: SHARES_CONTRACT_ADDRESS,
-    abi: SHARES_CONTRACT_ABI,
-    functionName: "sharesBalance",
-    args: [publicBot?.nftAddress, address],
-  });
-
-  const { data: buyPriceAfterFee } = useReadContract({
-    address: SHARES_CONTRACT_ADDRESS,
-    abi: SHARES_CONTRACT_ABI,
-    functionName: "getBuyPriceAfterFee",
-    args: [publicBot?.nftAddress, BigInt(amount || "0")],
-  });
-
-  const { data: sellPriceAfterFee } = useReadContract({
-    address: SHARES_CONTRACT_ADDRESS,
-    abi: SHARES_CONTRACT_ABI,
-    functionName: "getSellPriceAfterFee",
-    args: [publicBot?.nftAddress, BigInt(amount || "0")],
-  });
-
-  const { writeContractAsync: buyShares, data: buyTxHash } = useWriteContract();
-  const { writeContract: sellShares, data: sellTxHash } = useWriteContract();
-
-  const { isLoading: isBuyLoading, isSuccess: isBuySuccess } =
-    useWaitForTransactionReceipt({
-      hash: buyTxHash,
-    });
-
-  const { isLoading: isSellLoading, isSuccess: isSellSuccess } =
-    useWaitForTransactionReceipt({
-      hash: sellTxHash,
-    });
-
-  useEffect(() => {
-    if (isBuySuccess || isSellSuccess) {
-      toast({
-        title: "Transaction Successful",
-        description: "Your balance have been updated.",
-      });
-    }
-  }, [isBuySuccess, isSellSuccess]);
-
-  const handleBuy = async () => {
-    try {
-      await buyShares({
-        address: SHARES_CONTRACT_ADDRESS,
-        abi: SHARES_CONTRACT_ABI,
-        functionName: "buyShares",
-        args: [publicBot?.nftAddress, BigInt(amount)],
-        value: buyPriceAfterFee as bigint,
-      });
-    } catch (error) {
-      console.error("Error buying shares:", error);
-      toast({
-        title: "Error",
-        description: "Failed to buy shares. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleSell = async () => {
-    try {
-      await sellShares({
-        address: SHARES_CONTRACT_ADDRESS,
-        abi: SHARES_CONTRACT_ABI,
-        functionName: "sellShares",
-        args: [publicBot?.nftAddress, BigInt(amount)],
-      });
-    } catch (error) {
-      console.error("Error selling shares:", error);
-      toast({
-        title: "Error",
-        description: "Failed to sell shares. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   return (
     <>
@@ -241,56 +150,6 @@ export default function ChatClientPage() {
             </form>
           </div>
         </div>
-
-        <Card className="mt-8 max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle>Trade {publicBot?.name}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* <Input
-              placeholder="Shares Subject Address"
-              value={sharesSubject}
-              onChange={(e) => setSharesSubject(e.target.value)}
-            /> */}
-              <Input
-                type="number"
-                placeholder={`Amount of ${publicBot?.name}`}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-              <div>
-                <p>
-                  Your Balance: {sharesBalance?.toString() || "0"} $
-                  {publicBot?.name}
-                </p>
-
-                <p>
-                  Buy Price (After Fee):{" "}
-                  {formatEther((buyPriceAfterFee as bigint) || BigInt(0))} ETH
-                  Sell Price (After Fee):{" "}
-                  {formatEther((sellPriceAfterFee as bigint) || BigInt(0))} ETH
-                </p>
-              </div>
-              <div className="flex space-x-4">
-                <Button
-                  className="bg-green-500 hover:bg-green-400"
-                  onClick={handleBuy}
-                  disabled={isBuyLoading}
-                >
-                  {isBuyLoading ? "Buying..." : "Buy Shares"}
-                </Button>
-                <Button
-                  className="bg-red-500 hover:bg-red-400 "
-                  onClick={handleSell}
-                  disabled={isSellLoading}
-                >
-                  {isSellLoading ? "Selling..." : "Sell Shares"}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </Suspense>
     </>
   );
