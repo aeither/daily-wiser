@@ -13,7 +13,10 @@ const RevealWisdom = () => {
   const [canAdd, setCanAdd] = useState(false);
   const [nextWisdomTime, setNextWisdomTime] = useState(0);
   const [latestWisdom, setLatestWisdom] = useState("");
-  const { data, mutateAsync } = apiReact.ai.getDailyQuote.useMutation();
+  const [claimedDays, setClaimedDays] = useState<boolean[]>(
+    Array(7).fill(false)
+  );
+  const { mutateAsync } = apiReact.ai.getDailyQuote.useMutation();
   const { addWisdom, isPendingTx } = useAddWisdom();
   const { canAddWisdom, timeUntilNextWisdom, getLatestWisdom } =
     useCanAddWisdom();
@@ -26,6 +29,7 @@ const RevealWisdom = () => {
 
     const checkWisdomStatus = async () => {
       const canAddNow = await canAddWisdom();
+      console.log("🚀 ~ checkWisdomStatus ~ canAddNow:", canAddNow);
       setCanAdd(canAddNow);
 
       if (!canAddNow) {
@@ -33,29 +37,44 @@ const RevealWisdom = () => {
         setNextWisdomTime(Number(timeUntilNext));
 
         const wisdom = await getLatestWisdom();
-        console.log("🚀 ~ checkWisdomStatus ~ wisdom:", wisdom)
-        setLatestWisdom(wisdom.quote);
+        console.log("🚀 ~ checkWisdomStatus ~ wisdom:", wisdom);
+        setLatestWisdom(wisdom[2]);
+
+        // Mark today as claimed if we can't add wisdom
+        const newClaimedDays = [...claimedDays];
+        newClaimedDays[now.getDay()] = true;
+        setClaimedDays(newClaimedDays);
       }
     };
 
     checkWisdomStatus();
   }, []);
 
-  const handleRevealWisdom = async () => {
-    if (canAdd) {
-      setShowQuote(true);
-      setShowConfetti(true);
-      const { quote, date } = await mutateAsync();
-      await addWisdom(quote);
-      setTimeout(() => setShowConfetti(false), 5000); // Stop confetti after 5 seconds
+  const handleRevealWisdom = async (day: string, index: number) => {
+    if (day === today && canAdd) {
+      try {
+        setShowQuote(true);
+        const { quote, date } = await mutateAsync();
+        await addWisdom(quote);
 
-      // Refresh the wisdom status after adding
-      const canAddNow = await canAddWisdom();
-      setCanAdd(canAddNow);
-      if (!canAddNow) {
-        const timeUntilNext = await timeUntilNextWisdom();
-        setNextWisdomTime(Number(timeUntilNext));
-        setLatestWisdom(quote);
+        // Mark the day as claimed
+        const newClaimedDays = [...claimedDays];
+        newClaimedDays[index] = true;
+        setClaimedDays(newClaimedDays);
+
+        // Refresh the wisdom status after adding
+        const canAddNow = await canAddWisdom();
+        setCanAdd(canAddNow);
+        if (!canAddNow) {
+          const timeUntilNext = await timeUntilNextWisdom();
+          setNextWisdomTime(Number(timeUntilNext));
+          setLatestWisdom(quote);
+        }
+
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 5000); // Stop confetti after 5 seconds
+      } catch (error) {
+        console.error("Error revealing wisdom:", error);
       }
     }
   };
@@ -67,34 +86,38 @@ const RevealWisdom = () => {
         Unlock your Daily Dose of Wisdom
       </h2>
       <p className="text-gray-600 mb-4">
-        Click the button to unveil a daily dose of wisdom and inspiration!
+        Click on today's day to unveil a daily dose of wisdom and inspiration!
       </p>
-      <button
-        type="button"
-        onClick={handleRevealWisdom}
-        disabled={!canAdd || isPendingTx}
-        className={`w-full py-2 rounded-full font-semibold 
-          ${
-            canAdd
-              ? "bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transform hover:scale-105 transition-all"
-              : "bg-gray-300 cursor-not-allowed text-gray-500"
-          }`}
-      >
-        {canAdd ? "Reveal Wisdom" : "Wisdom Claimed"}
-      </button>
+      <div className="grid grid-cols-7 gap-2 mb-4">
+        {daysOfWeek.map((day, index) => (
+          <button
+            type="button"
+            key={index}
+            onClick={() => handleRevealWisdom(day, index)}
+            disabled={
+              day !== today || claimedDays[index] || !canAdd || isPendingTx
+            }
+            className={`aspect-square rounded-full flex items-center justify-center text-purple-700 font-semibold 
+              ${
+                day === today && !claimedDays[index] && canAdd
+                  ? "bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transform hover:scale-110 transition-all"
+                  : claimedDays[index]
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : "bg-purple-200"
+              }`}
+          >
+            {day === today ? "🏆" : day}
+          </button>
+        ))}
+      </div>
       {!canAdd && (
         <div className="mt-4 text-center text-purple-700">
           <p>
-            You can add wisdom again in {Math.floor(nextWisdomTime / 3600)}{" "}
-            hours and {Math.floor((nextWisdomTime % 3600) / 60)} minutes
+            You can reveal again in {Math.floor(nextWisdomTime / 3600)} hours
+            and {Math.floor((nextWisdomTime % 3600) / 60)} minutes
           </p>
-          <p className="mt-2">Your latest wisdom: "{latestWisdom}"</p>
+          <p className="mt-2 text-accent">{latestWisdom}</p>
         </div>
-      )}
-      {showQuote && data && (
-        <span className="text-center block mt-4 text-purple-700">
-          "{data.quote}" - {data.date}
-        </span>
       )}
     </Card>
   );
