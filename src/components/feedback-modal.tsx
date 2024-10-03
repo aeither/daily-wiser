@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useSubmitFeedback } from "@/hooks/use-feedback";
 import { Star } from "lucide-react";
+import posthog from "posthog-js";
 import { useState } from "react";
 
 export function FeedbackModalButton() {
@@ -20,6 +21,8 @@ export function FeedbackModalButton() {
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    posthog.capture("Feedback Button", { description: feedbackDescription });
     await submitFeedback(feedbackDescription);
     console.log("Submitting feedback:", feedbackDescription);
     setFeedbackOpen(false);

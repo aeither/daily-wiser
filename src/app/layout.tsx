@@ -11,6 +11,7 @@ import { headers } from "next/headers";
 import type { ReactNode } from "react";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
+import { CSPostHogProvider } from "@/context/posthog";
 
 const fontHeading = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -37,28 +38,30 @@ export default function RootLayout(props: { children: ReactNode }) {
 
   return (
     <html lang="en">
-      <body
-        className={cn(
-          "min-h-screen font-sans antialiased",
-          fontHeading.variable,
-          fontBody.variable
-        )}
-      >
-        <TRPCReactProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ContextProvider initialState={initialState}>
-              <Header />
-              {props.children}
-              <Toaster />
-            </ContextProvider>
-          </ThemeProvider>
-        </TRPCReactProvider>
-      </body>
+      <CSPostHogProvider>
+        <body
+          className={cn(
+            "min-h-screen font-sans antialiased",
+            fontHeading.variable,
+            fontBody.variable
+          )}
+        >
+          <TRPCReactProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ContextProvider initialState={initialState}>
+                <Header />
+                {props.children}
+                <Toaster />
+              </ContextProvider>
+            </ThemeProvider>
+          </TRPCReactProvider>
+        </body>
+      </CSPostHogProvider>
     </html>
   );
 }
