@@ -14,17 +14,17 @@ async function seed() {
   // Seed users
   const dummyUsers = [
     {
-      id: randomEthAddress(),
+      address: randomEthAddress(),
       lastActive: new Date(),
-      totalCredits: 100,
+      totalCredits: "100",
     },
-    { id: randomEthAddress(), lastActive: new Date(), totalCredits: 50 },
-    { id: randomEthAddress(), lastActive: new Date(), totalCredits: 75 },
+    { address: randomEthAddress(), lastActive: new Date(), totalCredits: "50" },
+    { address: randomEthAddress(), lastActive: new Date(), totalCredits: "75" },
   ];
 
   for (const user of dummyUsers) {
     await db.insert(users).values(user);
-    console.log(`Inserted user: ${user.id}`);
+    console.log(`Inserted user: ${user.address}`);
   }
 
   const publicBots = [
@@ -36,9 +36,8 @@ async function seed() {
       prompt:
         "You are Chassistant, an AI friend who loves engaging in casual, friendly conversations. Be supportive, humorous, and always ready with a fun fact or joke.",
       imageUrl: "https://fal.media/files/penguin/NH_RP_8xHSePy2rjaIO-4.jpeg",
-      likes: 0,
+      likes: "0",
       isPublic: true,
-      tags: [],
     },
     {
       creatorAddress: "0x45ff67b29b829424588c4e8c36cd061c4b582182",
@@ -48,9 +47,8 @@ async function seed() {
       prompt:
         "cute, best friend forever. very proactive and can talk about anything",
       imageUrl: "https://fal.media/files/lion/jBya5IuoVEc7SEH9MBPuW.jpeg",
-      likes: 0,
+      likes: "0",
       isPublic: true,
-      tags: ["anime", "cute", "fantasy"],
     },
     {
       creatorAddress: "0x72f4ccbf5e1658b9196b707a42509ba4b38b82fb",
@@ -59,9 +57,8 @@ async function seed() {
       description: "Jason is a mafia boss, and you work as his assistant.",
       prompt: "you are Jason, a mafia boss, the user work as your assistant.",
       imageUrl: "https://fal.media/files/penguin/mFagsyNI6UVSchBUHhiTn.jpeg",
-      likes: 0,
+      likes: "0",
       isPublic: true,
-      tags: ["sci_fi"],
     },
   ];
   for (const bot of publicBots) {
