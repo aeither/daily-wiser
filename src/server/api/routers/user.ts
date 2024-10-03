@@ -112,12 +112,10 @@ export const userRouter = createTRPCRouter({
     .input(
       z.object({
         creatorAddress: z.string(),
-        nftAddress: z.string(),
         name: z.string(),
         description: z.string(),
         prompt: z.string(),
         isPublic: z.boolean(),
-        tags: z.array(z.string().min(1).max(50)).min(1).max(3),
         imageUrl: z.string().optional(),
         likes: z.string().optional(),
       })
