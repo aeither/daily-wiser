@@ -20,7 +20,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateLevelAndMaxXp } from "@/lib/utils";
 import { apiReact } from "@/trpc/react";
 import { shortenEthAddress } from "@/utils";
-import { EXPLORER_BASE_URL } from "@/utils/constants";
 import type { Item } from "@/utils/types";
 import { Progress } from "@radix-ui/react-progress";
 import { useQuery } from "@tanstack/react-query";
@@ -116,6 +115,8 @@ export default function StudentProfile() {
     queryFn: () => fetchNFTs(address!).then((response) => response.items),
     enabled: !!address, // Only run the query if address is defined
   });
+  const { chain } = useAccount();
+  const baseUrl = chain?.blockExplorers?.default.url;
 
   useEffect(() => {
     if (address) {
@@ -128,14 +129,14 @@ export default function StudentProfile() {
   }, [address]);
 
   const fetchAddressInfo = async () => {
-    const response = await fetch(`${EXPLORER_BASE_URL}/addresses/${address}`);
+    const response = await fetch(`${baseUrl}/addresses/${address}`);
     const data = await response.json();
     setAddressInfo(data);
   };
 
   const fetchAddressCounters = async () => {
     const response = await fetch(
-      `${EXPLORER_BASE_URL}/addresses/${address}/counters`
+      `${baseUrl}/addresses/${address}/counters`
     );
     const data = await response.json();
     setAddressCounters(data);
@@ -143,7 +144,7 @@ export default function StudentProfile() {
 
   const fetchTokenBalances = async () => {
     const response = await fetch(
-      `${EXPLORER_BASE_URL}/addresses/${address}/token-balances`
+      `${baseUrl}/addresses/${address}/token-balances`
     );
     const data = await response.json();
     setTokenBalances(data.items);
@@ -151,7 +152,7 @@ export default function StudentProfile() {
 
   const fetchTransactions = async () => {
     const response = await fetch(
-      `${EXPLORER_BASE_URL}/addresses/${address}/transactions?limit=5`
+      `${baseUrl}/addresses/${address}/transactions?limit=5`
     );
     const data = await response.json();
     setTransactions(data.items);
@@ -159,7 +160,7 @@ export default function StudentProfile() {
 
   const fetchCoinBalanceHistory = async () => {
     const response = await fetch(
-      `${EXPLORER_BASE_URL}/addresses/${address}/coin-balance-history-by-day`
+      `${baseUrl}/addresses/${address}/coin-balance-history-by-day`
     );
     const data = await response.json();
     setCoinBalanceHistory(data.items);

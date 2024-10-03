@@ -2,19 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  CERTIFICATE_CONTRACT_ABI,
-  CERTIFICATE_CONTRACT_ADDRESS,
-} from "@/utils/constants/certificate";
+import { Progress } from "@/components/ui/progress";
+import { certificateContractAddresses } from "@/config";
+import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
 import { quizDatas } from "@/utils/constants/quiz";
-import { Progress } from "@radix-ui/react-progress";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import {
   useAccount,
+  useChainId,
   useWaitForTransactionReceipt,
-  useWriteContract,
+  useWriteContract
 } from "wagmi";
 
 export default function Component() {
@@ -34,6 +33,7 @@ export default function Component() {
   } = useWriteContract();
   const { isSuccess } = useWaitForTransactionReceipt({ hash });
   const router = useRouter();
+const chainId =useChainId()
 
   useEffect(() => {
     if (isSuccess) {
@@ -97,11 +97,16 @@ export default function Component() {
   };
 
   const mintNFTCredential = async () => {
+    console.log(
+      "🚀 ~ mintNFTCredential ~ mintNFTCredential:",
+      mintNFTCredential
+    );
+
     const tokenURI =
       "https://gateway.irys.xyz/FFyoky1LPR8Q3cFNFu2vN5CaywHFrKRVpZSEZDNeFejQ";
 
     writeContract({
-      address: CERTIFICATE_CONTRACT_ADDRESS,
+      address: certificateContractAddresses[chainId],
       abi: CERTIFICATE_CONTRACT_ABI,
       functionName: "mintNFT",
       args: [address, tokenURI],
@@ -124,7 +129,10 @@ export default function Component() {
           </CardHeader>
           <CardContent className="flex flex-grow flex-col h-auto justify-between p-4 sm:p-6">
             {!quizEnded && (
-              <Progress value={(timeLeft / 60) * 100} className="w-full mb-4" />
+              <div className="w-full mb-4">
+                <Progress value={(timeLeft / 60) * 100} className="w-full" />
+                <p className="text-center mt-2">{timeLeft} seconds left</p>
+              </div>
             )}
             <div className="mb-6">
               {!quizEnded ? (
@@ -201,8 +209,8 @@ export default function Component() {
                     </Button>
                   )}
                   <Button
+                    variant={"secondary"}
                     onClick={handlePlayAgain}
-                    variant="outline"
                     className="w-full"
                   >
                     Play Again

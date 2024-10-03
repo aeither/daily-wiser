@@ -1,6 +1,3 @@
-export const CERTIFICATE_CONTRACT_ADDRESS =
-  "0xE936c41FfeFce0ebF26d512eB4aCc6CAb39b50f9";
-
 export const CERTIFICATE_CONTRACT_ABI = [
   {
     inputs: [
