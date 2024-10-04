@@ -3,15 +3,16 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { wagmiConfig } from "@/config";
 import ContextProvider from "@/context";
+import { CSPostHogProvider } from "@/context/posthog";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import { headers } from "next/headers";
 import type { ReactNode } from "react";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
-import { CSPostHogProvider } from "@/context/posthog";
 
 const fontHeading = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -57,6 +58,7 @@ export default function RootLayout(props: { children: ReactNode }) {
                 <Header />
                 {props.children}
                 <Toaster />
+                <Analytics />
               </ContextProvider>
             </ThemeProvider>
           </TRPCReactProvider>
