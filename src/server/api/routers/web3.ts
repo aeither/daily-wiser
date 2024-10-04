@@ -63,7 +63,6 @@ export const web3Router = createTRPCRouter({
         const mintNFTReceipt = await waitForTransactionReceipt(walletClient, {
           hash: mintNFTReceiptHash,
         });
-        console.log("Mint NFT Receipt:", mintNFTReceipt);
 
         return {
           hash: mintNFTReceipt,

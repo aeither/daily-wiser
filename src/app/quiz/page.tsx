@@ -220,7 +220,7 @@ export default function Component() {
                         disabled={isPendingTx}
                         className="w-full"
                       >
-                        {isPendingTx ? "Minting..." : "Mint NFT Credential"}
+                        {isPendingTx ? "Claiming..." : "Claim Certificate"}
                       </Button>
                     </>
                   )}
