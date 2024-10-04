@@ -19,6 +19,7 @@ export const aiRouter = createTRPCRouter({
         system:
           "You are an AI assistant specialized in generating inspiring and thought-provoking quotes.",
         prompt: prompt,
+        temperature: 0.8,
       });
 
       return {
