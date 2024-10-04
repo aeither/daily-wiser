@@ -8,7 +8,7 @@ const nextConfig = {
     domains: ["res.cloudinary.com", "fal.ai", "fal.media"],
   },
   experimental: {
-    esmExternals: true,
+    esmExternals: 'loose',
   },
   transpilePackages: ["debug", "supports-color"],
 };

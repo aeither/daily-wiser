@@ -31,6 +31,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { toast } from "./ui/use-toast";
 
 const CREDITS_PER_ETH = 10000;
 
@@ -52,6 +53,11 @@ export function CreditPurchaseComponent() {
       async onSuccess() {
         await utils.user.getPurchaseHistory.invalidate();
         await utils.user.getUser.invalidate();
+
+        toast({
+          title: "Credits Purchased",
+          description: "Your credits have been successfully purchased.",
+        });
       },
     }
   );

@@ -15,8 +15,8 @@ export const metadata = {
   url: "https://web3modal.com", // origin must match your domain & subdomain
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
-// Define Open Campus Codex chain
-const openCampusCodex = defineChain({
+
+export const openCampusCodex = defineChain({
   id: 656476,
   testnet: true,
   name: "Open Campus Codex",
@@ -32,13 +32,12 @@ const openCampusCodex = defineChain({
   blockExplorers: {
     default: {
       name: "Blockscout",
-      url: "https://opencampus-codex.blockscout.com/",
+      url: "https://opencampus-codex.blockscout.com",
     },
   },
 });
 
-// Define Neo X chain
-const neoX = defineChain({
+export const neoX = defineChain({
   id: 12227332,
   testnet: true,
   name: "Neo X Testnet T4",
@@ -59,7 +58,6 @@ const neoX = defineChain({
   },
 });
 
-// Create wagmiConfig
 const chains = [openCampusCodex, morphHolesky, neoX] as const;
 export const wagmiConfig = defaultWagmiConfig({
   chains,
@@ -83,6 +81,19 @@ export const wagmiConfig = defaultWagmiConfig({
 
 export function getWagmiPublicClient(chainId: number) {
   return getPublicClient(wagmiConfig, { chainId });
+}
+
+export function getChainById(chainId: number) {
+  switch (chainId) {
+    case openCampusCodex.id:
+      return openCampusCodex;
+    case morphHolesky.id:
+      return morphHolesky;
+    case neoX.id:
+      return neoX;
+    default:
+      throw new Error(`Unsupported chain ID: ${chainId}`);
+  }
 }
 
 export const topUpContractAddresses: { [key: string]: `0x${string}` } = {

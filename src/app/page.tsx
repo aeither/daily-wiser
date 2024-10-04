@@ -5,17 +5,20 @@ import RevealWisdom from "@/components/reveal-wisdom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { openCampusCodex } from "@/config";
 import { MessageCircle, Trophy, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useChainId } from "wagmi";
 
 export default function HomePage() {
   const router = useRouter();
+  const chainId = useChainId();
 
-  return (
-    <div className="min-h-screen p-4">
-      <main className="max-w-md mx-auto space-y-6">
-        <header className="text-center space-y-2">
+  const AnnouncementBadge = () => {
+    switch (chainId) {
+      case openCampusCodex.id: // Ethereum Mainnet
+        return (
           <Badge className="bg-purple-500 text-white hover:bg-purple-600">
             OC Points: Testnet Campaign. 👉{" "}
             <Link
@@ -26,10 +29,27 @@ export default function HomePage() {
               Learn More
             </Link>
           </Badge>
+        );
+      default:
+        return (
+          <Badge className="bg-purple-500 text-white hover:bg-purple-600">
+            AI Tutor is now Daily Wiser.
+          </Badge>
+        );
+    }
+  };
+
+  const renderExtraBSCComponent = () => {
+    return chainId === openCampusCodex.id ? <div>Hello</div> : null;
+  };
+
+  return (
+    <div className="min-h-screen p-4">
+      <main className="max-w-md mx-auto space-y-6">
+        <header className="text-center space-y-2">
+          <AnnouncementBadge />
           <h1 className="text-3xl font-bold text-purple-800">DailyWiser</h1>
-          <p className="text-purple-600">
-            Micro-learning, macro impact!
-          </p>
+          <p className="text-purple-600">Micro-learning, macro impact!</p>
         </header>
 
         <Card className="p-4 shadow-lg rounded-xl">

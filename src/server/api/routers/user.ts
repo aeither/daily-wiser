@@ -7,6 +7,7 @@ import {
   nftMetadata,
   users,
 } from "@/server/db/schema";
+import { TRPCError } from "@trpc/server";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { decodeEventLog, parseAbiItem } from "viem";
 import { z } from "zod";
@@ -215,7 +216,11 @@ export const userRouter = createTRPCRouter({
         .returning();
 
       if (result.length === 0) {
-        throw new Error("Insufficient credits");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            "Oops! Looks like you're out of credits. Add more to continue",
+        });
       }
 
       return result[0];

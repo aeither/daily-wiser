@@ -5,6 +5,7 @@ import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { waitForTransactionReceipt } from "viem/actions";
 import { z } from "zod";
+import { createCaller } from "../root";
 
 // Safely get the admin private key
 const getAdminPrivateKey = () => {
@@ -28,7 +29,7 @@ export const web3Router = createTRPCRouter({
         userAddress: z.string(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { chainId, userAddress } = input;
 
       try {
@@ -42,11 +43,12 @@ export const web3Router = createTRPCRouter({
         });
 
         // Deduct credits
-        // await apiServer.user.spendCredits({
-        //   address: userAddress,
-        //   creditsToSpend: 25,
-        // });
-        // await apiServer.user.addXp({ address: userAddress, xpToAdd: 25 });
+        const caller = createCaller(ctx);
+        await caller.user.spendCredits({
+          address: userAddress,
+          creditsToSpend: 25,
+        });
+        await caller.user.addXp({ address: userAddress, xpToAdd: 25 });
 
         // Deploy NFT contract using factory
         const tokenURI =

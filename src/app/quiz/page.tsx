@@ -3,19 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { certificateContractAddresses } from "@/config";
-import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
+import { toast } from "@/components/ui/use-toast";
+import { apiReact } from "@/trpc/react";
+import { GENERATE_MEME_COST } from "@/utils/constants";
 import { quizDatas } from "@/utils/constants/quiz";
+import { ToastAction } from "@radix-ui/react-toast";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Confetti from "react-confetti";
-import {
-  useAccount,
-  useChainId,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
+import { useAccount } from "wagmi";
 
 export default function Component() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -27,14 +24,42 @@ export default function Component() {
   const searchParams = useSearchParams();
   const quizId = Number(searchParams.get("id"));
   const { address, chain } = useAccount();
-  const {
-    writeContract,
-    data: hash,
-    isPending: isPendingTx,
-  } = useWriteContract();
-  const { isSuccess } = useWaitForTransactionReceipt({ hash });
   const router = useRouter();
-  const chainId = useChainId();
+  const {
+    mutate: adminMintCertificate,
+    isPending: isPendingTx,
+    isSuccess,
+    data: mintResult,
+  } = apiReact.web3.adminMintCertificate.useMutation({
+    onSuccess(data, variables, context) {
+      if (data.hash) {
+        toast({
+          title: "Certificate Minted",
+          description: "Your certificate has been successfully minted.",
+          action: (
+            <ToastAction
+              onClick={() =>
+                window.open(
+                  `${baseUrl}/tx/${data.hash.transactionHash}`,
+                  "_blank"
+                )
+              }
+              altText={"View Transaction"}
+            >
+              View Transaction
+            </ToastAction>
+          ),
+        });
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const quizData = quizDatas.find((quiz) => quiz.id === quizId)?.slides || [];
   const quizName = quizDatas.find((quiz) => quiz.id === quizId)?.name || "Quiz";
@@ -43,7 +68,9 @@ export default function Component() {
   ).length;
 
   const baseUrl = chain?.blockExplorers?.default.url;
-  const txLink = hash ? `${baseUrl}/tx/${hash}` : "";
+  const txLink = mintResult?.hash.transactionHash
+    ? `${baseUrl}/tx/${mintResult.hash.transactionHash}`
+    : "";
 
   useEffect(() => {
     if (timeLeft > 0 && !quizEnded) {
@@ -93,16 +120,13 @@ export default function Component() {
     setShowConfetti(false);
   };
 
-  const mintNFTCredential = useCallback(async () => {
-    const tokenURI =
-      "https://gateway.irys.xyz/FFyoky1LPR8Q3cFNFu2vN5CaywHFrKRVpZSEZDNeFejQ";
-    writeContract({
-      address: certificateContractAddresses[chainId],
-      abi: CERTIFICATE_CONTRACT_ABI,
-      functionName: "mintNFT",
-      args: [address, tokenURI],
-    });
-  }, [address, chainId, writeContract]);
+  const mintNFTCredential = async () => {
+    if (chain?.id && address) {
+      adminMintCertificate({ chainId: chain.id, userAddress: address });
+    } else {
+      console.error("Chain ID or address is not defined.");
+    }
+  };
 
   const handlePlayAnotherQuiz = useCallback(() => {
     router.push("/select-quiz");
@@ -189,13 +213,16 @@ export default function Component() {
               ) : (
                 <div className="space-y-2">
                   {correctAnswers === quizQuestionCount && !isSuccess && (
-                    <Button
-                      onClick={mintNFTCredential}
-                      disabled={isPendingTx}
-                      className="w-full"
-                    >
-                      {isPendingTx ? "Minting..." : "Mint NFT Credential"}
-                    </Button>
+                    <>
+                      <span>🪄 {GENERATE_MEME_COST} credits</span>
+                      <Button
+                        onClick={mintNFTCredential}
+                        disabled={isPendingTx}
+                        className="w-full"
+                      >
+                        {isPendingTx ? "Minting..." : "Mint NFT Credential"}
+                      </Button>
+                    </>
                   )}
                   {isSuccess && (
                     <>
