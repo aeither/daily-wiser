@@ -29,6 +29,11 @@ const fontBody = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: "DailyWiser",
   description: "",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout(props: { children: ReactNode }) {
