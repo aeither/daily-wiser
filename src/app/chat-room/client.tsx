@@ -4,9 +4,7 @@ import { useChat } from "ai/react";
 import { SendHorizontalIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import {
-  useAccount
-} from "wagmi";
+import { useAccount } from "wagmi";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -15,6 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import CopyToClipboard from "@/components/copy-to-clipboard";
 import { apiReact } from "@/trpc/react";
+import { CHAT_COST } from "@/utils/constants";
 
 export const maxDuration = 30;
 
@@ -77,7 +76,7 @@ export default function ChatClientPage() {
     <>
       <Suspense>
         <div
-          className="mx-auto mt-3 w-full max-w-2xl bg-cover bg-center rounded-lg"
+          className="mx-auto mt-3 w-full max-w-2xl bg-cover bg-center rounded-lg mx-2"
           style={{ backgroundImage: `url(${publicBot?.imageUrl})` }}
         >
           <div className="bg-white bg-opacity-90 p-4 rounded-lg">
@@ -129,6 +128,8 @@ export default function ChatClientPage() {
                 </div>
               ))}
             </ScrollArea>
+
+            <span>🪄 {CHAT_COST} credits</span>
 
             <form onSubmit={onSubmit} className="relative">
               <Input

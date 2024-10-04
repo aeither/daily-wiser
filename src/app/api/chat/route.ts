@@ -1,4 +1,5 @@
 import { apiServer } from "@/trpc/server";
+import { CHAT_COST } from "@/utils/constants";
 import { createOpenAI as createGroq } from "@ai-sdk/openai";
 import { convertToCoreMessages, streamText } from "ai";
 
@@ -19,9 +20,9 @@ export async function POST(req: Request) {
   // Deduct credits
   await apiServer.user.spendCredits({
     address: user_address,
-    creditsToSpend: 2,
+    creditsToSpend: CHAT_COST,
   });
-  await apiServer.user.addXp({ address: user_address, xpToAdd: 2 });
+  await apiServer.user.addXp({ address: user_address, xpToAdd: CHAT_COST });
 
   // Get user
   const user = await apiServer.user.getUser({ address: user_address });
