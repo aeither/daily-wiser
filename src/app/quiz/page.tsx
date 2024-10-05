@@ -137,8 +137,8 @@ export default function Component() {
   }
 
   return (
-    <main className="mx-auto flex h-[calc(100vh-57px)] w-full max-w-lg flex-col items-center justify-center px-4 py-2">
-      <div className="h-screen grid grid-cols-1 grid-rows-1 gap-4">
+    <main className="mx-auto flex h-[calc(100dvh-57px)] w-full max-w-lg flex-col items-center justify-center px-4 py-2">
+      <div className="h-full grid grid-cols-1 grid-rows-1 gap-4">
         {showConfetti && <Confetti />}
         <Card className="flex flex-col w-full max-w-2xl">
           <CardHeader>
