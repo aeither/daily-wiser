@@ -1,28 +1,34 @@
 import Link from "next/link";
 
+const footerLinks = [
+  { href: "https://twitter.com/AITutor3", label: "Twitter" },
+  { href: "/privacy-policy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+  // { href: "/#contact", label: "Contact" },
+  { href: "/#blog", label: "Blog" },
+];
+
 export default function Footer() {
   return (
-    <footer className="p-4 text-center text-sm">
-      <nav className="flex flex-col space-y-2 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
-        <Link href="/#" className="hover:underline">
-          About Us
-        </Link>
-        <Link href="/#" className="hover:underline">
-          Privacy Policy
-        </Link>
-        <Link href="/#" className="hover:underline">
-          Terms of Service
-        </Link>
-        <Link href="/#" className="hover:underline">
-          Contact
-        </Link>
-        <Link href="/#" className="hover:underline">
-          FAQ
-        </Link>
-        <Link href="/#" className="hover:underline">
-          Blog
-        </Link>
-      </nav>
+    <footer className="pt-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto">
+        <nav className="flex flex-wrap justify-center gap-4">
+          {footerLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="border-t border-gray-300 pt-2 mt-2">
+          <p className="text-sm text-gray-500 text-center">
+            &copy; {new Date().getFullYear()} DailyWiser. All rights reserved.
+          </p>
+        </div>
+      </div>
     </footer>
   );
 }
