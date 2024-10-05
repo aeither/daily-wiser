@@ -10,10 +10,11 @@ export const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 if (!projectId) throw new Error("Project ID is not defined");
 
 export const metadata = {
-  name: "AppKit",
-  description: "AppKit Example",
-  url: "https://web3modal.com", // origin must match your domain & subdomain
-  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+  name: "Daily Wiser",
+  description:
+    "Gamified micro-learning app with AI personalization and blockchain-verified achievements. Learn daily, grow consistently, and earn NFT skill badges.",
+  url: "https://dailywiser.xyz", // origin must match your domain & subdomain
+  icons: ["https://dailywiser.xyz/favicon-32x32.png"],
 };
 
 export const openCampusCodex = defineChain({
