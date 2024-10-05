@@ -1,9 +1,9 @@
 import { certificateContractAddresses, getChainById } from "@/config";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
+import { TRPCError } from "@trpc/server";
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { waitForTransactionReceipt } from "viem/actions";
 import { z } from "zod";
 import { createCaller } from "../root";
 
@@ -60,16 +60,19 @@ export const web3Router = createTRPCRouter({
           args: [userAddress, tokenURI],
         });
 
-        const mintNFTReceipt = await waitForTransactionReceipt(walletClient, {
-          hash: mintNFTReceiptHash,
-        });
+        // const mintNFTReceipt = await waitForTransactionReceipt(walletClient, {
+        //   hash: mintNFTReceiptHash,
+        // });
 
         return {
-          hash: mintNFTReceipt,
+          hash: mintNFTReceiptHash,
         };
       } catch (error) {
-        console.error("Error deploying NFT contract or minting:", error);
-        throw error;
+        console.log("Error deploying NFT contract or minting:", error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error deploying NFT contract or minting",
+        });
       }
     }),
 });

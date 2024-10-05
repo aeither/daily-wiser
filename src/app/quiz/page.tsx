@@ -39,10 +39,7 @@ export default function Component() {
           action: (
             <ToastAction
               onClick={() =>
-                window.open(
-                  `${baseUrl}/tx/${data.hash.transactionHash}`,
-                  "_blank"
-                )
+                window.open(`${baseUrl}/tx/${data.hash}`, "_blank")
               }
               altText={"View Transaction"}
             >
@@ -68,9 +65,7 @@ export default function Component() {
   ).length;
 
   const baseUrl = chain?.blockExplorers?.default.url;
-  const txLink = mintResult?.hash.transactionHash
-    ? `${baseUrl}/tx/${mintResult.hash.transactionHash}`
-    : "";
+  const txLink = mintResult?.hash ? `${baseUrl}/tx/${mintResult.hash}` : "";
 
   useEffect(() => {
     if (timeLeft > 0 && !quizEnded) {
