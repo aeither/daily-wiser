@@ -130,7 +130,7 @@ const Header = () => {
             ) : null}
           </Link>
         </div>
-        <w3m-button balance="show" size="sm" label="Sign in" />
+        {isConnected ? <w3m-account-button /> : <w3m-connect-button label="Connect" />}
       </div>
     </header>
   );
