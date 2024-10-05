@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: config => {
-    config.externals.push('pino-pretty', 'lokijs', 'encoding')
-    return config
+  webpack: (config) => {
+    config.externals.push("pino-pretty", "lokijs", "encoding");
+    return config;
   },
   images: {
     domains: ["res.cloudinary.com", "fal.ai", "fal.media"],
   },
   experimental: {
-    esmExternals: 'loose',
+    esmExternals: true,
   },
   transpilePackages: ["debug", "supports-color"],
 };
