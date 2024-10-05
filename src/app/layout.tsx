@@ -10,6 +10,7 @@ import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import { headers } from "next/headers";
+import Script from "next/script";
 import type { ReactNode } from "react";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
@@ -65,6 +66,7 @@ export default function RootLayout(props: { children: ReactNode }) {
           </TRPCReactProvider>
         </body>
       </CSPostHogProvider>
+      <Script src="https://scripts.simpleanalyticscdn.com/latest.js" />
     </html>
   );
 }
