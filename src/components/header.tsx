@@ -130,7 +130,7 @@ const Header = () => {
             ) : null}
           </Link>
         </div>
-        <w3m-button />
+        <w3m-button balance="show" size="sm" label="Sign in" />
       </div>
     </header>
   );
