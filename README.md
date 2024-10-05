@@ -1,90 +1,79 @@
-# Daily Wiser
-
-<h1 align="center">Bite-Sized Learning, Daily Growth</h1>
+# Daily Wiser: Bite-Sized Learning, Daily Growth
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/9f819136-209f-46aa-8602-3017ccc955f6" alt="Banner" style="width: 50%; max-width: 1280px; aspect-ratio: 16/9; object-fit: cover;">
 </div>
 
-<p align="center"><strong>Gamified micro-learning with AI personalization</strong></p>
+<p align="center"><strong>Gamified micro-learning with AI personalization and blockchain integration</strong></p>
 
-## Demo
+## Live Demo & Open Source Code
 
-https://www.aitutor3.net/
+- **Web App**: [https://dailywiser.xyz/](https://dailywiser.xyz/)
+- **Social Media**: [https://x.com/AITutor3](https://x.com/AITutor3)
 
-https://x.com/AITutor3
+## Functionality and Technical Innovation
 
-## Description
+Daily Wiser is a fully functional mobile-first learning platform that combines AI, gamification, and blockchain technology to solve real-world educational challenges:
 
-Daily Wiser is a mobile-first, bite-sized learning app that offers quizzes with on-chain certificates, making personal growth a daily habit. It combines AI-powered personalization, gamification, and blockchain technology to create an engaging and effective learning experience.
+1. **AI-Powered Personalization**
+   - Ad-hoc personalized AI assistants tailored to individual learning styles and goals
+   - Interactive quizzes that validate active learning and adapt to user progress
 
-Let's explore the key features and their potential impact:
+2. **Blockchain Integration**
+   - NFT Skill Badges minted as verifiable proof of accomplishments
+   - Smart contract addresses: 0xd74a7CC422443ed6606a953B5428305Df23b1047, 0x56C66e07f669A04C21Fb376Ead3eFbAE4f9440AC and 0xA2DD26D1e1b87975692ab9efdD84177BC16fcA98
 
-## AI-Powered Personalization
+3. **Gamification Elements**
+   - XP and leveling to encourage consistent engagement
+   - Daily Wisdom claims for milestone completion
 
-### Adaptive Daily Lessons
+<!-- 4. **Community Features**
+   - Friend challenges and leaderboards to foster healthy competition
+   - AI-enhanced progress tracking with personalized insights -->
 
-The app delivers personalized, bite-sized lessons tailored to each user's interests, learning style, and goals. These daily micro-lessons ensure consistent progress without overwhelming the user.
+## Technical Depth
 
-### Smart Quizzes
+- **Frontend**: Next.js 14, TypeScript, Shadcn UI, Tailwind CSS
+- **Blockchain**: Wagmi v2, Viem v2 for Web3 integration
+- **State Management**: @tanstack/react-query, nuqs for efficient data handling
+- **AI Integration**: [Specify AI technology used, e.g., OpenAI GPT-3.5]
 
-Brief, adaptive quizzes at the end of each lesson reinforce learning and adjust difficulty based on user performance, optimizing knowledge retention in short, manageable sessions.
+## UI/UX Design
 
-## Gamification
+Daily Wiser prioritizes an intuitive and seamless user experience:
 
-### Streak System
+- Mobile-first design for learning on-the-go
+- Clean, minimalist interface promoting ease of use
+- Gamification elements strategically placed to boost engagement
+- Personalized dashboard for easy progress tracking
 
-Users build and maintain daily learning streaks, encouraging consistent engagement and habit formation.
+## Originality and Innovation
 
-### Experience Points and Leveling
+Daily Wiser pushes boundaries in blockchain-based education:
 
-Learners earn XP and level up as they complete lessons and quizzes, adding a motivational game-like element to their educational journey.
+1. **Micro-learning Revolution**: Combines AI personalization with blockchain verification for bite-sized, impactful learning experiences.
+2. **Skill Tokenization**: NFT badges on Neo X testnet provide tangible, verifiable proof of acquired knowledge.
+3. **Adaptive AI Curriculum**: Continuously evolving lesson plans based on individual and collective user data.
+4. **Gamified Blockchain Learning**: Seamlessly integrates game mechanics with blockchain technology to make learning both fun and verifiable.
 
-### Achievements and Badges
+## Impact and Real-World Application
 
-The app rewards users with unlockable achievements and badges for reaching milestones, mastering skills, or completing challenges.
+- Addresses the challenge of consistent, personalized learning in busy modern lifestyles
+- Provides verifiable skill credentials through blockchain technology
+- Increases learning retention through AI-powered adaptive content and gamification
+- Fosters a global community of lifelong learners
 
-## Blockchain Integration
-
-### NFT Skill Badges
-
-As users master specific skills or complete course modules, they can mint NFT badges as verifiable proof of their accomplishments.
-
-## Community Features
-
-### Friend Challenges
-
-Users can challenge friends to learning competitions, fostering a sense of community and healthy competition.
-
-### Leaderboards
-
-Weekly and monthly leaderboards showcase top learners, encouraging friendly competition and sustained engagement.
-
-## AI-Enhanced Progress Tracking
-
-### Personalized Insights
-
-AI-powered analytics provide users with insights into their learning patterns, strengths, and areas for improvement, helping them optimize their learning journey.
-
-## Impact and Benefits
-
-- **Consistent Learning**: Bite-sized daily lessons promote regular engagement and steady progress.
-- **Personalized Experience**: AI adapts content to individual needs and preferences.
-- **Motivation and Engagement**: Gamification elements keep users motivated and coming back daily.
-- **Verifiable Skills**: Blockchain-based NFT badges provide tangible proof of acquired knowledge.
-- **Social Learning**: Community features encourage peer support and friendly competition.
-- **Accessible Growth**: Mobile-first design allows learning on-the-go, fitting into busy lifestyles.
-
-Daily Wiser transforms personal growth into an engaging daily habit, making learning accessible, fun, and rewarding through its innovative mobile-first approach.
-
-## Setup
-
-To install dependencies:
+## Quick Start for Developers
 
 ```bash
 bun install
+bun run dev
 ```
 
-```bash
-bun run index.ts
-```
+Visit http://localhost:3000 to see the app in action.
+
+## Future Roadmap
+Expanded AI capabilities for even more personalized learning paths
+Mobile app development UX
+Partnerships with educational institutions for content and credential recognition
+Community feaures: leaderboard and friend challenges
