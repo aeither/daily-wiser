@@ -3,11 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "@/components/ui/use-toast";
-import { apiReact } from "@/trpc/react";
+import { useAdminMintCertificate } from "@/hooks/use-mint-certificate";
 import { GENERATE_MEME_COST } from "@/utils/constants";
-import { quizDatas } from "@/utils/constants/quiz";
-import { ToastAction } from "@radix-ui/react-toast";
+import { quizDatas } from "@/utils/constants/quizzes";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -22,7 +20,7 @@ export default function Component() {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const searchParams = useSearchParams();
-  const quizId = Number(searchParams.get("id"));
+  const quizId = searchParams.get("id");
   const { address, chain } = useAccount();
   const router = useRouter();
   const {
@@ -30,36 +28,11 @@ export default function Component() {
     isPending: isPendingTx,
     isSuccess,
     data: mintResult,
-  } = apiReact.web3.adminMintCertificate.useMutation({
-    onSuccess(data, variables, context) {
-      if (data.hash) {
-        toast({
-          title: "Certificate Minted",
-          description: "Your certificate has been successfully minted.",
-          action: (
-            <ToastAction
-              onClick={() =>
-                window.open(`${baseUrl}/tx/${data.hash}`, "_blank")
-              }
-              altText={"View Transaction"}
-            >
-              View Transaction
-            </ToastAction>
-          ),
-        });
-      }
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  } = useAdminMintCertificate();
 
   const quizData = quizDatas.find((quiz) => quiz.id === quizId)?.slides || [];
-  const quizName = quizDatas.find((quiz) => quiz.id === quizId)?.name || "Quiz";
+  const quizName =
+    quizDatas.find((quiz) => quiz.id === quizId)?.title || "Quiz";
   const quizQuestionCount = quizData.filter(
     (slide) => slide.type === "quiz"
   ).length;
