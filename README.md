@@ -3,7 +3,7 @@
 <h1 align="center">Bite-Sized Learning, Daily Growth</h1>
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/9f819136-209f-46aa-8602-3017ccc955f6" alt="Banner" style="width: 50%; max-width: 1280px; aspect-ratio: 16/9; object-fit: cover;">
+  <img src="https://github.com/user-attachments/assets/8c89f28c-10c6-4e9f-b4fc-ec6fb8e65122" alt="Banner" style="width: 50%; max-width: 1280px; aspect-ratio: 16/9; object-fit: cover;">
 </div>
 
 <p align="center"><strong>Gamified micro-learning with AI personalization</strong></p>
