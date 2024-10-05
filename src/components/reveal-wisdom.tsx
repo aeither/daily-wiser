@@ -46,17 +46,12 @@ const RevealWisdom = () => {
 
     checkWisdomStatus();
   }, []);
-
   const handleRevealWisdom = async (day: string, index: number) => {
     if (day === today && canAdd && !isTransactionPending) {
       try {
         setIsTransactionPending(true);
         const { quote, date } = await mutateAsync();
-        await addWisdom(quote);
-
-        const newClaimedDays = [...claimedDays];
-        newClaimedDays[index] = true;
-        setClaimedDays(newClaimedDays);
+        const isAddWisdomSuccess = await addWisdom(quote);
 
         const canAddNow = await canAddWisdom();
         setCanAdd(canAddNow);
@@ -66,8 +61,14 @@ const RevealWisdom = () => {
           setLatestWisdom(quote);
         }
 
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 5000);
+        if (isAddWisdomSuccess) {
+          const newClaimedDays = [...claimedDays];
+          newClaimedDays[index] = true;
+          setClaimedDays(newClaimedDays);
+          
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 5000);
+        }
       } catch (error) {
         console.error("Error revealing wisdom:", error);
         // Reset states if transaction fails or is rejected
