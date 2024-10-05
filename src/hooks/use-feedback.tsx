@@ -103,6 +103,8 @@ export const useAddWisdom = () => {
           ),
         });
       }
+
+      return true;
     } catch (error) {
       console.error("Error submitting wisdom:", error);
       toast({
@@ -110,6 +112,8 @@ export const useAddWisdom = () => {
         description: "Failed to submit wisdom. Please try again.",
         variant: "destructive",
       });
+
+      return false;
     }
   };
 
