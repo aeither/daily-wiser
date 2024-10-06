@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { useAdminMintCertificate } from "@/hooks/use-mint-certificate";
 import { useQuizStore } from "@/store/quizStore";
+import { GENERATE_MEME_COST } from "@/utils/constants";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
@@ -10,6 +11,10 @@ import { useAccount } from "wagmi";
 export function QuizEndCard() {
   const router = useRouter();
   const { isConnected, address, chain } = useAccount();
+  // const { data: user, refetch } = apiReact.user.getUser.useQuery(
+  //   { address: address as string },
+  //   { enabled: !!address }
+  // );
   const { quizName, correctAnswers, quizQuestionCount, playAgain } =
     useQuizStore();
 
@@ -71,7 +76,9 @@ export function QuizEndCard() {
               disabled={isPendingTx}
               className="w-full"
             >
-              {isPendingTx ? "Claiming..." : "Claim Certificate"}
+              {isPendingTx
+                ? "Claiming..."
+                : `Claim Certificate (${GENERATE_MEME_COST} 🪙)`}
             </Button>
           )}
           {isSuccess && (

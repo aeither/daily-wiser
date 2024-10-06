@@ -10,7 +10,7 @@ export function QuizStartCard() {
       <CardHeader>
         <CardTitle className="text-xl sm:text-2xl">{quizName}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-grow flex-col h-auto justify-between p-4 sm:p-6">
+      <CardContent className="flex flex-grow flex-col h-auto justify-center p-4 sm:p-6">
         <Button onClick={startQuiz} className="w-full">
           Start Quiz
         </Button>

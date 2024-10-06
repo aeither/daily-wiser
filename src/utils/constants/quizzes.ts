@@ -8,18 +8,7 @@ type Category =
   | "science"
   | "technology";
 
-type Quiz = {
-  id: string;
-  title: string;
-  description: string;
-  image?: string;
-  category?: Category;
-  group?: string;
-  endscreen?: string;
-  slides: Slide[];
-};
-
-type Slide = {
+export type Quiz = {
   type: "info" | "quiz";
   content: string;
   media?: string;
@@ -27,7 +16,18 @@ type Slide = {
   correctAnswer?: string;
 };
 
-export const quizDatas: Quiz[] = [
+export type QuizData = {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  category?: Category;
+  group?: string;
+  endscreen?: string;
+  slides: Quiz[];
+};
+
+export const quizDatas: QuizData[] = [
   {
     id: "ADEA87C4-4ED6-4DAA-B21E-B90E2761CA35",
     title: "Math Fundamentals: Arithmetic and Algebra",

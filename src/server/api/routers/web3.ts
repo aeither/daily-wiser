@@ -72,7 +72,7 @@ export const web3Router = createTRPCRouter({
           error instanceof Error ? error.message : "Unknown error";
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Something went wrong while minting: ${errorMessage}`,
+          message: `${errorMessage}`,
         });
       }
     }),

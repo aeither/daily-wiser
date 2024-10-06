@@ -31,9 +31,8 @@ export function useAdminMintCertificate() {
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: "Something went wrong :(",
         description: error.message,
-        variant: "destructive",
       });
     },
   });

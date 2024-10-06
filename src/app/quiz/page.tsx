@@ -1,4 +1,3 @@
-// QuizPage.tsx
 "use client";
 
 import { useQuizStore } from "@/store/quizStore";
@@ -21,26 +20,34 @@ export default function QuizPage() {
     setQuizId,
     decrementTime,
     timeLeft,
+    resetQuiz,
   } = useQuizStore();
 
   useEffect(() => {
     if (quizId) {
       setQuizId(quizId);
     }
-  }, [quizId, setQuizId]);
+
+    return () => {
+      resetQuiz();
+    };
+  }, [quizId, setQuizId, resetQuiz]);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (timeLeft > 0 && !quizEnded && quizStarted) {
-      const timer = setTimeout(() => decrementTime(), 1000);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => decrementTime(), 1000);
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [timeLeft, quizEnded, quizStarted, decrementTime]);
 
   if (quizData.length === 0) return <div>No quiz data available.</div>;
 
   return (
     <main className="mx-auto flex h-[calc(100dvh-57px)] w-full max-w-lg flex-col items-center justify-center px-4 py-2">
-      <div className="h-full grid grid-cols-1 grid-rows-1 gap-4">
+      <div className="w-full h-full grid grid-cols-1 grid-rows-1 gap-4">
         {showConfetti && <Confetti />}
         {!quizStarted ? (
           <QuizStartCard />

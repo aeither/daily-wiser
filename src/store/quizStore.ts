@@ -1,10 +1,10 @@
-import { quizDatas } from "@/utils/constants/quizzes";
+import { type Quiz, quizDatas } from "@/utils/constants/quizzes";
 // store/quizStore.ts
 import { create } from "zustand";
 
 interface QuizState {
   quizId: string | null;
-  quizData: any[];
+  quizData: Quiz[];
   quizName: string;
   quizQuestionCount: number;
   currentSlide: number;
@@ -24,9 +24,10 @@ interface QuizState {
   endQuiz: () => void;
   playAgain: () => void;
   decrementTime: () => void;
+  resetQuiz: () => void;
 }
 
-export const useQuizStore = create<QuizState>((set, get) => ({
+export const useQuizStore = create<QuizState>((set, _get) => ({
   quizId: null,
   quizData: [],
   quizName: "Quiz",
@@ -42,7 +43,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   isCorrectAnswer: false,
 
   setQuizId: (id) =>
-    set((state) => {
+    set((_state) => {
       const quiz = quizDatas.find((quiz) => quiz.id === id);
       const quizData = quiz?.slides || [];
       const quizName = quiz?.title || "Quiz";
@@ -116,4 +117,21 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       timeLeft: state.timeLeft > 0 ? state.timeLeft - 1 : 0,
       quizEnded: state.timeLeft === 1 ? true : state.quizEnded,
     })),
+
+  resetQuiz: () =>
+    set({
+      quizId: null,
+      quizData: [],
+      quizName: "Quiz",
+      quizQuestionCount: 0,
+      currentSlide: 0,
+      selectedAnswer: null,
+      timeLeft: 60,
+      quizEnded: false,
+      correctAnswers: 0,
+      showConfetti: false,
+      quizStarted: false,
+      answerSubmitted: false,
+      isCorrectAnswer: false,
+    }),
 }));
