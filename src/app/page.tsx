@@ -3,6 +3,7 @@
 import FAQ from "@/components/faq";
 import { FeedbackModalButton } from "@/components/feedback-modal";
 import Footer from "@/components/footer";
+import { OCIDComponent } from "@/components/ocid/OCIDComponent";
 import RevealWisdom from "@/components/reveal-wisdom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,8 +42,8 @@ export default function HomePage() {
     }
   };
 
-  const renderExtraBSCComponent = () => {
-    return chainId === openCampusCodex.id ? <div>Hello</div> : null;
+  const ConditialOCIDComponent = () => {
+    return chainId === openCampusCodex.id ? <OCIDComponent /> : null;
   };
 
   return (
@@ -53,6 +54,7 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold text-purple-800">DailyWiser</h1>
           <p className="text-purple-600">Micro-learning, macro impact!</p>
         </header>
+        <ConditialOCIDComponent />
         <Card className="p-4 shadow-lg rounded-xl">
           <h2 className="text-xl font-semibold mb-2 text-purple-700">Quiz</h2>
           <p className="text-gray-600 mb-4">

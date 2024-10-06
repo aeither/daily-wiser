@@ -4,7 +4,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { wagmiConfig } from "@/config";
 import { CSPostHogProvider } from "@/context/posthog";
-import MyPrivyProvider from "@/context/privy";
 import ContextProvider from "@/context/reown";
 import { cn, getBaseUrl } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
@@ -113,14 +112,14 @@ export default function RootLayout(props: { children: ReactNode }) {
                 enableSystem
                 disableTransitionOnChange
               >
-                <MyPrivyProvider>
+                {/* <MyPrivyProvider> */}
                   <ContextProvider initialState={initialState}>
                     <Header />
                     {props.children}
                     <Toaster />
                     <Analytics />
                   </ContextProvider>
-                </MyPrivyProvider>
+                {/* </MyPrivyProvider> */}
               </ThemeProvider>
             </TRPCReactProvider>
           </OCConnectWrapper>
