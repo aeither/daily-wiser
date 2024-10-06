@@ -2,8 +2,9 @@ import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { wagmiConfig } from "@/config";
-import ContextProvider from "@/context";
 import { CSPostHogProvider } from "@/context/posthog";
+import MyPrivyProvider from "@/context/privy";
+import ContextProvider from "@/context/reown";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Analytics } from "@vercel/analytics/react";
@@ -105,12 +106,14 @@ export default function RootLayout(props: { children: ReactNode }) {
               enableSystem
               disableTransitionOnChange
             >
-              <ContextProvider initialState={initialState}>
-                <Header />
-                {props.children}
-                <Toaster />
-                <Analytics />
-              </ContextProvider>
+              <MyPrivyProvider>
+                <ContextProvider initialState={initialState}>
+                  <Header />
+                  {props.children}
+                  <Toaster />
+                  <Analytics />
+                </ContextProvider>
+              </MyPrivyProvider>
             </ThemeProvider>
           </TRPCReactProvider>
         </body>
