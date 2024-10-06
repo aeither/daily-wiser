@@ -1,26 +1,20 @@
 import { Button } from "@/components/ui/button";
+import { useQuizStore } from "@/store/quizStore";
 
-interface QuizNavigationBarProps {
-  currentSlide: number;
-  totalSlides: number;
-  isQuizSlide: boolean;
-  answerSubmitted: boolean;
-  isCorrectAnswer: boolean;
-  selectedAnswer: string | null;
-  onSubmit: () => void;
-  onNext: () => void;
-}
+export function QuizNavigationBar() {
+  const {
+    currentSlide,
+    quizData,
+    answerSubmitted,
+    isCorrectAnswer,
+    selectedAnswer,
+    submitAnswer,
+    nextSlide,
+  } = useQuizStore();
 
-export function QuizNavigationBar({
-  currentSlide,
-  totalSlides,
-  isQuizSlide,
-  answerSubmitted,
-  isCorrectAnswer,
-  selectedAnswer,
-  onSubmit,
-  onNext,
-}: QuizNavigationBarProps) {
+  const totalSlides = quizData.length;
+  const isQuizSlide = quizData[currentSlide]?.type === "quiz";
+
   return (
     <div className="flex justify-between items-center mt-4">
       <span className="text-sm sm:text-base">
@@ -28,16 +22,16 @@ export function QuizNavigationBar({
       </span>
       {isQuizSlide ? (
         !answerSubmitted || !isCorrectAnswer ? (
-          <Button onClick={onSubmit} disabled={!selectedAnswer}>
+          <Button onClick={submitAnswer} disabled={!selectedAnswer}>
             Submit
           </Button>
         ) : (
-          <Button onClick={onNext}>
+          <Button onClick={nextSlide}>
             {currentSlide === totalSlides - 1 ? "Finish" : "Next"}
           </Button>
         )
       ) : (
-        <Button onClick={onNext}>
+        <Button onClick={nextSlide}>
           {currentSlide === totalSlides - 1 ? "Finish" : "Next"}
         </Button>
       )}

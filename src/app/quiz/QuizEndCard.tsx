@@ -1,30 +1,47 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
+import { useAdminMintCertificate } from "@/hooks/use-mint-certificate";
+import { useQuizStore } from "@/store/quizStore";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAccount } from "wagmi";
 
-interface QuizEndCardProps {
-  quizName: string;
-  correctAnswers: number;
-  totalQuestions: number;
-  isSuccess: boolean;
-  isPendingTx: boolean;
-  txLink: string;
-  onMintNFT: () => void;
-  onPlayAnotherQuiz: () => void;
-  onPlayAgain: () => void;
-}
+export function QuizEndCard() {
+  const router = useRouter();
+  const { isConnected, address, chain } = useAccount();
+  const { quizName, correctAnswers, quizQuestionCount, playAgain } =
+    useQuizStore();
 
-export function QuizEndCard({
-  quizName,
-  correctAnswers,
-  totalQuestions,
-  isSuccess,
-  isPendingTx,
-  txLink,
-  onMintNFT,
-  onPlayAnotherQuiz,
-  onPlayAgain,
-}: QuizEndCardProps) {
+  const {
+    mutate: adminMintCertificate,
+    isPending: isPendingTx,
+    isSuccess,
+    data: mintResult,
+  } = useAdminMintCertificate();
+
+  const baseUrl = chain?.blockExplorers?.default.url;
+  const txLink = mintResult?.hash ? `${baseUrl}/tx/${mintResult.hash}` : "";
+
+  const mintNFTCredential = async () => {
+    if (!isConnected) {
+      toast({
+        title: "Wallet Connection Required",
+        description:
+          "Please connect your wallet to continue with the NFT credential minting process.",
+      });
+      return;
+    }
+
+    if (chain?.id && address) {
+      adminMintCertificate({ chainId: chain.id, userAddress: address });
+    } else {
+      console.error("Chain ID or address is not defined.");
+    }
+  };
+
+  const handlePlayAnotherQuiz = () => router.push("/select-quiz");
+
   return (
     <Card className="flex flex-col w-full max-w-2xl">
       <CardHeader>
@@ -36,9 +53,10 @@ export function QuizEndCard({
             Quiz Completed!
           </h2>
           <p className="mb-4">
-            You got {correctAnswers} out of {totalQuestions} questions correct.
+            You got {correctAnswers} out of {quizQuestionCount} questions
+            correct.
           </p>
-          {correctAnswers === totalQuestions ? (
+          {correctAnswers === quizQuestionCount ? (
             <p className="mb-4">
               Congratulations! You answered all questions correctly!
             </p>
@@ -47,9 +65,9 @@ export function QuizEndCard({
           )}
         </div>
         <div className="space-y-2">
-          {correctAnswers === totalQuestions && !isSuccess && (
+          {correctAnswers === quizQuestionCount && !isSuccess && (
             <Button
-              onClick={onMintNFT}
+              onClick={mintNFTCredential}
               disabled={isPendingTx}
               className="w-full"
             >
@@ -71,7 +89,7 @@ export function QuizEndCard({
               </p>
               <Button
                 variant="secondary"
-                onClick={onPlayAnotherQuiz}
+                onClick={handlePlayAnotherQuiz}
                 className="w-full"
               >
                 Play Another Quiz
@@ -81,7 +99,7 @@ export function QuizEndCard({
           {!isSuccess && (
             <Button
               variant={"secondary"}
-              onClick={onPlayAgain}
+              onClick={playAgain}
               className="w-full"
             >
               Play Again

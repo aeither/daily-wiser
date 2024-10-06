@@ -1,32 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useQuizStore } from "@/store/quizStore";
 
-interface QuizCardProps {
-  quizName: string;
-  currentSlide: number;
-  timeLeft: number;
-  content: string;
-  options?: string[];
-  selectedAnswer: string | null;
-  answerSubmitted: boolean;
-  isCorrectAnswer: boolean;
-  correctAnswer: string;
-  onAnswerSelect: (answer: string) => void;
-}
+export function QuizCard() {
+  const {
+    quizName,
+    currentSlide,
+    timeLeft,
+    quizData,
+    selectedAnswer,
+    answerSubmitted,
+    isCorrectAnswer,
+    setSelectedAnswer,
+    submitAnswer,
+    nextSlide,
+  } = useQuizStore();
 
-export function QuizCard({
-  quizName,
-  currentSlide,
-  timeLeft,
-  content,
-  options,
-  selectedAnswer,
-  answerSubmitted,
-  isCorrectAnswer,
-  correctAnswer,
-  onAnswerSelect,
-}: QuizCardProps) {
+  const content = quizData[currentSlide]?.content || "";
+  const options = quizData[currentSlide]?.options || [];
+  const correctAnswer = quizData[currentSlide]?.correctAnswer || "";
+  const totalSlides = quizData.length;
+  const isQuizSlide = quizData[currentSlide]?.type === "quiz";
+
   return (
     <Card className="flex flex-col w-full max-w-2xl">
       <CardHeader>
@@ -41,7 +37,7 @@ export function QuizCard({
           <h2 className="text-lg sm:text-xl font-bold mb-4">
             {currentSlide + 1}. {content}
           </h2>
-          {options && (
+          {options.length > 0 && (
             <div className="space-y-2">
               {options.map((option, index) => (
                 <Button
@@ -62,13 +58,33 @@ export function QuizCard({
                       ? "bg-green-500 hover:bg-green-600"
                       : ""
                   }`}
-                  onClick={() => onAnswerSelect(option)}
+                  onClick={() => setSelectedAnswer(option)}
                   disabled={answerSubmitted && isCorrectAnswer}
                 >
                   {option}
                 </Button>
               ))}
             </div>
+          )}
+        </div>
+        <div className="flex justify-between items-center mt-4">
+          <span className="text-sm sm:text-base">
+            {currentSlide + 1} of {totalSlides} Slides
+          </span>
+          {isQuizSlide ? (
+            !answerSubmitted || !isCorrectAnswer ? (
+              <Button onClick={submitAnswer} disabled={!selectedAnswer}>
+                Submit
+              </Button>
+            ) : (
+              <Button onClick={nextSlide}>
+                {currentSlide === totalSlides - 1 ? "Finish" : "Next"}
+              </Button>
+            )
+          ) : (
+            <Button onClick={nextSlide}>
+              {currentSlide === totalSlides - 1 ? "Finish" : "Next"}
+            </Button>
           )}
         </div>
       </CardContent>
