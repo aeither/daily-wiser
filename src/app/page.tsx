@@ -1,5 +1,6 @@
 "use client";
 
+import FAQ from "@/components/faq";
 import { FeedbackModalButton } from "@/components/feedback-modal";
 import Footer from "@/components/footer";
 import RevealWisdom from "@/components/reveal-wisdom";
@@ -55,7 +56,8 @@ export default function HomePage() {
         <Card className="p-4 shadow-lg rounded-xl">
           <h2 className="text-xl font-semibold mb-2 text-purple-700">Quiz</h2>
           <p className="text-gray-600 mb-4">
-            Challenge yourself with our quiz. We've just added 4 new quizzes for you to try!
+            Challenge yourself with our quiz. We've just added 4 new quizzes for
+            you to try!
           </p>
           <Button
             className="w-full bg-purple-500 hover:bg-purple-600 text-white"
@@ -89,6 +91,7 @@ export default function HomePage() {
           <h2 className="text-xl font-semibold text-purple-700">Leaderboard</h2>
           <p className="text-gray-600 mt-2">Coming Soon!</p>
         </Card>
+        <FAQ />
       </main>
       <Footer />
     </div>
