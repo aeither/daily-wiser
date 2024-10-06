@@ -67,11 +67,12 @@ export const web3Router = createTRPCRouter({
         return {
           hash: mintNFTReceiptHash,
         };
-      } catch (error) {
-        console.log("Error deploying NFT contract or minting:", error)
+      } catch (error: any) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Error deploying NFT contract or minting",
+          message: `Something went wrong while minting: ${errorMessage}`,
         });
       }
     }),

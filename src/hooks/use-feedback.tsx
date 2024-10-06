@@ -119,6 +119,7 @@ export const useAddWisdom = () => {
 
   return { addWisdom, hash, isPendingTx };
 };
+
 export const useCanAddWisdom = () => {
   const chainId = useChainId();
   const { address } = useAccount();

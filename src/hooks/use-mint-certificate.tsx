@@ -4,13 +4,15 @@ import { apiReact } from "@/trpc/react";
 import { useAccount } from "wagmi";
 
 export function useAdminMintCertificate() {
-  const { chain, isConnected } = useAccount();
+  const { chain } = useAccount();
   const baseUrl = chain?.blockExplorers?.default.url;
-
+  const utils = apiReact.useUtils();
 
   return apiReact.web3.adminMintCertificate.useMutation({
     onSuccess(data, variables, context) {
       if (data.hash) {
+        utils.user.getUser.invalidate();
+
         toast({
           title: "Certificate Minted",
           description: "Your certificate has been successfully minted.",
