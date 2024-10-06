@@ -14,17 +14,18 @@ import Confetti from "react-confetti";
 import { useAccount } from "wagmi";
 
 export default function Component() {
-  const { isConnected } = useAccount();
+  const { isConnected, address, chain } = useAccount();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const quizId = searchParams.get("id");
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(60);
   const [quizEnded, setQuizEnded] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
-  const searchParams = useSearchParams();
-  const quizId = searchParams.get("id");
-  const { address, chain } = useAccount();
-  const router = useRouter();
+
   const {
     mutate: adminMintCertificate,
     isPending: isPendingTx,
@@ -32,9 +33,9 @@ export default function Component() {
     data: mintResult,
   } = useAdminMintCertificate();
 
-  const quizData = quizDatas.find((quiz) => quiz.id === quizId)?.slides || [];
-  const quizName =
-    quizDatas.find((quiz) => quiz.id === quizId)?.title || "Quiz";
+  const quiz = quizDatas.find((quiz) => quiz.id === quizId);
+  const quizData = quiz?.slides || [];
+  const quizName = quiz?.title || "Quiz";
   const quizQuestionCount = quizData.filter(
     (slide) => slide.type === "quiz"
   ).length;
@@ -47,9 +48,7 @@ export default function Component() {
       const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearTimeout(timer);
     }
-    if (timeLeft === 0) {
-      setQuizEnded(true);
-    }
+    if (timeLeft === 0) setQuizEnded(true);
   }, [timeLeft, quizEnded]);
 
   useEffect(() => {
@@ -60,9 +59,10 @@ export default function Component() {
     }
   }, [quizEnded, correctAnswers, quizQuestionCount]);
 
-  const handleAnswerSelect = useCallback((answer: string) => {
-    setSelectedAnswer(answer);
-  }, []);
+  const handleAnswerSelect = useCallback(
+    (answer: string) => setSelectedAnswer(answer),
+    []
+  );
 
   const handleNextSlide = useCallback(() => {
     const currentQuizSlide = quizData[currentSlide];
@@ -107,13 +107,12 @@ export default function Component() {
     }
   };
 
-  const handlePlayAnotherQuiz = useCallback(() => {
-    router.push("/select-quiz");
-  }, [router]);
+  const handlePlayAnotherQuiz = useCallback(
+    () => router.push("/select-quiz"),
+    [router]
+  );
 
-  if (quizData.length === 0) {
-    return <div>No quiz data available.</div>;
-  }
+  if (quizData.length === 0) return <div>No quiz data available.</div>;
 
   return (
     <main className="mx-auto flex h-[calc(100dvh-57px)] w-full max-w-lg flex-col items-center justify-center px-4 py-2">
