@@ -25,6 +25,9 @@ export default function Component() {
   const [quizEnded, setQuizEnded] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [answerSubmitted, setAnswerSubmitted] = useState(false);
+  const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
 
   const {
     mutate: adminMintCertificate,
@@ -44,12 +47,12 @@ export default function Component() {
   const txLink = mintResult?.hash ? `${baseUrl}/tx/${mintResult.hash}` : "";
 
   useEffect(() => {
-    if (timeLeft > 0 && !quizEnded) {
+    if (timeLeft > 0 && !quizEnded && quizStarted) {
       const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearTimeout(timer);
     }
     if (timeLeft === 0) setQuizEnded(true);
-  }, [timeLeft, quizEnded]);
+  }, [timeLeft, quizEnded, quizStarted]);
 
   useEffect(() => {
     if (quizEnded && correctAnswers === quizQuestionCount) {
@@ -60,26 +63,37 @@ export default function Component() {
   }, [quizEnded, correctAnswers, quizQuestionCount]);
 
   const handleAnswerSelect = useCallback(
-    (answer: string) => setSelectedAnswer(answer),
-    []
+    (answer: string) => {
+      setSelectedAnswer(answer);
+      if (answerSubmitted && !isCorrectAnswer) {
+        setAnswerSubmitted(false);
+      }
+    },
+    [answerSubmitted, isCorrectAnswer]
   );
 
-  const handleNextSlide = useCallback(() => {
+  const handleSubmitAnswer = useCallback(() => {
     const currentQuizSlide = quizData[currentSlide];
-    if (
-      currentQuizSlide.type === "quiz" &&
-      selectedAnswer === currentQuizSlide.correctAnswer
-    ) {
-      setCorrectAnswers((prev) => prev + 1);
+    if (currentQuizSlide.type === "quiz") {
+      setAnswerSubmitted(true);
+      const isCorrect = selectedAnswer === currentQuizSlide.correctAnswer;
+      setIsCorrectAnswer(isCorrect);
+      if (isCorrect) {
+        setCorrectAnswers((prev) => prev + 1);
+      }
     }
+  }, [currentSlide, quizData, selectedAnswer]);
 
+  const handleNextSlide = useCallback(() => {
     if (currentSlide < quizData.length - 1) {
       setCurrentSlide((prev) => prev + 1);
       setSelectedAnswer(null);
+      setAnswerSubmitted(false);
+      setIsCorrectAnswer(false);
     } else {
       setQuizEnded(true);
     }
-  }, [currentSlide, quizData, selectedAnswer]);
+  }, [currentSlide, quizData]);
 
   const handlePlayAgain = () => {
     setCurrentSlide(0);
@@ -88,6 +102,9 @@ export default function Component() {
     setQuizEnded(false);
     setCorrectAnswers(0);
     setShowConfetti(false);
+    setQuizStarted(false);
+    setAnswerSubmitted(false);
+    setIsCorrectAnswer(false);
   };
 
   const mintNFTCredential = async () => {
@@ -112,6 +129,10 @@ export default function Component() {
     [router]
   );
 
+  const handleStartQuiz = () => {
+    setQuizStarted(true);
+  };
+
   if (quizData.length === 0) return <div>No quiz data available.</div>;
 
   return (
@@ -123,119 +144,164 @@ export default function Component() {
             <CardTitle className="text-xl sm:text-2xl">{quizName}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-grow flex-col h-auto justify-between p-4 sm:p-6">
-            {!quizEnded && (
-              <div className="w-full mb-4">
-                <Progress value={(timeLeft / 60) * 100} className="w-full" />
-                <p className="text-center mt-2">{timeLeft} seconds left</p>
-              </div>
-            )}
-            <div className="mb-6">
-              {!quizEnded ? (
-                <>
-                  <h2 className="text-lg sm:text-xl font-bold mb-4">
-                    {currentSlide + 1}. {quizData[currentSlide].content}
-                  </h2>
-                  {quizData[currentSlide].type === "quiz" && (
-                    <div className="space-y-2">
-                      {quizData[currentSlide].options?.map((option, index) => (
-                        <Button
-                          key={index}
-                          variant={
-                            selectedAnswer === option ? "default" : "outline"
-                          }
-                          className="w-full text-left justify-start"
-                          onClick={() => handleAnswerSelect(option)}
-                        >
-                          {option}
-                        </Button>
-                      ))}
+            {!quizStarted ? (
+              <Button onClick={handleStartQuiz} className="w-full">
+                Start Quiz
+              </Button>
+            ) : (
+              <>
+                {!quizEnded && (
+                  <div className="w-full mb-4">
+                    <Progress
+                      value={(timeLeft / 60) * 100}
+                      className="w-full"
+                    />
+                    <p className="text-center mt-2">{timeLeft} seconds left</p>
+                  </div>
+                )}
+                <div className="mb-6">
+                  {!quizEnded ? (
+                    <>
+                      <h2 className="text-lg sm:text-xl font-bold mb-4">
+                        {currentSlide + 1}. {quizData[currentSlide].content}
+                      </h2>
+                      {quizData[currentSlide].type === "quiz" && (
+                        <div className="space-y-2">
+                          {quizData[currentSlide].options?.map(
+                            (option, index) => (
+                              <Button
+                                key={index}
+                                variant={
+                                  selectedAnswer === option
+                                    ? answerSubmitted
+                                      ? option ===
+                                        quizData[currentSlide].correctAnswer
+                                        ? "default"
+                                        : "destructive"
+                                      : "default"
+                                    : answerSubmitted &&
+                                        option ===
+                                          quizData[currentSlide].correctAnswer
+                                      ? "default"
+                                      : "outline"
+                                }
+                                className={`w-full text-left justify-start ${
+                                  answerSubmitted &&
+                                  option ===
+                                    quizData[currentSlide].correctAnswer
+                                    ? "bg-green-500 hover:bg-green-600"
+                                    : ""
+                                }`}
+                                onClick={() => handleAnswerSelect(option)}
+                                disabled={answerSubmitted && isCorrectAnswer}
+                              >
+                                {option}
+                              </Button>
+                            )
+                          )}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center">
+                      <h2 className="text-xl sm:text-2xl font-bold mb-4">
+                        Quiz Completed!
+                      </h2>
+                      <p className="mb-4">
+                        You got {correctAnswers} out of {quizQuestionCount}{" "}
+                        questions correct.
+                      </p>
+                      {correctAnswers === quizQuestionCount ? (
+                        <p className="mb-4">
+                          Congratulations! You answered all questions correctly!
+                        </p>
+                      ) : (
+                        <p className="mb-4">
+                          Keep practicing to improve your score!
+                        </p>
+                      )}
                     </div>
                   )}
-                </>
-              ) : (
-                <div className="text-center">
-                  <h2 className="text-xl sm:text-2xl font-bold mb-4">
-                    Quiz Completed!
-                  </h2>
-                  <p className="mb-4">
-                    You got {correctAnswers} out of {quizQuestionCount}{" "}
-                    questions correct.
-                  </p>
-                  {correctAnswers === quizQuestionCount ? (
-                    <p className="mb-4">
-                      Congratulations! You answered all questions correctly!
-                    </p>
+                </div>
+                <div className="mt-auto">
+                  {!quizEnded ? (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm sm:text-base">
+                        {currentSlide + 1} of {quizData.length} Slides
+                      </span>
+                      {quizData[currentSlide].type === "quiz" ? (
+                        !answerSubmitted || !isCorrectAnswer ? (
+                          <Button
+                            onClick={handleSubmitAnswer}
+                            disabled={!selectedAnswer}
+                          >
+                            Submit
+                          </Button>
+                        ) : (
+                          <Button onClick={handleNextSlide}>
+                            {currentSlide === quizData.length - 1
+                              ? "Finish"
+                              : "Next"}
+                          </Button>
+                        )
+                      ) : (
+                        <Button onClick={handleNextSlide}>
+                          {currentSlide === quizData.length - 1
+                            ? "Finish"
+                            : "Next"}
+                        </Button>
+                      )}
+                    </div>
                   ) : (
-                    <p className="mb-4">
-                      Keep practicing to improve your score!
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-            <div className="mt-auto">
-              {!quizEnded ? (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm sm:text-base">
-                    {currentSlide + 1} of {quizData.length} Slides
-                  </span>
-                  <Button
-                    onClick={handleNextSlide}
-                    disabled={
-                      quizData[currentSlide].type === "quiz" && !selectedAnswer
-                    }
-                  >
-                    {currentSlide === quizData.length - 1 ? "Finish" : "Next"}
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {correctAnswers === quizQuestionCount && !isSuccess && (
-                    <>
-                      <span>🪄 {GENERATE_MEME_COST} credits</span>
-                      <Button
-                        onClick={mintNFTCredential}
-                        disabled={isPendingTx}
-                        className="w-full"
-                      >
-                        {isPendingTx ? "Claiming..." : "Claim Certificate"}
-                      </Button>
-                    </>
-                  )}
-                  {isSuccess && (
-                    <>
-                      <p className="mb-4">
-                        NFT minted successfully!{" "}
-                        <Link
-                          href={txLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline"
+                    <div className="space-y-2">
+                      {correctAnswers === quizQuestionCount && !isSuccess && (
+                        <>
+                          <span>🪄 {GENERATE_MEME_COST} credits</span>
+                          <Button
+                            onClick={mintNFTCredential}
+                            disabled={isPendingTx}
+                            className="w-full"
+                          >
+                            {isPendingTx ? "Claiming..." : "Claim Certificate"}
+                          </Button>
+                        </>
+                      )}
+                      {isSuccess && (
+                        <>
+                          <p className="mb-4">
+                            NFT minted successfully!{" "}
+                            <Link
+                              href={txLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 hover:underline"
+                            >
+                              View transaction
+                            </Link>
+                          </p>
+                          <Button
+                            variant="secondary"
+                            onClick={handlePlayAnotherQuiz}
+                            className="w-full"
+                          >
+                            Play Another Quiz
+                          </Button>
+                        </>
+                      )}
+                      {!isSuccess && (
+                        <Button
+                          variant={"secondary"}
+                          onClick={handlePlayAgain}
+                          className="w-full"
                         >
-                          View transaction
-                        </Link>
-                      </p>
-                      <Button
-                        variant="secondary"
-                        onClick={handlePlayAnotherQuiz}
-                        className="w-full"
-                      >
-                        Play Another Quiz
-                      </Button>
-                    </>
-                  )}
-                  {!isSuccess && (
-                    <Button
-                      variant={"secondary"}
-                      onClick={handlePlayAgain}
-                      className="w-full"
-                    >
-                      Play Again
-                    </Button>
+                          Play Again
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
