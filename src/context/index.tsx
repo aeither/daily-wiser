@@ -17,6 +17,7 @@ createWeb3Modal({
   wagmiConfig,
   projectId,
   themeMode: "light",
+  themeVariables: {"--w3m-border-radius-master": "2px"},
   enableOnramp: true,
   enableSwaps: true, // Notes: Only available for email login
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
