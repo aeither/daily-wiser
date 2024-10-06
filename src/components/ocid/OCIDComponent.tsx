@@ -22,11 +22,12 @@ export function OCIDComponent() {
 
   return (
     <div>
-      <h1>Welcome to My App</h1>
       {authState.isAuthenticated ? (
         <p>You are logged in! {JSON.stringify(ocAuth.getAuthInfo())}</p>
       ) : (
-        <OCIDLoginButton />
+        <div className="w-full rounded-md bg-gradient-to-r from-blue-200 to-green-300">
+          <OCIDLoginButton />
+        </div>
       )}
     </div>
   );

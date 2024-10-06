@@ -1,6 +1,7 @@
 "use client";
 
 import { useOCAuth } from "@opencampus/ocid-connect-js";
+import { Button } from "../ui/button";
 
 export function OCIDLoginButton() {
   const { ocAuth } = useOCAuth();
@@ -14,8 +15,13 @@ export function OCIDLoginButton() {
   };
 
   return (
-    <button type="button" onClick={handleLogin}>
-      Login
-    </button>
+    <Button
+      type="button"
+      variant={"ghost"}
+      className="blue-600"
+      onClick={handleLogin}
+    >
+      Connect
+    </Button>
   );
 }

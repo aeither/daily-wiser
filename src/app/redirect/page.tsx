@@ -1,6 +1,6 @@
 "use client";
 
-import { LoginCallBack } from "@opencampus/ocid-connect-js";
+import { LoginCallBack, useOCAuth } from "@opencampus/ocid-connect-js";
 import { useRouter } from "next/navigation";
 
 export default function RedirectPage() {
