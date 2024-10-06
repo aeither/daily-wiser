@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "@/components/ui/use-toast";
 import { useAdminMintCertificate } from "@/hooks/use-mint-certificate";
 import { GENERATE_MEME_COST } from "@/utils/constants";
 import { quizDatas } from "@/utils/constants/quizzes";
@@ -13,6 +14,7 @@ import Confetti from "react-confetti";
 import { useAccount } from "wagmi";
 
 export default function Component() {
+  const { isConnected } = useAccount();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -89,6 +91,15 @@ export default function Component() {
   };
 
   const mintNFTCredential = async () => {
+    if (!isConnected) {
+      toast({
+        title: "Wallet Connection Required",
+        description:
+          "Please connect your wallet to continue with the NFT credential minting process.",
+      });
+      return;
+    }
+
     if (chain?.id && address) {
       adminMintCertificate({ chainId: chain.id, userAddress: address });
     } else {

@@ -13,14 +13,24 @@ import { useSubmitFeedback } from "@/hooks/use-feedback";
 import { Star } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
+import { useAccount } from "wagmi";
+import { toast } from "./ui/use-toast";
 
 export function FeedbackModalButton() {
   const [feedbackDescription, setFeedbackDescription] = useState("");
   const { submitFeedback } = useSubmitFeedback();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const { isConnected } = useAccount();
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isConnected) {
+      toast({
+        title: "Wallet Connection Required",
+        description: "To proceed, please connect your wallet.",
+      });
+      return;
+    }
 
     posthog.capture("Feedback Button", { description: feedbackDescription });
     await submitFeedback(feedbackDescription);

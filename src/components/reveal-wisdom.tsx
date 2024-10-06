@@ -4,7 +4,9 @@ import { useAddWisdom, useCanAddWisdom } from "@/hooks/use-feedback";
 import { apiReact } from "@/trpc/react";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
+import { useAccount } from "wagmi";
 import { Card } from "./ui/card";
+import { toast } from "./ui/use-toast";
 
 const RevealWisdom = () => {
   const [showConfetti, setShowConfetti] = useState(false);
@@ -20,6 +22,7 @@ const RevealWisdom = () => {
   const { addWisdom, isPendingTx } = useAddWisdom();
   const { canAddWisdom, timeUntilNextWisdom, getLatestWisdom } =
     useCanAddWisdom();
+  const { isConnected } = useAccount();
 
   const daysOfWeek = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
@@ -47,6 +50,14 @@ const RevealWisdom = () => {
     checkWisdomStatus();
   }, []);
   const handleRevealWisdom = async (day: string, index: number) => {
+    if (!isConnected) {
+      toast({
+        title: "Wallet Connection Required",
+        description: "To proceed, please connect your wallet.",
+      });
+      return;
+    }
+
     if (day === today && canAdd && !isTransactionPending) {
       try {
         setIsTransactionPending(true);
@@ -65,7 +76,7 @@ const RevealWisdom = () => {
           const newClaimedDays = [...claimedDays];
           newClaimedDays[index] = true;
           setClaimedDays(newClaimedDays);
-          
+
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 5000);
         }

@@ -12,12 +12,14 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import CopyToClipboard from "@/components/copy-to-clipboard";
+import { toast } from "@/components/ui/use-toast";
 import { apiReact } from "@/trpc/react";
 import { CHAT_COST } from "@/utils/constants";
 
 export const maxDuration = 30;
 
 export default function ChatClientPage() {
+  const { isConnected } = useAccount();
   const botId = useSearchParams().get("botId");
   const { address } = useAccount();
   const utils = apiReact.useUtils();
@@ -66,9 +68,16 @@ export default function ChatClientPage() {
   useEffect(() => {
     if (ref.current) ref.current.scrollTo(0, ref.current.scrollHeight);
   }, [messages]);
-
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!isConnected) {
+      toast({
+        title: "Wallet Connection Required",
+        description:
+          "To proceed, please connect your wallet to chat.",
+      });
+      return;
+    }
     handleSubmit(e);
   }
 

@@ -4,8 +4,9 @@ import { apiReact } from "@/trpc/react";
 import { useAccount } from "wagmi";
 
 export function useAdminMintCertificate() {
-  const { chain } = useAccount();
+  const { chain, isConnected } = useAccount();
   const baseUrl = chain?.blockExplorers?.default.url;
+
 
   return apiReact.web3.adminMintCertificate.useMutation({
     onSuccess(data, variables, context) {
