@@ -5,7 +5,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { apiReact } from "@/trpc/react";
 import { Coins, Menu, Plus, Sparkles } from "lucide-react";
@@ -120,17 +120,31 @@ const Header = () => {
         <div className="hidden md:block">
           <Link href="/credits" passHref>
             {isConnected && user ? (
-              <Button variant="outline" size="sm" className="flex items-center">
-                <Plus className="h-4 w-4 mr-2" />
-                <span className="font-semibold mr-2">
-                  {user.totalCredits ?? "Loading..."}
-                </span>
-                <Coins className="w-4" />
-              </Button>
+              <div className="flex items-center rounded-full border border-amber-500/50 bg-white/20 px-2 gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mr-2 p-0 hover:bg-transparent"
+                >
+                  <div className="rounded-sm bg-green-800 p-1 transition-colors hover:bg-green-700">
+                    <Plus className="h-4 w-4 text-white" />
+                  </div>
+                </Button>
+                <div className="flex flex-row items-center">
+                  <span className="mr-1 font-semibold">
+                    {user.totalCredits ?? "Loading..."}
+                  </span>
+                  <Coins className="h-5 w-5 text-yellow-900" />
+                </div>
+              </div>
             ) : null}
           </Link>
         </div>
-        {isConnected ? <w3m-account-button /> : <w3m-connect-button label="Connect" />}
+        {isConnected ? (
+          <w3m-account-button />
+        ) : (
+          <w3m-connect-button label="Connect" />
+        )}
       </div>
     </header>
   );
