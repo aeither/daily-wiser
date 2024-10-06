@@ -54,7 +54,7 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold text-purple-800">DailyWiser</h1>
           <p className="text-purple-600">Micro-learning, macro impact!</p>
         </header>
-        <ConditialOCIDComponent />
+        {/* <ConditialOCIDComponent /> */}
         <Card className="p-4 shadow-lg rounded-xl">
           <h2 className="text-xl font-semibold mb-2 text-purple-700">Quiz</h2>
           <p className="text-gray-600 mb-4">

@@ -17,8 +17,8 @@ export function OCIDLoginButton() {
   return (
     <Button
       type="button"
-      variant={"ghost"}
-      className="blue-600"
+      // variant={"ghost"}
+      className="bg-blue-600 hover:bg-blue-500"
       onClick={handleLogin}
     >
       Connect
