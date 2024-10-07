@@ -11,7 +11,19 @@ export const aiRouter = createTRPCRouter({
   getDailyQuote: publicProcedure.mutation(async () => {
     const today = new Date();
     const dateString = today.toISOString().split("T")[0]; // YYYY-MM-DD format
-    const prompt = `Generate an inspiring daily quote for ${dateString}. The quote should be concise, thought-provoking, and suitable for motivation or reflection.`;
+    const prompt = `Generate an inspiring and actionable daily quote for ${dateString}. The quote should:
+
+1. Be concise (20-30 words max) and easy to remember
+2. Focus on themes of personal growth, discipline, continuous learning, or habit formation
+3. Provide a specific, actionable insight or challenge
+4. Relate to the concept of daily improvement or 'getting 1% better every day'
+5. Be suitable for a diverse, global audience
+6. Avoid clichés and overly common phrases
+7. Optionally, tie into the idea of leveling up or gaining experience in real life
+
+The quote should motivate users to engage in daily learning, reinforce the value of consistent self-improvement, and inspire application of knowledge to personal or professional life.
+
+Return only the quote itself, without any additional explanation or context.`;
 
     try {
       const result = await generateText({
