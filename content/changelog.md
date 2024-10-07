@@ -2,16 +2,16 @@
 
 ## 2024-10-06
 
-- FAQ
+- Added Changelog
+- Added FAQ
 - Improved Quizzes
-- Changelog
 - Minor Fixes
 - Better Toast Feedback
 
 ## 2024-10-03
 
-- Daily Wisdom Claim
-- Fixes
+- Added Daily Wisdom Claim
+- Fixes and Improvements
 
 ## 2024-10-02
 

@@ -1,7 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { quizDatas } from "@/utils/constants/quizzes";
 import { Clock, Code, FlaskConical, Lightbulb } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -30,22 +36,24 @@ export default function SelectQuiz() {
       <h1 className="text-3xl font-bold mb-8 text-center">Select Your Quiz</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {quizDatas.map((quiz) => (
-          <Card key={quiz.id} className="border-gray-700">
+          <Card key={quiz.id} className="border-gray-700 flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 {getCategoryIcon(quiz.category)}
                 <span>{quiz.title}</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="mb-4">{quiz.description}</p>
+            <CardContent className="flex-grow">
+              <p>{quiz.description}</p>
+            </CardContent>
+            <CardFooter className="mt-auto">
               <Button
                 className="w-full"
                 onClick={() => router.push(`/quiz/?id=${quiz.id}`)}
               >
                 Start Quiz
               </Button>
-            </CardContent>
+            </CardFooter>
           </Card>
         ))}
       </div>
