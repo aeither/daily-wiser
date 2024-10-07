@@ -21,6 +21,7 @@ export type QuizData = {
   title: string;
   description: string;
   image?: string;
+  metadata?: string;
   category?: Category;
   group?: string;
   endscreen?: string;
@@ -28,6 +29,73 @@ export type QuizData = {
 };
 
 export const quizDatas: QuizData[] = [
+  {
+    id: "B7F9E2D1-3A5C-4E8B-9D6F-1C2A3B4C5D6E",
+    title: "The Power of 1% Daily Improvement",
+    description:
+      "Explore the concept of continuous small improvements and their compounding effect over time.",
+    category: "personal development",
+    endscreen:
+      "Great job completing this quiz on daily improvement! Remember, consistency is key. By focusing on getting just 1% better each day, you can achieve remarkable growth over time. Keep pushing forward!",
+    slides: [
+      {
+        type: "info",
+        content:
+          "The concept of improving 1% every day is based on the power of compound growth. Over a year, this seemingly small daily improvement can lead to becoming 37 times better.",
+      },
+      {
+        type: "info",
+        content:
+          "This approach emphasizes consistency and small, manageable changes rather than dramatic, unsustainable transformations. It's about progress, not perfection.",
+      },
+      {
+        type: "info",
+        content:
+          "Areas for daily 1% improvement can include skills, habits, knowledge, health, relationships, or any aspect of personal or professional life.",
+      },
+      {
+        type: "quiz",
+        content:
+          "If you improve by 1% every day for a year, approximately how much better will you be?",
+        options: [
+          "10 times better",
+          "20 times better",
+          "37 times better",
+          "50 times better",
+        ],
+        correctAnswer: "37 times better",
+      },
+      {
+        type: "info",
+        content:
+          "The 1% rule aligns with the Japanese concept of 'Kaizen', which means continuous improvement. It's about making small, incremental changes that add up over time.",
+      },
+      {
+        type: "info",
+        content:
+          "Tracking progress is crucial when aiming for 1% daily improvement. This can be done through journaling, apps, or other measurement tools specific to your goals.",
+      },
+      {
+        type: "quiz",
+        content:
+          "Which of the following best describes the 1% daily improvement philosophy?",
+        options: [
+          "Making dramatic changes quickly",
+          "Focusing on perfection in every task",
+          "Consistent small improvements over time",
+          "Improving only when feeling motivated",
+        ],
+        correctAnswer: "Consistent small improvements over time",
+      },
+      {
+        type: "quiz",
+        content:
+          "What Japanese concept aligns with the idea of 1% daily improvement?",
+        options: ["Ikigai", "Kaizen", "Wabi-sabi", "Kintsugi"],
+        correctAnswer: "Kaizen",
+      },
+    ],
+  },
   {
     id: "ADEA87C4-4ED6-4DAA-B21E-B90E2761CA35",
     title: "Math Fundamentals: Arithmetic and Algebra",
