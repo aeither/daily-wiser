@@ -1,12 +1,12 @@
 import { certificateContractAddresses, getChainById } from "@/config";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
 import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
 import { TRPCError } from "@trpc/server";
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { z } from "zod";
 import { createCaller } from "../root";
-import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
 
 // Safely get the admin private key
 const getAdminPrivateKey = () => {
