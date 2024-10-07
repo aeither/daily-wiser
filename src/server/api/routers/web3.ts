@@ -6,6 +6,7 @@ import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { z } from "zod";
 import { createCaller } from "../root";
+import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
 
 // Safely get the admin private key
 const getAdminPrivateKey = () => {
@@ -46,9 +47,12 @@ export const web3Router = createTRPCRouter({
         const caller = createCaller(ctx);
         await caller.user.spendCredits({
           address: userAddress,
-          creditsToSpend: 25,
+          creditsToSpend: GENERATE_CERTIFICATE_COST,
         });
-        await caller.user.addXp({ address: userAddress, xpToAdd: 25 });
+        await caller.user.addXp({
+          address: userAddress,
+          xpToAdd: GENERATE_CERTIFICATE_COST,
+        });
 
         // Deploy NFT contract using factory
         const tokenURI =

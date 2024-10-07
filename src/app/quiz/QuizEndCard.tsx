@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { useAdminMintCertificate } from "@/hooks/use-mint-certificate";
 import { useQuizStore } from "@/store/quizStore";
-import { GENERATE_MEME_COST } from "@/utils/constants";
+import { apiReact } from "@/trpc/react";
+import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
+import { ToastAction } from "@radix-ui/react-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
@@ -11,6 +13,10 @@ import { useAccount } from "wagmi";
 export function QuizEndCard() {
   const router = useRouter();
   const { isConnected, address, chain } = useAccount();
+  const { data: user } = apiReact.user.getUser.useQuery(
+    { address: address as string },
+    { enabled: !!address }
+  );
   const {
     quizName,
     correctAnswers,
@@ -35,6 +41,19 @@ export function QuizEndCard() {
         title: "Wallet Connection Required",
         description:
           "Please connect your wallet to continue with the NFT credential minting process.",
+      });
+      return;
+    }
+
+    if (user && Number(user.totalCredits) < GENERATE_CERTIFICATE_COST) {
+      toast({
+        title: "Not enough credits",
+        description: "Looks like you're out of credits. Add more to continue.",
+        action: (
+          <ToastAction altText={"Credits"}>
+            <Link href={"/credits"}>Open</Link>
+          </ToastAction>
+        ),
       });
       return;
     }
@@ -79,7 +98,7 @@ export function QuizEndCard() {
             >
               {isPendingTx
                 ? "Claiming..."
-                : `Claim Certificate (${GENERATE_MEME_COST} 🪙)`}
+                : `Claim Certificate (${GENERATE_CERTIFICATE_COST} 🪙)`}
             </Button>
           )}
           {isSuccess && (
