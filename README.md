@@ -9,7 +9,7 @@
 ## Live Demo & Open Source Code
 
 - **Web App**: [https://dailywiser.xyz/](https://dailywiser.xyz/)
-- **Social Media**: [https://x.com/AITutor3](https://x.com/AITutor3)
+- **Social Media**: [https://x.com/DailyWiser_](https://x.com/DailyWiser_)
 
 ## Introduction
 

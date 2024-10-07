@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const footerLinks = [
-  { href: "https://twitter.com/AITutor3", label: "Twitter" },
+  { href: "https://twitter.com/DailyWiser_", label: "Twitter" },
   { href: "/privacy-policy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
   // { href: "/#contact", label: "Contact" },
