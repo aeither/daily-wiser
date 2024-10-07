@@ -1,13 +1,24 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
 import { useAdminMintCertificate } from "@/hooks/use-mint-certificate";
 import { useQuizStore } from "@/store/quizStore";
 import { apiReact } from "@/trpc/react";
 import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
 import { ToastAction } from "@radix-ui/react-toast";
+import { Share2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Confetti from "react-confetti";
 import { useAccount } from "wagmi";
 
 export function QuizEndCard() {
@@ -23,7 +34,13 @@ export function QuizEndCard() {
     quizQuestionCount,
     playAgain,
     quizEndscreen,
+    showConfetti,
+    quizId,
   } = useQuizStore();
+
+  const [isShared, setIsShared] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const shareUrl = `${window.location.origin}/quiz?id=${quizId}`;
 
   const {
     mutate: adminMintCertificate,
@@ -67,69 +84,116 @@ export function QuizEndCard() {
 
   const handlePlayAnotherQuiz = () => router.push("/select-quiz");
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `I completed the "${quizName}" quiz!`,
+          text: `I got ${correctAnswers} out of ${quizQuestionCount} questions correct. Try it yourself!`,
+          url: shareUrl,
+        });
+        setIsShared(true);
+        setTimeout(() => setIsShared(false), 2000);
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
   return (
-    <Card className="flex flex-col w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle className="text-xl sm:text-2xl">{quizName}</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-grow flex-col h-auto justify-between p-4 sm:p-6">
-        <div className="text-center">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4">
-            Quiz Completed!
-          </h2>
-          <p className="mb-4">
-            You got {correctAnswers} out of {quizQuestionCount} questions
-            correct.
-          </p>
-          {quizEndscreen ? (
-            <p className="mb-4 text-lg font-semibold">{quizEndscreen}</p>
-          ) : (
+    <>
+      {showConfetti && <Confetti recycle={false} />}
+      <Card className="flex flex-col w-full max-w-2xl">
+        <CardHeader className="space-y-4">
+          <div className="flex flex-row justify-between items-center gap-4">
+            <CardTitle className="text-xl sm:text-2xl">{quizName}</CardTitle>
+            <div className="flex space-x-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={handleShare}>
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isShared ? "Shared!" : "Share Quiz"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-grow flex-col h-auto justify-between p-6">
+          <div className="text-center">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4">
+              Quiz Completed!
+            </h2>
             <p className="mb-4">
-              Congratulations! You answered all questions correctly!
+              You got {correctAnswers} out of {quizQuestionCount} questions
+              correct.
             </p>
-          )}
-        </div>
-        <div className="space-y-2">
-          {correctAnswers === quizQuestionCount && !isSuccess && (
-            <Button
-              onClick={mintNFTCredential}
-              disabled={isPendingTx}
-              className="w-full"
-            >
-              {isPendingTx
-                ? "Claiming..."
-                : `Claim Certificate (${GENERATE_CERTIFICATE_COST} 🪙)`}
-            </Button>
-          )}
-          {isSuccess && (
-            <>
+            {quizEndscreen ? (
+              <p className="mb-4 text-lg font-semibold">{quizEndscreen}</p>
+            ) : (
               <p className="mb-4">
-                NFT minted successfully!{" "}
-                <Link
-                  href={txLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  View transaction
-                </Link>
+                Congratulations! You answered all questions correctly!
               </p>
+            )}
+          </div>
+          <div className="space-y-4">
+            {correctAnswers === quizQuestionCount && !isSuccess && (
               <Button
-                variant="secondary"
-                onClick={handlePlayAnotherQuiz}
+                onClick={mintNFTCredential}
+                disabled={isPendingTx}
                 className="w-full"
               >
-                Play Another Quiz
+                {isPendingTx
+                  ? "Claiming..."
+                  : `Claim Certificate (${GENERATE_CERTIFICATE_COST} 🪙)`}
               </Button>
-            </>
-          )}
-          {!isSuccess && (
-            <Button variant="secondary" onClick={playAgain} className="w-full">
-              Play Again
-            </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            )}
+            {isSuccess && (
+              <>
+                <p className="mb-4">
+                  NFT minted successfully!{" "}
+                  <Link
+                    href={txLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    View transaction
+                  </Link>
+                </p>
+                <Button
+                  variant="secondary"
+                  onClick={handlePlayAnotherQuiz}
+                  className="w-full"
+                >
+                  Play Another Quiz
+                </Button>
+              </>
+            )}
+            {!isSuccess && (
+              <Button
+                variant="secondary"
+                onClick={playAgain}
+                className="w-full"
+              >
+                Play Again
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

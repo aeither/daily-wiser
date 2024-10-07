@@ -3,7 +3,6 @@
 import { useQuizStore } from "@/store/quizStore";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import Confetti from "react-confetti";
 import { QuizCard } from "./QuizCard";
 import { QuizEndCard } from "./QuizEndCard";
 import { QuizStartCard } from "./QuizStartCard";
@@ -14,7 +13,6 @@ export default function QuizPage() {
 
   const {
     quizData,
-    showConfetti,
     quizStarted,
     quizEnded,
     setQuizId,
@@ -48,7 +46,6 @@ export default function QuizPage() {
   return (
     <main className="mx-auto flex h-[calc(100dvh-57px)] w-full max-w-lg flex-col items-center justify-center px-4 py-2">
       <div className="w-full h-full grid grid-cols-1 grid-rows-1 gap-4">
-        {showConfetti && <Confetti />}
         {!quizStarted ? (
           <QuizStartCard />
         ) : !quizEnded ? (
