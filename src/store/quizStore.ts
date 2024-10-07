@@ -6,6 +6,12 @@ interface QuizState {
   quizId: string | null;
   quizData: Quiz[];
   quizName: string;
+  quizDescription: string;
+  quizImage?: string;
+  quizMetadata?: string;
+  quizCategory?: string;
+  quizGroup?: string;
+  quizEndscreen?: string;
   quizQuestionCount: number;
   currentSlide: number;
   selectedAnswer: string | null;
@@ -31,6 +37,12 @@ export const useQuizStore = create<QuizState>((set, _get) => ({
   quizId: null,
   quizData: [],
   quizName: "Quiz",
+  quizDescription: "",
+  quizImage: undefined,
+  quizMetadata: undefined,
+  quizCategory: undefined,
+  quizGroup: undefined,
+  quizEndscreen: undefined,
   quizQuestionCount: 0,
   currentSlide: 0,
   selectedAnswer: null,
@@ -45,12 +57,25 @@ export const useQuizStore = create<QuizState>((set, _get) => ({
   setQuizId: (id) =>
     set((_state) => {
       const quiz = quizDatas.find((quiz) => quiz.id === id);
-      const quizData = quiz?.slides || [];
-      const quizName = quiz?.title || "Quiz";
-      const quizQuestionCount = quizData.filter(
-        (slide) => slide.type === "quiz"
-      ).length;
-      return { quizId: id, quizData, quizName, quizQuestionCount };
+      if (quiz) {
+        const quizData = quiz.slides || [];
+        const quizQuestionCount = quizData.filter(
+          (slide) => slide.type === "quiz"
+        ).length;
+        return {
+          quizId: id,
+          quizData,
+          quizName: quiz.title,
+          quizDescription: quiz.description,
+          quizImage: quiz.image,
+          quizMetadata: quiz.metadata,
+          quizCategory: quiz.category,
+          quizGroup: quiz.group,
+          quizEndscreen: quiz.endscreen,
+          quizQuestionCount,
+        };
+      }
+      return { quizId: id };
     }),
 
   setSelectedAnswer: (answer) =>
@@ -123,6 +148,12 @@ export const useQuizStore = create<QuizState>((set, _get) => ({
       quizId: null,
       quizData: [],
       quizName: "Quiz",
+      quizDescription: "",
+      quizImage: undefined,
+      quizMetadata: undefined,
+      quizCategory: undefined,
+      quizGroup: undefined,
+      quizEndscreen: undefined,
       quizQuestionCount: 0,
       currentSlide: 0,
       selectedAnswer: null,

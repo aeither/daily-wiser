@@ -11,12 +11,13 @@ import { useAccount } from "wagmi";
 export function QuizEndCard() {
   const router = useRouter();
   const { isConnected, address, chain } = useAccount();
-  // const { data: user, refetch } = apiReact.user.getUser.useQuery(
-  //   { address: address as string },
-  //   { enabled: !!address }
-  // );
-  const { quizName, correctAnswers, quizQuestionCount, playAgain } =
-    useQuizStore();
+  const {
+    quizName,
+    correctAnswers,
+    quizQuestionCount,
+    playAgain,
+    quizEndscreen,
+  } = useQuizStore();
 
   const {
     mutate: adminMintCertificate,
@@ -61,12 +62,12 @@ export function QuizEndCard() {
             You got {correctAnswers} out of {quizQuestionCount} questions
             correct.
           </p>
-          {correctAnswers === quizQuestionCount ? (
+          {quizEndscreen ? (
+            <p className="mb-4 text-lg font-semibold">{quizEndscreen}</p>
+          ) : (
             <p className="mb-4">
               Congratulations! You answered all questions correctly!
             </p>
-          ) : (
-            <p className="mb-4">Keep practicing to improve your score!</p>
           )}
         </div>
         <div className="space-y-2">
@@ -104,11 +105,7 @@ export function QuizEndCard() {
             </>
           )}
           {!isSuccess && (
-            <Button
-              variant={"secondary"}
-              onClick={playAgain}
-              className="w-full"
-            >
+            <Button variant="secondary" onClick={playAgain} className="w-full">
               Play Again
             </Button>
           )}
