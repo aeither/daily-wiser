@@ -77,33 +77,50 @@ export default function CreateCustomBotPage() {
 
     setIsLoading(true);
     try {
-      if (user) {
-        await addXpAction.mutateAsync({
-          address: user.address,
-          xpToAdd: CREATE_CHAT_COST * 5,
-        });
-        await spendCreditsAction.mutateAsync({
-          address: user.address,
-          creditsToSpend: CREATE_CHAT_COST,
-        });
+      if (!user) {
+        throw new Error("User data not available");
       }
+
+      // Check if user has enough credits
+      if (user.totalCredits && Number(user.totalCredits) < CREATE_CHAT_COST) {
+        throw new Error("Insufficient credits");
+      }
+
+      await spendCreditsAction.mutateAsync({
+        address: user.address,
+        creditsToSpend: CREATE_CHAT_COST,
+      });
+      await addXpAction.mutateAsync({
+        address: user.address,
+        xpToAdd: CREATE_CHAT_COST * 5,
+      });
+
       await createCustomFriendAction.mutateAsync({
         ...values,
         creatorAddress: address,
         imageUrl:
           "https://res.cloudinary.com/dzkwltgyd/image/upload/v1724533260/glif-run-outputs/axgs45lxp7khr83ck2t0.jpg",
       });
+
       toast({
         title: "Success",
         description: "Your custom bot has been created.",
       });
       router.push("/chat"); // Redirect to bots page after successful creation
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create custom bot. Please try again.",
-        variant: "destructive",
-      });
+      if (error instanceof Error) {
+        toast({
+          title: error.message === "Insufficient credits" ? "Insufficient Credits" : "Error",
+          description: error.message === "Insufficient credits" ? `You need ${CREATE_CHAT_COST} credits to create a custom bot. Please add more credits to your account.` : `Failed to create custom bot: ${error.message}`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

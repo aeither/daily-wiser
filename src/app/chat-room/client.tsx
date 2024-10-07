@@ -23,6 +23,9 @@ export default function ChatClientPage() {
   const botId = useSearchParams().get("botId");
   const { address } = useAccount();
   const utils = apiReact.useUtils();
+  const { data: user } = apiReact.user.getUser.useQuery({
+    address: address as string,
+  });
   const { data: publicBot } = apiReact.user.getPublicBotById.useQuery(
     { id: botId! },
     { enabled: !!botId }
@@ -68,16 +71,25 @@ export default function ChatClientPage() {
   useEffect(() => {
     if (ref.current) ref.current.scrollTo(0, ref.current.scrollHeight);
   }, [messages]);
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!isConnected) {
       toast({
         title: "Wallet Connection Required",
-        description:
-          "To proceed, please connect your wallet to chat.",
+        description: "To proceed, please connect your wallet to chat.",
       });
       return;
     }
+
+    if (!user || Number(user.totalCredits) < CHAT_COST) {
+      toast({
+        title: "Insufficient Credits",
+        description: <div>You need at least {CHAT_COST} credits to chat.</div>,
+      });
+      return;
+    }
+
     handleSubmit(e);
   }
 

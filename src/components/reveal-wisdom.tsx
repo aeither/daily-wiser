@@ -118,7 +118,7 @@ const RevealWisdom = () => {
                 !claimedDays[index] &&
                 canAdd &&
                 !isTransactionPending
-                  ? "bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transform hover:scale-110 transition-all"
+                  ? "bg-yellow-500 animate-bounce hover:bg-yellow-600 text-white cursor-pointer transform hover:scale-110 transition-all"
                   : claimedDays[index] || isTransactionPending
                     ? "bg-gray-300 cursor-not-allowed"
                     : "bg-purple-200"
