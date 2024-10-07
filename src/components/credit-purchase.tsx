@@ -109,6 +109,7 @@ export function CreditPurchaseComponent() {
                   type="number"
                   value={credits}
                   onChange={(e) => setCredits(Number(e.target.value))}
+                  min="1"
                   className="w-24 text-center"
                 />
                 <span>credits</span>
