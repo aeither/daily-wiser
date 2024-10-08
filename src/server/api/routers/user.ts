@@ -17,6 +17,22 @@ export const userRouter = createTRPCRouter({
     return await db.select().from(users);
   }),
 
+  getLeaderboard: publicProcedure.query(async () => {
+    const leaderboard = await db
+      .select({
+        address: users.address,
+        xp: users.xp,
+        rank: sql<number>`row_number() over (order by cast(${users.xp} as numeric) desc)`.as(
+          "rank"
+        ),
+      })
+      .from(users)
+      .orderBy(desc(sql`cast(${users.xp} as numeric)`))
+      .limit(10);
+
+    return leaderboard;
+  }),
+
   extractEvent: publicProcedure
     .input(z.object({ txHash: z.string(), chainId: z.number() }))
     .mutation(async ({ input }) => {

@@ -41,7 +41,19 @@ export default function QuizPage() {
     };
   }, [timeLeft, quizEnded, quizStarted, decrementTime]);
 
-  if (quizData.length === 0) return <div>No quiz data available.</div>;
+  if (quizData.length === 0) {
+    return (
+      <div className="flex h-[calc(100dvh-57px)] w-full items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full border-t-4 border-blue-500 border-r-4 border-blue-500 border-b-4 border-blue-500 border-l-4 border-blue-200 h-16 w-16 mb-4" />
+          <p className="text-lg font-semibold text-gray-700">Loading Quiz...</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Get ready for some brain-teasing questions!
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="mx-auto flex h-[calc(100dvh-57px)] w-full max-w-lg flex-col items-center justify-center px-4 py-2">

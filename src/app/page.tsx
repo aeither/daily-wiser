@@ -1,22 +1,30 @@
+// HomePage.tsx
 "use client";
 
 import FAQ from "@/components/faq";
 import { FeedbackModalButton } from "@/components/feedback-modal";
 import Footer from "@/components/footer";
+import { LeaderboardCard } from "@/components/home-leaderboard-card";
 import { OCIDComponent } from "@/components/ocid/OCIDComponent";
 import RevealWisdom from "@/components/reveal-wisdom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { openCampusCodex } from "@/config";
-import { MessageCircle, Trophy } from "lucide-react";
+import { MessageCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useChainId } from "wagmi";
 
 export default function HomePage() {
   const router = useRouter();
   const chainId = useChainId();
+  const leaderboardRef = useRef<HTMLDivElement>(null);
+
+  const scrollToLeaderboard = () => {
+    leaderboardRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const AnnouncementBadge = () => {
     switch (chainId) {
@@ -55,12 +63,20 @@ export default function HomePage() {
           <p className="text-purple-600">Micro-learning, macro impact!</p>
         </header>
         {/* <ConditialOCIDComponent /> */}
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+        <div
+          onClick={scrollToLeaderboard}
+          className="w-full flex flex-row justify-center items-center gap-2 shadow-md rounded-lg bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-3 animate-pulse cursor-pointer hover:opacity-90 transition-opacity"
+        >
+          <Sparkles className="text-yellow-300 h-5 w-5" />
+          <div className="text-white font-semibold">
+            New: Leaderboard Now Live! Click to view
+          </div>
+          <Sparkles className="text-yellow-300 h-5 w-5" />
+        </div>
         <Card className="p-4 shadow-lg rounded-xl">
           <h2 className="text-xl font-semibold mb-2 text-purple-700">Quiz</h2>
-          <p className="text-gray-600 mb-4">
-            Challenge yourself with our quiz. We’ve just added new quizzes
-            for you to try
-          </p>
+          <p className="text-gray-600 mb-4">Challenge yourself with our quiz</p>
           <Button
             className="w-full bg-purple-500 hover:bg-purple-600 text-white"
             onClick={() => router.push("/select-quiz")}
@@ -88,11 +104,9 @@ export default function HomePage() {
           <FeedbackModalButton />
         </div>
         <RevealWisdom />
-        <Card className="p-4 shadow-lg rounded-xl">
-          <Trophy className="h-12 w-12 text-purple-500 mx-auto mb-2" />
-          <h2 className="text-xl font-semibold text-purple-700">Leaderboard</h2>
-          <p className="text-gray-600 mt-2">Coming Soon!</p>
-        </Card>
+        <div ref={leaderboardRef}>
+          <LeaderboardCard />
+        </div>
         <FAQ />
       </main>
       <Footer />
