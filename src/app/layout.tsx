@@ -7,7 +7,6 @@ import { CSPostHogProvider } from "@/context/posthog";
 import ContextProvider from "@/context/reown";
 import { cn, getBaseUrl } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
-import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import { headers } from "next/headers";
@@ -117,7 +116,6 @@ export default function RootLayout(props: { children: ReactNode }) {
                     <Header />
                     {props.children}
                     <Toaster />
-                    <Analytics />
                   </ContextProvider>
                 {/* </MyPrivyProvider> */}
               </ThemeProvider>

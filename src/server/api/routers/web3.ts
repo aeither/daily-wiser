@@ -3,10 +3,29 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
 import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
 import { TRPCError } from "@trpc/server";
-import { createWalletClient, http } from "viem";
+import { Redis } from "@upstash/redis";
+import { createWalletClient, http, parseEther } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { z } from "zod";
 import { createCaller } from "../root";
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+const getFaucetPrivateKey = () => {
+  const key = process.env.FAUCET_PRIVATE_KEY;
+  if (!key) {
+    throw new Error(
+      "FAUCET_PRIVATE_KEY is not defined in environment variables"
+    );
+  }
+  if (!key.startsWith("0x")) {
+    return `0x${key}` as `0x${string}`;
+  }
+  return key as `0x${string}`;
+};
 
 // Safely get the admin private key
 const getAdminPrivateKey = () => {
@@ -77,6 +96,61 @@ export const web3Router = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: `${errorMessage}`,
+        });
+      }
+    }),
+
+  claimFaucetToken: publicProcedure
+    .input(
+      z.object({
+        chainId: z.number(),
+        userAddress: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { chainId, userAddress } = input;
+
+      // Check if the user has already claimed within the last 24 hours
+      const lastClaimTime = await redis.get(`faucet:${userAddress}`);
+      if (lastClaimTime) {
+        const timeElapsed = Date.now() - Number(lastClaimTime);
+        if (timeElapsed < 24 * 60 * 60 * 1000) {
+          // 24 hours in milliseconds
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: "You can only claim once per day. Please try again later.",
+          });
+        }
+      }
+
+      try {
+        const FAUCET_PRIVATE_KEY = getFaucetPrivateKey();
+        const faucetAccount = privateKeyToAccount(FAUCET_PRIVATE_KEY);
+
+        const walletClient = createWalletClient({
+          account: faucetAccount,
+          chain: getChainById(chainId),
+          transport: http(),
+        });
+
+        // Send 0.001 EDU tokens
+        const txHash = await walletClient.sendTransaction({
+          to: userAddress as `0x${string}`,
+          value: parseEther("0.001"),
+        });
+
+        // Update the last claim time in Redis
+        await redis.set(`faucet:${userAddress}`, Date.now());
+
+        return {
+          hash: txHash,
+        };
+      } catch (error: any) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to claim faucet token: ${errorMessage}`,
         });
       }
     }),
