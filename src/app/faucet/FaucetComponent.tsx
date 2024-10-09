@@ -17,6 +17,9 @@ import { useAccount } from "wagmi";
 
 export default function FaucetComponent() {
   const [isClaiming, setIsClaiming] = useState(false);
+  const [claimStatus, setClaimStatus] = useState<"idle" | "success" | "failed">(
+    "idle"
+  );
   const { address, isConnected, chain } = useAccount();
   const claimMutation = apiReact.web3.claimFaucetToken.useMutation();
   const baseUrl = chain?.blockExplorers?.default.url;
@@ -45,6 +48,7 @@ export default function FaucetComponent() {
           </ToastAction>
         ),
       });
+      setClaimStatus("success");
     } catch (error: any) {
       console.error("Claim failed:", error);
       if (error.message.includes("You can only claim once per day")) {
@@ -58,13 +62,21 @@ export default function FaucetComponent() {
         toast({
           title: "Claim Failed",
           description:
-            "You can only claim once per day. Please try again later.",
+            "An error occurred while claiming. Please try again later.",
           variant: "destructive",
         });
       }
+      setClaimStatus("failed");
     } finally {
       setIsClaiming(false);
     }
+  };
+
+  const getButtonText = () => {
+    if (isClaiming) return "Claiming...";
+    if (claimStatus === "success") return "Claimed Successfully";
+    if (claimStatus === "failed") return "Claim Failed";
+    return "Claim 0.001 EDU";
   };
 
   return (
@@ -76,23 +88,25 @@ export default function FaucetComponent() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isConnected ? (
-          <p className="text-sm text-gray-600 mb-4">Connected: {address}</p>
-        ) : (
-          <p className="text-sm text-gray-600 mb-4">
-            Please connect your wallet to claim tokens.
-          </p>
-        )}
+        <div className="p-2">
+          {isConnected ? (
+            <p className="text-sm text-gray-600 mb-4">Connected: {address}</p>
+          ) : (
+            <p className="text-sm text-gray-600 mb-4">
+              Please connect your wallet to claim tokens.
+            </p>
+          )}
+        </div>
+        <w3m-button />
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
-        <w3m-button />
         {isConnected && (
           <Button
             onClick={handleClaim}
-            disabled={isClaiming}
+            disabled={isClaiming || claimStatus !== "idle"}
             className="w-full mt-2"
           >
-            {isClaiming ? "Claiming..." : "Claim 0.001 EDU"}
+            {getButtonText()}
           </Button>
         )}
       </CardFooter>
