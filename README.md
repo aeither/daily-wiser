@@ -95,7 +95,6 @@ Built with a modern tech stack, Daily Wiser showcases technical depth and innova
 - State Management: @tanstack/react-query and nuqs for efficient data handling
 - AI Integration: Groq for personalized content generation and adaptive learning
 
-
 ## Real-World Impact
 
 Daily Wiser addresses several critical challenges in modern education:
