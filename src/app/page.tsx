@@ -14,17 +14,11 @@ import { openCampusCodex } from "@/config";
 import { MessageCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
 import { useChainId } from "wagmi";
 
 export default function HomePage() {
   const router = useRouter();
   const chainId = useChainId();
-  const leaderboardRef = useRef<HTMLDivElement>(null);
-
-  const scrollToLeaderboard = () => {
-    leaderboardRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
   const AnnouncementBadge = () => {
     switch (chainId) {
@@ -63,17 +57,18 @@ export default function HomePage() {
           <p className="text-purple-600">Micro-learning, macro impact!</p>
         </header>
         {/* <ConditialOCIDComponent /> */}
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-        <div
-          onClick={scrollToLeaderboard}
+        <Link
+          href="https://twitter.com/intent/follow?screen_name=DailyWiser_"
+          target="_blank"
+          rel="noopener noreferrer"
           className="w-full flex flex-row justify-center items-center gap-2 shadow-md rounded-lg bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-3 animate-pulse cursor-pointer hover:opacity-90 transition-opacity"
         >
           <Sparkles className="text-yellow-300 h-5 w-5" />
           <div className="text-white font-semibold">
-            New: Leaderboard Now Live! Click to view
+            Follow us on Twitter for updates
           </div>
           <Sparkles className="text-yellow-300 h-5 w-5" />
-        </div>
+        </Link>
         <Card className="p-4 shadow-lg rounded-xl">
           <h2 className="text-xl font-semibold mb-2 text-purple-700">Quiz</h2>
           <p className="text-gray-600 mb-4">Challenge yourself with our quiz</p>
@@ -104,9 +99,7 @@ export default function HomePage() {
           <FeedbackModalButton />
         </div>
         <RevealWisdom />
-        <div ref={leaderboardRef}>
-          <LeaderboardCard />
-        </div>
+        <LeaderboardCard />
         <FAQ />
       </main>
       <Footer />
