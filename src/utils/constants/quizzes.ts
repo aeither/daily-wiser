@@ -30,6 +30,78 @@ export type QuizData = {
 
 export const quizDatas: QuizData[] = [
   {
+    id: "A1B2C3D4-5E6F-7G8H-9I10-J11K12L13M14",
+    title: "Developing a Growth Mindset",
+    description:
+      "Explore the concept of a growth mindset and its impact on personal development and success.",
+    category: "personal development",
+    endscreen:
+      "Congratulations on completing this quiz about developing a growth mindset! Remember, embracing challenges, persisting through obstacles, and viewing effort as a path to mastery are key aspects of a growth mindset. Keep cultivating this mindset to unlock your full potential!",
+    slides: [
+      {
+        type: "info",
+        content:
+          "A growth mindset is the belief that abilities and intelligence can be developed through dedication, hard work, and learning. It contrasts with a fixed mindset, which assumes talents are innate and unchangeable.",
+      },
+      {
+        type: "info",
+        content:
+          "People with a growth mindset tend to embrace challenges, persist in the face of setbacks, see effort as a path to mastery, learn from criticism, and find inspiration in others' success.",
+      },
+      {
+        type: "quiz",
+        content:
+          "Which of the following is NOT a characteristic of a growth mindset?",
+        options: [
+          "Embracing challenges",
+          "Believing talents are fixed at birth",
+          "Learning from criticism",
+          "Persisting in the face of setbacks",
+        ],
+        correctAnswer: "Believing talents are fixed at birth",
+      },
+      {
+        type: "info",
+        content:
+          "Developing a growth mindset involves reframing challenges as opportunities, replacing negative self-talk with positive affirmations, and focusing on the process of learning rather than just the outcome.",
+      },
+      {
+        type: "quiz",
+        content:
+          "What does 'embracing challenges' mean in the context of a growth mindset?",
+        options: [
+          "Avoiding difficult tasks",
+          "Seeing challenges as opportunities to learn and grow",
+          "Only taking on easy tasks to build confidence",
+          "Comparing yourself to others constantly",
+        ],
+        correctAnswer: "Seeing challenges as opportunities to learn and grow",
+      },
+      {
+        type: "info",
+        content:
+          "Research by psychologist Carol Dweck has shown that individuals with a growth mindset tend to achieve more than those with a fixed mindset, particularly in challenging situations.",
+      },
+      {
+        type: "quiz",
+        content:
+          "According to growth mindset theory, how should effort be viewed?",
+        options: [
+          "As a sign of weakness",
+          "As unnecessary if you're naturally talented",
+          "As a path to mastery and improvement",
+          "As something to be avoided",
+        ],
+        correctAnswer: "As a path to mastery and improvement",
+      },
+      {
+        type: "info",
+        content:
+          "Cultivating a growth mindset is an ongoing process. It involves consistently challenging your own beliefs about your abilities and potential, and actively seeking out opportunities for growth and learning.",
+      },
+    ],
+  },
+  {
     id: "B7F9E2D1-3A5C-4E8B-9D6F-1C2A3B4C5D6E",
     title: "The Power of 1% Daily Improvement",
     description:
