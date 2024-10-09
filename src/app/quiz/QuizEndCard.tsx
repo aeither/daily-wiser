@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ToastAction } from "@/components/ui/toast";
 import {
   Tooltip,
   TooltipContent,
@@ -13,7 +14,6 @@ import { useAdminMintCertificate } from "@/hooks/use-mint-certificate";
 import { useQuizStore } from "@/store/quizStore";
 import { apiReact } from "@/trpc/react";
 import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
-import { ToastAction } from "@radix-ui/react-toast";
 import { Share2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -67,7 +67,7 @@ export function QuizEndCard() {
         title: "Not enough credits",
         description: "Looks like you're out of credits. Add more to continue.",
         action: (
-          <ToastAction altText={"Credits"}>
+          <ToastAction altText="Credits">
             <Link href={"/credits"}>Open</Link>
           </ToastAction>
         ),
