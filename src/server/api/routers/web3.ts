@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import { Redis } from "@upstash/redis";
 import { createWalletClient, http, parseEther } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { waitForTransactionReceipt } from "viem/actions";
 import { z } from "zod";
 import { createCaller } from "../root";
 
@@ -75,7 +76,7 @@ export const web3Router = createTRPCRouter({
 
         // Deploy NFT contract using factory
         const tokenURI =
-          "https://gateway.irys.xyz/FFyoky1LPR8Q3cFNFu2vN5CaywHFrKRVpZSEZDNeFejQ";
+          "ipfs://QmfCPGzGnN6tamFK6bN1AyjtvKebD9GSUnomZSGuvPgrNK/0";
         const mintNFTReceiptHash = await walletClient.writeContract({
           address: certificateContractAddresses[chainId],
           abi: CERTIFICATE_CONTRACT_ABI,
@@ -83,12 +84,12 @@ export const web3Router = createTRPCRouter({
           args: [userAddress, tokenURI],
         });
 
-        // const mintNFTReceipt = await waitForTransactionReceipt(walletClient, {
-        //   hash: mintNFTReceiptHash,
-        // });
+        const mintNFTReceipt = await waitForTransactionReceipt(walletClient, {
+          hash: mintNFTReceiptHash,
+        });
 
         return {
-          hash: mintNFTReceiptHash,
+          hash: mintNFTReceipt.transactionHash,
         };
       } catch (error: any) {
         const errorMessage =
