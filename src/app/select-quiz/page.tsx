@@ -9,10 +9,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { quizDatas } from "@/utils/constants/quizzes";
-import { Clock, Code, FlaskConical, Lightbulb } from "lucide-react";
+import { Clock, Code, FlaskConical, Lightbulb, UserPlus } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
 
-// Helper function to get icon based on category
 const getCategoryIcon = (category: string | undefined) => {
   switch (category) {
     case "mathematics":
@@ -23,19 +24,27 @@ const getCategoryIcon = (category: string | undefined) => {
       return <FlaskConical className="w-6 h-6" />;
     case "technology":
       return <Code className="w-6 h-6" />;
+    case "onboard":
+      return <UserPlus className="w-6 h-6" />;
     default:
-      return <Lightbulb className="w-6 h-6" />; // Default icon
+      return <Lightbulb className="w-6 h-6" />;
   }
 };
 
 export default function SelectQuiz() {
   const router = useRouter();
+  const [category] = useQueryState("category");
+
+  const filteredQuizzes =
+    category === "onboard"
+      ? quizDatas.filter((quiz) => quiz.category === "onboard")
+      : quizDatas.filter((quiz) => quiz.category !== "onboard");
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 text-center">Select Your Quiz</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-        {quizDatas.map((quiz) => (
+        {filteredQuizzes.map((quiz) => (
           <Card key={quiz.id} className="border-gray-700 flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -44,6 +53,20 @@ export default function SelectQuiz() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-grow">
+              {quiz.image && (
+                <div
+                  className="mb-4 relative w-full"
+                  style={{ paddingTop: "56.25%" }}
+                >
+                  <Image
+                    src={quiz.image}
+                    alt={quiz.title}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-md absolute top-0 left-0"
+                  />
+                </div>
+              )}
               <p>{quiz.description}</p>
             </CardContent>
             <CardFooter className="mt-auto">

@@ -79,7 +79,7 @@ export default function HomePage() {
           </p>
           <Button
             className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={() => router.push("/select-onboard-quiz")}
+            onClick={() => router.push("/select-quiz?category=onboard")}
           >
             <Rocket className="mr-2 h-4 w-4" />
             Let's go
