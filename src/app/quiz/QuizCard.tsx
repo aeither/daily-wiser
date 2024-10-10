@@ -43,7 +43,6 @@ export function QuizCard() {
   const [localIsCorrectAnswer, setLocalIsCorrectAnswer] =
     useState<boolean>(false);
 
-    console.log("🚀 ~ QuizCard ~ quizData:", quizData)
   const content = quizData[currentSlide]?.content || "";
   const options = quizData[currentSlide]?.options || [];
   const correctAnswer = quizData[currentSlide]?.correctAnswer || "";
