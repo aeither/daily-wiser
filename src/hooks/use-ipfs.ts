@@ -27,7 +27,7 @@ export const useIPFS = () => {
       const metadata = {
         name,
         description,
-        image: imageUri,
+        image: `${GATEWAY_URL}${imageUri.replace("ipfs://", "")}`,
       };
 
       // Upload metadata to IPFS
@@ -48,15 +48,16 @@ export const useIPFS = () => {
       const metadataJson = await metadataResponse.json();
 
       // Extract image CID and path
-      const [imageCid, imagePath] = metadataJson.image
-        .replace("ipfs://", "")
-        .split("/");
-      const imageUrl = `${GATEWAY_URL}${imageCid}/${encodeURIComponent(imagePath)}`;
+      // const [imageCid, imagePath] = metadataJson.image
+      //   .replace("ipfs://", "")
+      //   .split("/");
+      // const imageUrl = `${GATEWAY_URL}${imageCid}/${encodeURIComponent(imagePath)}`;
 
       return {
         name: metadataJson.name,
         description: metadataJson.description,
-        image: imageUrl,
+        image: metadataJson.image,
+        gateway: `${GATEWAY_URL}${uri.replace("ipfs://", "")}`,
       };
     } catch (error) {
       console.error("Error fetching metadata:", error);

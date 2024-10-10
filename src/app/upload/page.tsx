@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +24,7 @@ const MetadataUploader = () => {
     name: string;
     description: string;
     image: string;
+    gateway: string;
   } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -122,6 +123,11 @@ const MetadataUploader = () => {
               <FileText className="w-5 h-5" />
               <span className="font-semibold">IPFS URI:</span>
               <span className="text-sm break-all">{uploadedUri}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <FileText className="w-5 h-5" />
+              <span className="font-semibold">Gateway:</span>
+              <span className="text-sm break-all">{metadata.gateway}</span>
             </div>
             <div className="flex items-center space-x-2">
               <ImageIcon className="w-5 h-5" />
