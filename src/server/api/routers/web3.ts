@@ -76,7 +76,7 @@ export const web3Router = createTRPCRouter({
 
         // Deploy NFT contract using factory
         const tokenURI =
-          "ipfs://QmfCPGzGnN6tamFK6bN1AyjtvKebD9GSUnomZSGuvPgrNK/0";
+          "https://gateway.irys.xyz/FFyoky1LPR8Q3cFNFu2vN5CaywHFrKRVpZSEZDNeFejQ";
         const mintNFTReceiptHash = await walletClient.writeContract({
           address: certificateContractAddresses[chainId],
           abi: CERTIFICATE_CONTRACT_ABI,
