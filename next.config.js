@@ -5,7 +5,12 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ["res.cloudinary.com", "fal.ai", "fal.media"],
+    domains: [
+      "res.cloudinary.com",
+      "fal.ai",
+      "fal.media",
+      "gateway.pinata.cloud",
+    ],
   },
   experimental: {
     esmExternals: true,

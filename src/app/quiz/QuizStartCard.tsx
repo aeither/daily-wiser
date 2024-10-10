@@ -105,14 +105,16 @@ export function QuizStartCard() {
       </CardHeader>
       <CardContent className="flex flex-grow flex-col h-auto justify-between p-6">
         {quizImage && (
-          <div className="mb-6">
+          <div
+            className="mb-6 relative w-full"
+            style={{ paddingTop: "56.25%" }}
+          >
             <Image
               src={quizImage}
               alt={quizName}
-              width={400}
-              height={200}
-              className="rounded-lg object-cover w-full"
-              layout="responsive"
+              layout="fill"
+              objectFit="cover"
+              className="rounded-lg absolute top-0 left-0"
             />
           </div>
         )}
