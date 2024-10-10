@@ -4,7 +4,7 @@ const footerLinks = [
   { href: "https://twitter.com/DailyWiser_", label: "Twitter" },
   { href: "/privacy-policy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
-  // { href: "/#contact", label: "Contact" },
+  { href: "https://blog.dailywiser.xyz/", label: "Blog" },
   { href: "https://t.me/dailywiser", label: "Telegram" },
   { href: "/changelog", label: "Changelog" },
 ];
