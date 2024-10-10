@@ -2,17 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { apiReact } from "@/trpc/react";
 import { ToastAction } from "@radix-ui/react-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 export default function FaucetComponent() {
@@ -24,8 +25,43 @@ export default function FaucetComponent() {
   const claimMutation = apiReact.web3.claimFaucetToken.useMutation();
   const baseUrl = chain?.blockExplorers?.default.url;
 
+  // Prove human states
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+  const [captchaQuestion, setCaptchaQuestion] = useState("");
+  const [isHuman, setIsHuman] = useState(false);
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+
+  const generateCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10);
+    const num2 = Math.floor(Math.random() * 10);
+    setCaptchaQuestion(`What is ${num1} + ${num2}?`);
+    setCaptchaAnswer((num1 + num2).toString());
+  };
+
+  const handleCaptchaSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const userAnswer = (e.target as HTMLFormElement).captcha.value;
+    if (userAnswer === captchaAnswer) {
+      setIsHuman(true);
+      toast({
+        title: "Human Verified",
+        description: "You can now claim your tokens.",
+      });
+    } else {
+      toast({
+        title: "Verification Failed",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+      generateCaptcha();
+    }
+  };
+
   const handleClaim = async () => {
-    if (!address || !chain) return;
+    if (!address || !chain || !isHuman) return;
 
     setIsClaiming(true);
     try {
@@ -84,7 +120,8 @@ export default function FaucetComponent() {
       <CardHeader>
         <CardTitle>Claim Your Daily EDU</CardTitle>
         <CardDescription>
-          Connect your wallet to claim 0.001 EDU tokens once per day.
+          Connect your wallet and verify you're human to claim 0.001 EDU tokens
+          once per day.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -98,9 +135,23 @@ export default function FaucetComponent() {
           )}
         </div>
         <w3m-button />
+        {isConnected && !isHuman && (
+          <form onSubmit={handleCaptchaSubmit} className="mt-4">
+            <p className="text-sm text-gray-600 mb-2">{captchaQuestion}</p>
+            <div className="flex space-x-2">
+              <Input
+                type="text"
+                name="captcha"
+                placeholder="Enter answer"
+                className="flex-grow"
+              />
+              <Button type="submit">Verify</Button>
+            </div>
+          </form>
+        )}
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
-        {isConnected && (
+        {isConnected && isHuman && (
           <Button
             onClick={handleClaim}
             disabled={isClaiming || claimStatus !== "idle"}
