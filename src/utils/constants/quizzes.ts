@@ -44,42 +44,41 @@ export const quizDatas: QuizData[] = [
     metadata:
       "https://gateway.pinata.cloud/ipfs/QmYsEN4V63r9uuE6xsaEsfqhnXgMq8e9wFsPmfgnuoHs1c/0",
     endscreen:
-      "Congratulations! You're now ready to embark on your Daily Wiser journey. Start claiming your daily wisdom, earn XP, and collect NFT Skill Badges as you grow. Remember, with AI-powered personalization and gamified learning, every day is an opportunity to become wiser!",
+      "Congratulations! You're now ready to embark on your Daily Wiser journey. Start claiming your daily wisdom, earn XP, and collect NFT Skill Badges as you grow. Every day is an opportunity to become wiser!",
     slides: [
       {
         type: "info",
         content:
-          "Daily Wiser is your AI-powered companion for bite-sized, personalized learning. We combine cutting-edge technology with gamification to make personal growth fun and verifiable.",
+          "Daily Wiser is an mobile-first learning platform that transforms personal growth into an engaging daily habit. Daily Wiser combines cutting-edge AI technology, gamification principles, and blockchain integration, we've created a unique ecosystem that makes learning accessible, fun, and verifiable.",
         media: "https://dailywiser.xyz/images/ai-personalization.gif",
       },
       {
         type: "quiz",
-        content: "What makes Daily Wiser unique in the learning space?",
+        content: "What's Daily Wiser's secret sauce for learning?",
         options: [
-          "Long, academic lectures",
-          "AI personalization and blockchain verification",
-          "Physical textbooks",
-          "One-size-fits-all courses",
+          "Boring lectures that cure insomnia",
+          "Bite-sized, fun lessons with blockchain proof",
+          "Textbooks heavy enough to build muscle",
+          "One-size-fits-none courses",
         ],
-        correctAnswer: "AI personalization and blockchain verification",
+        correctAnswer: "Bite-sized, fun lessons with blockchain proof",
       },
       {
         type: "info",
         content:
-          "With Daily Wiser, you'll earn XP and level up as you learn. Complete milestones to claim your Daily Wisdom and watch your knowledge grow day by day.",
+          "With Daily Wiser, you'll earn XP and level up as you learn. Claim your Daily Wisdom and watch your knowledge grow day by day.",
         media: "https://dailywiser.xyz/images/xp-and-levels.png",
       },
       {
         type: "quiz",
-        content:
-          "How does Daily Wiser keep you motivated to learn consistently?",
+        content: "How does Daily Wiser boost your learning motivation?",
         options: [
-          "By assigning homework",
-          "Through gamification elements like XP and levels",
-          "With monetary rewards",
-          "By sending daily reminders",
+          "Unleashes learning zombies",
+          "Uses points, streaks, and challenges",
+          "Installs a brain-zapping chip",
+          "Hires 24/7 educational mariachis",
         ],
-        correctAnswer: "Through gamification elements like XP and levels",
+        correctAnswer: "Uses points, streaks, and challenges",
       },
       {
         type: "info",
@@ -89,33 +88,14 @@ export const quizDatas: QuizData[] = [
       },
       {
         type: "quiz",
-        content:
-          "What tangible proof of your learning does Daily Wiser provide?",
+        content: "How does Daily Wiser prove your learning achievements?",
         options: [
-          "Paper certificates",
-          "Email confirmations",
-          "NFT Skill Badges on the blockchain",
-          "Physical medals",
+          "Tattoos your forehead with learned facts",
+          "Mints blockchain-verified NFT Skill Badges",
+          "Trains a parrot to recite your knowledge",
+          "Erects statues of you in public squares",
         ],
-        correctAnswer: "NFT Skill Badges on the blockchain",
-      },
-      {
-        type: "info",
-        content:
-          "Our AI adapts to your learning style, creating a personalized curriculum that evolves with you. Enjoy interactive quizzes that validate your progress and keep you engaged.",
-        media: "https://dailywiser.xyz/images/adaptive-learning.webp",
-      },
-      {
-        type: "quiz",
-        content:
-          "How does Daily Wiser ensure the learning experience is tailored to you?",
-        options: [
-          "By offering the same content to everyone",
-          "Through AI-powered personalization",
-          "By letting you choose from a fixed set of courses",
-          "By following a standard curriculum",
-        ],
-        correctAnswer: "Through AI-powered personalization",
+        correctAnswer: "Mints blockchain-verified NFT Skill Badges",
       },
     ],
   },
