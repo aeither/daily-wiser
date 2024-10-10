@@ -132,22 +132,40 @@ export function QuizEndCard() {
           </div>
         </CardHeader>
         <CardContent className="flex flex-grow flex-col h-auto justify-between p-6">
-          <div className="text-center">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4">
-              Quiz Completed!
-            </h2>
-            <p className="mb-4">
-              You got {correctAnswers} out of {quizQuestionCount} questions
-              correct.
-            </p>
-            {quizEndscreen ? (
-              <p className="mb-4 text-lg font-semibold">{quizEndscreen}</p>
-            ) : (
+          {correctAnswers === quizQuestionCount ? (
+            <div className="text-center">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4">
+                Quiz Completed!
+              </h2>
               <p className="mb-4">
-                Congratulations! You answered all questions correctly!
+                You got {correctAnswers} out of {quizQuestionCount} questions
+                correct.
               </p>
-            )}
-          </div>
+              {quizEndscreen ? (
+                <p className="mb-4 text-lg font-semibold">{quizEndscreen}</p>
+              ) : (
+                <p className="mb-4">
+                  Congratulations! You answered all questions correctly!
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="text-center">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4">Time's Up!</h2>
+              <p className="mb-4">
+                You got {correctAnswers} out of {quizQuestionCount} questions
+                correct before the time ran out.
+              </p>
+              <p className="mb-4 text-lg font-semibold">
+                Don't worry! You can always try again to improve your score and
+                complete the quiz.
+              </p>
+              <p className="mb-4">
+                Remember, practice makes perfect. Take your time, review the
+                questions, and give it another shot!
+              </p>
+            </div>
+          )}
           <div className="space-y-4">
             {correctAnswers === quizQuestionCount && !isSuccess && (
               <Button
