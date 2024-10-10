@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { quizDatas } from "@/utils/constants/quizzes";
-import { Clock, Code, FlaskConical, Lightbulb, UserPlus } from "lucide-react";
+import { BadgeCheckIcon, Clock, Code, FlaskConical, Lightbulb } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
@@ -25,7 +25,7 @@ const getCategoryIcon = (category: string | undefined) => {
     case "technology":
       return <Code className="w-6 h-6" />;
     case "onboard":
-      return <UserPlus className="w-6 h-6" />;
+      return <BadgeCheckIcon className="w-6 h-6" />;
     default:
       return <Lightbulb className="w-6 h-6" />;
   }
