@@ -169,7 +169,7 @@ export const userRouter = createTRPCRouter({
           address: input.address,
           lastActive: new Date(),
           xp: "0",
-          totalCredits: "30",
+          totalCredits: "20",
         })
         .onConflictDoUpdate({
           target: users.address,
