@@ -6,7 +6,8 @@ type Category =
   | "mathematics"
   | "history"
   | "science"
-  | "technology";
+  | "technology"
+  | "onboard";
 
 export type Quiz = {
   type: "info" | "quiz";
@@ -558,6 +559,99 @@ export const quizDatas: QuizData[] = [
           "It makes the habit more difficult",
         ],
         correctAnswer: "It provides a visual cue of your progress",
+      },
+    ],
+  },
+];
+
+/**
+ * Onboard Quiz
+ */
+
+export const onboardQuizDatas: QuizData[] = [
+  {
+    id: "A1B2C3D4-5E6F-7G8H-9I10-J11K12L13M14",
+    title: "Welcome to Daily Wiser",
+    description:
+      "Discover how Daily Wiser can transform your learning journey in just 60 seconds!",
+    category: "onboard",
+    image:
+      "https://gateway.pinata.cloud/ipfs/QmUGioFDUkJgvzHMXTJcZTgjMYDZjsbpXEqh6Y1qrLf6Zf/logo_dailywiser.png",
+    metadata:
+      "https://gateway.pinata.cloud/ipfs/QmYsEN4V63r9uuE6xsaEsfqhnXgMq8e9wFsPmfgnuoHs1c/0",
+    endscreen:
+      "Congratulations! You're now ready to embark on your Daily Wiser journey. Start claiming your daily wisdom, earn XP, and collect NFT Skill Badges as you grow. Remember, with AI-powered personalization and gamified learning, every day is an opportunity to become wiser!",
+    slides: [
+      {
+        type: "info",
+        content:
+          "Daily Wiser is your AI-powered companion for bite-sized, personalized learning. We combine cutting-edge technology with gamification to make personal growth fun and verifiable.",
+        media: "https://dailywiser.xyz/images/ai-personalization.gif",
+      },
+      {
+        type: "quiz",
+        content: "What makes Daily Wiser unique in the learning space?",
+        options: [
+          "Long, academic lectures",
+          "AI personalization and blockchain verification",
+          "Physical textbooks",
+          "One-size-fits-all courses",
+        ],
+        correctAnswer: "AI personalization and blockchain verification",
+      },
+      {
+        type: "info",
+        content:
+          "With Daily Wiser, you'll earn XP and level up as you learn. Complete milestones to claim your Daily Wisdom and watch your knowledge grow day by day.",
+        media: "https://dailywiser.xyz/images/xp-and-levels.png",
+      },
+      {
+        type: "quiz",
+        content:
+          "How does Daily Wiser keep you motivated to learn consistently?",
+        options: [
+          "By assigning homework",
+          "Through gamification elements like XP and levels",
+          "With monetary rewards",
+          "By sending daily reminders",
+        ],
+        correctAnswer: "Through gamification elements like XP and levels",
+      },
+      {
+        type: "info",
+        content:
+          "Your achievements are more than just numbers. Daily Wiser mints NFT Skill Badges on the blockchain, giving you verifiable proof of your acquired knowledge.",
+        media: "https://dailywiser.xyz/images/nft-skill-badges.jpg",
+      },
+      {
+        type: "quiz",
+        content:
+          "What tangible proof of your learning does Daily Wiser provide?",
+        options: [
+          "Paper certificates",
+          "Email confirmations",
+          "NFT Skill Badges on the blockchain",
+          "Physical medals",
+        ],
+        correctAnswer: "NFT Skill Badges on the blockchain",
+      },
+      {
+        type: "info",
+        content:
+          "Our AI adapts to your learning style, creating a personalized curriculum that evolves with you. Enjoy interactive quizzes that validate your progress and keep you engaged.",
+        media: "https://dailywiser.xyz/images/adaptive-learning.webp",
+      },
+      {
+        type: "quiz",
+        content:
+          "How does Daily Wiser ensure the learning experience is tailored to you?",
+        options: [
+          "By offering the same content to everyone",
+          "Through AI-powered personalization",
+          "By letting you choose from a fixed set of courses",
+          "By following a standard curriculum",
+        ],
+        correctAnswer: "Through AI-powered personalization",
       },
     ],
   },
