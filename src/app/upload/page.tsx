@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useIPFS } from "@/hooks/use-ipfs";
-import { FileText, Image as ImageIcon, Upload } from "lucide-react";
+import { FileImage, FileText, Link, Upload } from "lucide-react";
 import { useState } from "react";
 
 const MetadataUploader = () => {
@@ -66,7 +66,9 @@ const MetadataUploader = () => {
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Metadata Uploader</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            Metadata Uploader
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -116,21 +118,23 @@ const MetadataUploader = () => {
       {metadata && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl font-bold">Uploaded Metadata</CardTitle>
+            <CardTitle className="text-xl font-bold">
+              Uploaded Metadata
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-2">
-              <FileText className="w-5 h-5" />
-              <span className="font-semibold">IPFS URI:</span>
-              <span className="text-sm break-all">{uploadedUri}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <FileText className="w-5 h-5" />
-              <span className="font-semibold">Gateway:</span>
+              <Link className="w-5 h-5" />
+              <span className="font-semibold">Metadata JSON:</span>
               <span className="text-sm break-all">{metadata.gateway}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <ImageIcon className="w-5 h-5" />
+              <Link className="w-5 h-5" />
+              <span className="font-semibold">Image:</span>
+              <span className="text-sm break-all">{metadata.image}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <FileText className="w-5 h-5" />
               <span className="font-semibold">Name:</span>
               <span>{metadata.name}</span>
             </div>
@@ -140,6 +144,7 @@ const MetadataUploader = () => {
               <p className="text-sm">{metadata.description}</p>
             </div>
             <div className="mt-4">
+              <FileImage className="w-5 h-5 mb-2" />
               <img
                 src={metadata.image}
                 alt="Uploaded Metadata"

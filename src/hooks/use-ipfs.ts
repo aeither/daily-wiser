@@ -23,11 +23,15 @@ export const useIPFS = () => {
       // Upload image to IPFS
       const imageUri = await storage.upload(imageFile);
 
+      // Extract image CID and path
+      const [imageCid, imagePath] = imageUri.replace("ipfs://", "").split("/");
+      const imageUrl = `${GATEWAY_URL}${imageCid}/${encodeURIComponent(imagePath)}`;
+
       // Create metadata
       const metadata = {
         name,
         description,
-        image: `${GATEWAY_URL}${imageUri.replace("ipfs://", "")}`,
+        image: imageUrl,
       };
 
       // Upload metadata to IPFS
@@ -46,12 +50,6 @@ export const useIPFS = () => {
         `${GATEWAY_URL}${uri.replace("ipfs://", "")}`
       );
       const metadataJson = await metadataResponse.json();
-
-      // Extract image CID and path
-      // const [imageCid, imagePath] = metadataJson.image
-      //   .replace("ipfs://", "")
-      //   .split("/");
-      // const imageUrl = `${GATEWAY_URL}${imageCid}/${encodeURIComponent(imagePath)}`;
 
       return {
         name: metadataJson.name,
