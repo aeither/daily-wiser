@@ -1,6 +1,5 @@
-// app/page.tsx
-
 import type { Metadata } from "next";
+import Link from "next/link";
 import FaucetComponent from "./FaucetComponent";
 
 export const metadata: Metadata = {
@@ -17,6 +16,38 @@ export default function Home() {
         EduChain Faucet
       </h1>
       <FaucetComponent />
+
+      <section className="mt-8">
+        <h2 className="text-2xl font-semibold text-center mb-4 text-blue-700">
+          More Faucets
+        </h2>
+        <div className="flex flex-col space-y-2">
+          <Link
+            href="https://drpc.org/faucet/open-campus-codex"
+            className="text-blue-600 hover:text-blue-800 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            DRPC Open Campus Codex Faucet
+          </Link>
+          <Link
+            href="https://www.hackquest.io/en/faucets/656476"
+            className="text-blue-600 hover:text-blue-800 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            HackQuest EDU Chain Testnet Faucet
+          </Link>
+          <Link
+            href="https://educhain-community-faucet.vercel.app/"
+            className="text-blue-600 hover:text-blue-800 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            EduChain Community Faucet
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }
