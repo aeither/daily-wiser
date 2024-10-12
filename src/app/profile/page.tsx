@@ -6,13 +6,15 @@ import { calculateLevelAndMaxXp } from "@/lib/utils";
 import { apiReact } from "@/trpc/react";
 import type { NFTResponseType } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
+import { ExternalLink } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useAccount } from "wagmi";
 import { fetchNFTs } from "../actions/blockscout";
 
-export default function StudentProfile() {
+export default function Profile() {
   const { address, chain } = useAccount();
   const { data: user } = apiReact.user.getUser.useQuery({
     address: address as string,
@@ -76,8 +78,8 @@ export default function StudentProfile() {
                     styles={buildStyles({
                       textSize: "16px",
                       pathColor: `rgba(62, 152, 199, ${xpData.progress / 100})`,
-                      textColor: "#34C759",
-                      trailColor: "#C6F4D6",
+                      textColor: "#000000", // Changed to black for higher contrast
+                      trailColor: "#FFC107", // Changed to a more distinct orange color
                     })}
                   />
                 </div>
@@ -111,7 +113,7 @@ export default function StudentProfile() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {nftsQuery.data?.items.map((nft) => (
-            <Card key={nft.id} className="overflow-hidden">
+            <Card key={nft.id} className="overflow-hidden relative">
               <div className="aspect-square relative">
                 <Image
                   src={nft.image_url || "/placeholder-image.jpg"}
@@ -119,6 +121,14 @@ export default function StudentProfile() {
                   layout="fill"
                   objectFit="cover"
                 />
+                <Link
+                  href={`${chain?.blockExplorers?.default.url}/token/${nft.token.address}/instance/${nft.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:shadow-lg transition-shadow duration-200"
+                >
+                  <ExternalLink size={16} className="text-gray-600" />
+                </Link>
               </div>
               <CardContent className="p-4">
                 <h3 className="font-bold text-lg mb-2">
