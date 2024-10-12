@@ -10,6 +10,8 @@ const nextConfig = {
       "fal.ai",
       "fal.media",
       "gateway.pinata.cloud",
+      "ipfs.io",
+      "gateway.irys.xyz",
     ],
   },
   experimental: {

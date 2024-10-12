@@ -33,7 +33,7 @@ export const openCampusCodex = defineChain({
   blockExplorers: {
     default: {
       name: "Blockscout",
-      url: "https://opencampus-codex.blockscout.com",
+      url: "https://edu-chain-testnet.blockscout.com/api/v2",
     },
   },
 });
