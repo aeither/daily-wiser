@@ -10,24 +10,7 @@ import Image from "next/image";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useAccount } from "wagmi";
-
-const fetchNFTs = async (address: string): Promise<NFTResponseType> => {
-  const baseUrl = "https://edu-chain-testnet.blockscout.com/api/v2";
-  const url = `${baseUrl}/addresses/${address}/nft?type=ERC-721%2CERC-404%2CERC-1155`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return (await response.json()) as NFTResponseType;
-};
+import { fetchNFTs } from "../actions/blockscout";
 
 export default function StudentProfile() {
   const { address, chain } = useAccount();
@@ -56,7 +39,8 @@ export default function StudentProfile() {
     queryFn: async () => {
       if (!address || !chainId) return { items: [], next_page_params: null };
       const contractAddresses = certificateContractAddresses[chainId] || [];
-      const response = await fetchNFTs(address);
+      const baseUrl = chain.blockExplorers?.default.url;
+      const response = await fetchNFTs(address, baseUrl!);
       return {
         ...response,
         items: response.items.filter(
