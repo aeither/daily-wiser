@@ -36,6 +36,7 @@ export function QuizEndCard() {
     quizEndscreen,
     showConfetti,
     quizId,
+    quizMetadata,
   } = useQuizStore();
 
   const [isShared, setIsShared] = useState(false);
@@ -76,7 +77,11 @@ export function QuizEndCard() {
     }
 
     if (chain?.id && address) {
-      adminMintCertificate({ chainId: chain.id, userAddress: address });
+      adminMintCertificate({
+        chainId: chain.id,
+        userAddress: address,
+        tokenURI: quizMetadata, // Use quizMetadata as tokenURI
+      });
     } else {
       console.error("Chain ID or address is not defined.");
     }

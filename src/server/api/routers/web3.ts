@@ -48,10 +48,11 @@ export const web3Router = createTRPCRouter({
       z.object({
         chainId: z.number(),
         userAddress: z.string(),
+        tokenURI: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { chainId, userAddress } = input;
+      const { chainId, userAddress, tokenURI } = input;
 
       try {
         const ADMIN_PRIVATE_KEY = getAdminPrivateKey();
@@ -74,14 +75,16 @@ export const web3Router = createTRPCRouter({
           xpToAdd: GENERATE_CERTIFICATE_COST,
         });
 
-        // Deploy NFT contract using factory
-        const tokenURI =
+        // Use provided tokenURI or default if not provided
+        const finalTokenURI =
+          tokenURI ||
           "https://gateway.irys.xyz/FFyoky1LPR8Q3cFNFu2vN5CaywHFrKRVpZSEZDNeFejQ";
+
         const mintNFTReceiptHash = await walletClient.writeContract({
           address: certificateContractAddresses[chainId],
           abi: CERTIFICATE_CONTRACT_ABI,
           functionName: "mintNFT",
-          args: [userAddress, tokenURI],
+          args: [userAddress, finalTokenURI],
         });
 
         const mintNFTReceipt = await waitForTransactionReceipt(walletClient, {
