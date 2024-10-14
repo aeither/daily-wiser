@@ -193,7 +193,8 @@ export function QuizEndCard() {
                   <Link
                     href={txLink}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
+                    // noreferrer so target know
                     className="text-blue-500 hover:underline"
                   >
                     View transaction
