@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useQuizStore } from "@/store/quizStore";
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 const getRandomPhrase = (isCorrect: boolean): string => {
   const correctPhrases = [
@@ -43,6 +43,7 @@ export function QuizCard() {
   const [localIsCorrectAnswer, setLocalIsCorrectAnswer] =
     useState<boolean>(false);
 
+  const media = quizData[currentSlide]?.media || "";
   const content = quizData[currentSlide]?.content || "";
   const options = quizData[currentSlide]?.options || [];
   const correctAnswer = quizData[currentSlide]?.correctAnswer || "";
@@ -60,6 +61,16 @@ export function QuizCard() {
     updateFeedbackPhrase(isCorrect);
   }, [selectedAnswer, correctAnswer, storeSubmitAnswer, updateFeedbackPhrase]);
 
+  // Function to render content with line breaks
+  const renderContent = (text: string) => {
+    return text.split("\n").map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < text.split("\n").length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
+
   return (
     <Card className="w-full flex flex-col max-w-2xl">
       <CardHeader>
@@ -68,11 +79,16 @@ export function QuizCard() {
           <p className="text-center mt-2">{timeLeft} seconds left</p>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-grow flex-col h-auto justify-between p-4 sm:p-6">
+      <CardContent className="flex flex-grow flex-col h-auto justify-between p-4 sm:p-6 overflow-y-scroll">
         <div className="flex flex-col justify-between mb-6">
-          <h2 className="text-lg sm:text-xl font-bold mb-4">
-            {currentSlide + 1}. {content}
+          <h2 className="text-md sm:text-xl mb-4">
+            {currentSlide + 1}. {renderContent(content)}
           </h2>
+          {media && (
+            <div className="mb-4 w-full h-48 sm:h-64 relative">
+              <img src={media} alt="Quiz media" />
+            </div>
+          )}
           {options.length > 0 && (
             <div className="space-y-2">
               {options.map((option, index) => (
@@ -97,7 +113,7 @@ export function QuizCard() {
                   onClick={() => setSelectedAnswer(option)}
                   disabled={answerSubmitted && localIsCorrectAnswer}
                 >
-                  {option}
+                  {renderContent(option)}
                 </Button>
               ))}
             </div>

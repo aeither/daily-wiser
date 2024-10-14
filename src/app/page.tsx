@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { openCampusCodex } from "@/config";
-import { MessageCircle, Sparkles } from "lucide-react";
+import { MessageCircle, Rocket, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useChainId } from "wagmi";
@@ -69,7 +69,7 @@ export default function HomePage() {
           </div>
           <Sparkles className="text-yellow-300 h-5 w-5" />
         </Link>
-        {/* <Card className="p-4 shadow-lg rounded-xl">
+        <Card className="p-4 shadow-lg rounded-xl">
           <h2 className="text-xl font-semibold mb-2 text-purple-700">
             Onboard Quiz
           </h2>
@@ -84,7 +84,7 @@ export default function HomePage() {
             <Rocket className="mr-2 h-4 w-4" />
             Let's go
           </Button>
-        </Card> */}
+        </Card>
         <Card className="p-4 shadow-lg rounded-xl">
           <h2 className="text-xl font-semibold mb-2 text-purple-700">Quiz</h2>
           <p className="text-gray-600 mb-4">Challenge yourself with our quiz</p>

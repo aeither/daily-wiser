@@ -34,6 +34,70 @@ export const quizDatas: QuizData[] = [
    * Onboard Quiz
    */
   {
+    id: "S1T2R3E4-5A6M-7B8I-9L10-L11I12N13V14",
+    title: "Streambill - invoicing & real time payments",
+    description: "Explore how Streambill is reducing stress for freelancers",
+    category: "onboard",
+    image:
+      "https://gateway.pinata.cloud/ipfs/QmYAJSLsaNLWS3R7KXD5sQwzdWVGCcj25q36YaZWgpxBbD/logo_cropped.png",
+    metadata:
+      "https://gateway.pinata.cloud/ipfs/QmdLhBkHpeS3Y2rfxsbUeGe5hG4zpEi2qxqEBFbUXJgby9/0",
+    endscreen: "Thank you for learning about Streambill ! :)",
+    slides: [
+      {
+        type: "info",
+        content:
+          "In the ever-evolving world of freelancing and gig economy, managing payments and cash flow remains a significant challenge. Enter Streambill: your ultimate solution for secure, real-time payments and invoicing. Streambill's mission is to solve a big pain point for freelancers : unpredictable income. Unlike a traditional job, while freelancing you are not sure when you are going to get paid, or even IF you are going to get paid 🤔",
+        media: "https://www.streambill.xyz/With.png",
+      },
+      {
+        type: "quiz",
+        content:
+          "What's the pain point for freelancers that Streambill is aiming to solve ?",
+        options: [
+          "Having no clients",
+          "Promotion on social media",
+          "Unpredictable income",
+          "Competition",
+        ],
+        correctAnswer: "Unpredictable income",
+      },
+      {
+        type: "info",
+        content:
+          "Picture this:\n\n🙋‍♀️ Alice is a talented web developer.\n🙋‍♂️ Bob is a client in need of a new website.\nTheir story unfolds like this:\n\nBob reaches out to Alice for a website project.\nThey agree on terms, and Bob provides a 20% down payment.\nAlice begins work on the website.\nHalfway through the project, Bob vanishes without a trace.\nThe result? Alice potentially loses 30% of the project's value. This scenario is precisely why we built Streambill.\n\nLet's reimagine this situation with Streambill in play:\n\nAlice sends an invoice with a due date matching the contract duration (1 month).\nBob initiates a stream, setting up payments to flow continuously over the month.\nAlice begins work on the project, confident in the payment structure.\nIf Bob disappears halfway through, Alice can still withdraw 50% of the money - exactly matching her work completed.",
+      },
+      {
+        type: "quiz",
+        content:
+          "When using Streambill, what happens if your client disappears halfway through the project?",
+        options: [
+          "You stress about your income",
+          "You can still withdraw 50% of the money",
+          "You start worrying what happens to your work now",
+          "Nothing",
+        ],
+        correctAnswer: "You can still withdraw 50% of the money",
+      },
+      {
+        type: "info",
+        content:
+          "Streambill is an innovative invoicing and real-time payments application designed for freelancers, gig workers, and their clients. Powered by Sablier's streaming protocol and Request Network's invoicing infrastructure, Streambill offers a comprehensive suite of features:\n\n-Send and manage invoices\n-Stream money in real-time\n-Track payment completion\n-Withdraw funds as work progresses",
+      },
+      {
+        type: "quiz",
+        content: "What are some of the features that Streambill can offer?",
+        options: [
+          "Manage invoices, stream money in real time",
+          "Multichain swaps",
+          "Mint NFTs",
+          "Trade tokens",
+        ],
+        correctAnswer: "Manage invoices, stream money in real time",
+      },
+    ],
+  },
+  {
     id: "B1B2C3D4-5F6F-7G8H-9I10-J22K12L16M14",
     title: "Daily Wiser: Micro-Learning",
     description:
