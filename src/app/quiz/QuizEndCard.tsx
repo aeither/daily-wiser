@@ -193,7 +193,7 @@ export function QuizEndCard() {
                   <Link
                     href={txLink}
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener nofollow"
                     // noreferrer so target know
                     className="text-blue-500 hover:underline"
                   >
