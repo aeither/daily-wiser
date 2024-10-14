@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
 import { useAdminMintCertificate } from "@/hooks/use-mint-certificate";
+import { linkify } from "@/lib/utils";
 import { useQuizStore } from "@/store/quizStore";
 import { apiReact } from "@/trpc/react";
 import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
@@ -147,7 +148,9 @@ export function QuizEndCard() {
                 correct.
               </p>
               {quizEndscreen ? (
-                <p className="mb-4 text-lg font-semibold">{quizEndscreen}</p>
+                <p className="mb-4 text-lg font-semibold">
+                  {linkify(quizEndscreen)}
+                </p>
               ) : (
                 <p className="mb-4">
                   Congratulations! You answered all questions correctly!

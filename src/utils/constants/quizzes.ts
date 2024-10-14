@@ -42,7 +42,8 @@ export const quizDatas: QuizData[] = [
       "https://gateway.pinata.cloud/ipfs/QmYAJSLsaNLWS3R7KXD5sQwzdWVGCcj25q36YaZWgpxBbD/logo_cropped.png",
     metadata:
       "https://gateway.pinata.cloud/ipfs/QmdLhBkHpeS3Y2rfxsbUeGe5hG4zpEi2qxqEBFbUXJgby9/0",
-    endscreen: "Thank you for learning about Streambill ! :)",
+    endscreen:
+      "Thank you for learning about Streambill ! :). Visit https://www.streambill.xyz/",
     slides: [
       {
         type: "info",
