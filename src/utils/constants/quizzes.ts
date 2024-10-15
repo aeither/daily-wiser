@@ -169,6 +169,106 @@ export const quizDatas: QuizData[] = [
    * Normal Quiz
    */
   {
+    id: "S1O2L3A4-5N6A7-8Q9U10-I11Z-12A13N14A15T16O17L18Y",
+    title: "Anatoly Yakovenko and Solana",
+    description:
+      "Explore the journey of Anatoly Yakovenko and the innovative features of the Solana blockchain.",
+    category: "technology",
+    image:
+      "https://gateway.pinata.cloud/ipfs/QmVujmTpd5nS9tzg3fah4XGbPciEHFzuYu7J2yDXiARRew/AnatolyYakovenkocrypto.webp",
+    metadata:
+      "https://gateway.pinata.cloud/ipfs/QmcFLaBTaAr6ngKsb1cvn2wqA3WyThQQRR15QReVgd67A6/0",
+    endscreen:
+      "Congratulations on completing this quiz about Anatoly Yakovenko and Solana! You've learned about the innovative approach to blockchain scalability and the vision behind one of the fastest blockchains in the world. Keep exploring the exciting world of blockchain technology!",
+    slides: [
+      {
+        type: "info",
+        content:
+          "Anatoly Yakovenko is the CEO and Co-founder of Solana, a high-performance blockchain platform. Before Solana, he worked on operating systems at Qualcomm, distributed systems at Mesosphere, and compression at Dropbox.",
+      },
+      {
+        type: "quiz",
+        content: "What was Anatoly Yakovenko's role before founding Solana?",
+        options: [
+          "CEO of a major tech company",
+          "Working on operating systems at Qualcomm",
+          "Developing social media platforms",
+          "Teaching computer science at a university",
+        ],
+        correctAnswer: "Working on operating systems at Qualcomm",
+      },
+      {
+        type: "info",
+        content:
+          "Yakovenko and his team created a new consensus algorithm called Proof of History (PoH) for Solana. With the implementation of PoH, the Solana blockchain can handle up to 50,000 transactions per second, making it one of the fastest blockchains globally.",
+      },
+      {
+        type: "quiz",
+        content:
+          "What innovative consensus algorithm did Yakovenko and his team create for Solana?",
+        options: [
+          "Proof of Stake",
+          "Proof of Work",
+          "Proof of History",
+          "Proof of Authority",
+        ],
+        correctAnswer: "Proof of History",
+      },
+      {
+        type: "info",
+        content:
+          "Yakovenko's experience at Qualcomm with cellular networks inspired him to apply similar optimizations to blockchain technology. The idea for Solana was inspired by a concept known as time division multiple access, which is related to how cellular towers alternate transmissions based on specific time intervals.",
+      },
+      {
+        type: "quiz",
+        content:
+          "What technology from Yakovenko's past experience inspired Solana's design?",
+        options: [
+          "Social media algorithms",
+          "Cellular network optimizations",
+          "Video game rendering",
+          "E-commerce platforms",
+        ],
+        correctAnswer: "Cellular network optimizations",
+      },
+      {
+        type: "info",
+        content:
+          "Yakovenko aspires for Solana to set a standard for all financial data worldwide and eradicate inefficiencies in the market. He envisions a future where state transitions in the blockchain travel at the same speed as news, eliminating arbitrage opportunities.",
+      },
+      {
+        type: "quiz",
+        content:
+          "What is Yakovenko's vision for Solana in relation to global financial data?",
+        options: [
+          "To replace traditional stock exchanges",
+          "To create a new cryptocurrency",
+          "To set a standard for all financial data worldwide",
+          "To eliminate all forms of digital currency",
+        ],
+        correctAnswer: "To set a standard for all financial data worldwide",
+      },
+      {
+        type: "info",
+        content:
+          "On the topic of Solana vs Ethereum, Yakovenko denounces the 'ETH killer' narrative as 'lame.' He doesn't anticipate a future where Solana thrives while Ethereum dies. Instead, he points to technology upgrades that could enhance interoperability between the two platforms.",
+      },
+      {
+        type: "quiz",
+        content:
+          "What is Yakovenko's stance on the relationship between Solana and Ethereum?",
+        options: [
+          "Solana will replace Ethereum",
+          "Ethereum and Solana cannot coexist",
+          "Interoperability between the two platforms is beneficial",
+          "Ethereum is superior to Solana",
+        ],
+        correctAnswer:
+          "Interoperability between the two platforms is beneficial",
+      },
+    ],
+  },
+  {
     id: "A1B2C3D4-5E6F-7G8H-9I10-J11K12L13M14",
     title: "Developing a Growth Mindset",
     description:
