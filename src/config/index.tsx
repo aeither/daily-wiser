@@ -119,3 +119,12 @@ export const feedbackContractAddresses: { [key: string]: `0x${string}` } = {
   [neoX.id]: "0xA2DD26D1e1b87975692ab9efdD84177BC16fcA98",
   [arbitrumSepolia.id]: "0xf9E1498d9bA116f1Ca29282cdC001d61474f5f20",
 };
+
+export const dailywiserTokenContractAddresses: {
+  [key: string]: `0x${string}`;
+} = {
+  [openCampusCodex.id]: "0x0x8760bE217dafe9812d7C44914D90AdB4D4A23985",
+  [morphHolesky.id]: "0x9F60d44631027Da12A2b3897641464dB56482626",
+  [neoX.id]: "0x",
+  [arbitrumSepolia.id]: "0x",
+};
