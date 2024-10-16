@@ -19,22 +19,27 @@ import { useMintDailywiserToken } from "@/hooks/use-convert-token";
 import { apiReact } from "@/trpc/react";
 import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 
-export default function SwapPage() {
+export default function TokenCreditSwapPage() {
   const [amount, setAmount] = useState<string>("");
-  const [isSwappingToTokens, setIsSwappingToTokens] = useState<boolean>(true);
-  const [creditsBalance, setCreditsBalance] = useState<number>(1000);
+  const [isConvertingToCredits, setIsConvertingToCredits] =
+    useState<boolean>(true);
 
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const utils = apiReact.useUtils();
 
   const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
 
+  const { data: user, refetch: refetchUser } = apiReact.user.getUser.useQuery(
+    { address: address as string },
+    { enabled: !!address }
+  );
+
   const {
     data: contractData,
     isError,
     isLoading,
-    refetch,
+    refetch: refetchTokenBalance,
   } = useReadContracts({
     contracts: [
       {
@@ -46,7 +51,7 @@ export default function SwapPage() {
     ],
   });
 
-  const spendCreditsAction = apiReact.user.spendCredits.useMutation({
+  const convertCreditsToTokens = apiReact.user.spendCredits.useMutation({
     onSuccess(data, variables, context) {
       mintTokens(
         {
@@ -56,16 +61,17 @@ export default function SwapPage() {
         },
         {
           onSuccess: () => {
-            refetch();
+            refetchTokenBalance();
+            refetchUser();
             toast({
               title: "Success",
-              description: `${amount} tokens minted successfully!`,
+              description: `${amount} DailyWiser tokens minted successfully!`,
             });
           },
           onError: (error) => {
             toast({
               title: "Error",
-              description: `Failed to mint tokens: ${error.message}`,
+              description: `Failed to mint DailyWiser tokens: ${error.message}`,
               variant: "destructive",
             });
           },
@@ -81,14 +87,16 @@ export default function SwapPage() {
     },
   });
 
-  const { mutate: burnEvent2Credits } =
+  const { mutate: convertTokensToCredits } =
     apiReact.user.burnEvent2Credits.useMutation({
       async onSuccess() {
         await utils.user.getUser.invalidate();
-        refetch();
+        refetchTokenBalance();
+        refetchUser();
         toast({
-          title: "Credits Purchased",
-          description: "Your credits have been successfully purchased.",
+          title: "Credits Received",
+          description:
+            "Your DailyWiser tokens have been successfully converted to credits.",
         });
       },
     });
@@ -106,12 +114,12 @@ export default function SwapPage() {
 
   useEffect(() => {
     if (isSuccess && receipt && hash && chainId) {
-      burnEvent2Credits({
+      convertTokensToCredits({
         txHash: hash,
         chainId: chainId,
       });
     }
-  }, [isSuccess, receipt, hash, burnEvent2Credits]);
+  }, [isSuccess, receipt, hash, convertTokensToCredits]);
 
   const tokenBalance = (() => {
     if (contractData && !isError && !isLoading) {
@@ -123,13 +131,7 @@ export default function SwapPage() {
     return "0";
   })();
 
-  const handleSwap = () => {
-    console.log(
-      `Swapping ${amount} ${isSwappingToTokens ? "credits to WISER" : "WISER to credits"}`
-    );
-  };
-
-  const handleMintTokens = async () => {
+  const handleConvert = async () => {
     if (!chainId || !address) {
       toast({
         title: "Error",
@@ -140,42 +142,31 @@ export default function SwapPage() {
       return;
     }
 
-    const data = await spendCreditsAction.mutateAsync({
-      address: address,
-      creditsToSpend: Number(amount),
-    });
-    console.log("🚀 ~ handleMintTokens ~ data:", data);
-  };
+    if (isConvertingToCredits) {
+      try {
+        await writeContract({
+          address: dailywiserTokenContractAddresses[chainId],
+          abi: DAILYWISER_TOKEN_CONTRACT_ABI,
+          functionName: "burn",
+          args: [parseUnits(amount, 0)],
+        });
 
-  const handleBurnTokens = async () => {
-    if (!chainId || !address) {
-      toast({
-        title: "Error",
-        description:
-          "Please connect your wallet and ensure you're on a supported network.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      await writeContract({
-        address: dailywiserTokenContractAddresses[chainId],
-        abi: DAILYWISER_TOKEN_CONTRACT_ABI,
-        functionName: "burn",
-        args: [parseUnits(amount, 0)],
-      });
-
-      refetch();
-      toast({
-        title: "Success",
-        description: `${amount} tokens burned successfully!`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: `Failed to burn tokens: ${(error as Error).message}`,
-        variant: "destructive",
+        refetchTokenBalance();
+        toast({
+          title: "Success",
+          description: `${amount} DailyWiser tokens converted to credits successfully!`,
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: `Failed to convert DailyWiser tokens to credits: ${(error as Error).message}`,
+          variant: "destructive",
+        });
+      }
+    } else {
+      await convertCreditsToTokens.mutateAsync({
+        address: address,
+        creditsToSpend: Number(amount),
       });
     }
   };
@@ -184,58 +175,49 @@ export default function SwapPage() {
     <div className="container mx-auto p-4">
       <Card className="max-w-md mx-auto">
         <CardHeader>
-          <CardTitle>Swap Credits and DailyWiser Tokens</CardTitle>
+          <CardTitle>Convert DailyWiser Tokens and Platform Credits</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
-              <span>Credits: {creditsBalance}</span>
               <span>
-                WISER Token: {isLoading ? "Loading..." : tokenBalance}
+                Platform Credits: {user?.totalCredits ?? "Loading..."}
+              </span>
+              <span>
+                DailyWiser Tokens: {isLoading ? "Loading..." : tokenBalance}
               </span>
             </div>
             <div className="flex items-center space-x-2">
               <Button
-                variant={isSwappingToTokens ? "default" : "outline"}
-                onClick={() => setIsSwappingToTokens(true)}
+                variant={isConvertingToCredits ? "default" : "outline"}
+                onClick={() => setIsConvertingToCredits(true)}
                 className="flex-1"
               >
-                Credits to WISER
+                Tokens to Credits
               </Button>
               <Button
-                variant={!isSwappingToTokens ? "default" : "outline"}
-                onClick={() => setIsSwappingToTokens(false)}
+                variant={!isConvertingToCredits ? "default" : "outline"}
+                onClick={() => setIsConvertingToCredits(false)}
                 className="flex-1"
               >
-                WISER to Credits
+                Credits to Tokens
               </Button>
             </div>
             <Input
               type="number"
-              placeholder={`Enter ${isSwappingToTokens ? "credits" : "WISER"} amount`}
+              placeholder={`Enter ${isConvertingToCredits ? "DailyWiser tokens" : "credits"} amount`}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <Button onClick={handleSwap} className="w-full">
-              Swap{" "}
-              {isSwappingToTokens ? "Credits to WISER" : "WISER to Credits"}
+            <Button
+              onClick={handleConvert}
+              className="w-full"
+              disabled={isMinting || isBurning || !amount || isWaiting}
+            >
+              {isMinting || isBurning || isWaiting
+                ? "Converting..."
+                : `Convert ${amount || "0"} ${isConvertingToCredits ? "Tokens to Credits" : "Credits to Tokens"}`}
             </Button>
-            <div className="flex space-x-2 mt-4">
-              <Button
-                onClick={handleMintTokens}
-                className="flex-1"
-                disabled={isMinting || !amount || isWaiting}
-              >
-                {isMinting ? "Minting..." : `Mint ${amount || "0"} Tokens`}
-              </Button>
-              <Button
-                onClick={handleBurnTokens}
-                className="flex-1"
-                disabled={isBurning || !amount}
-              >
-                {isBurning ? "Burning..." : `Burn ${amount || "0"} Tokens`}
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>
