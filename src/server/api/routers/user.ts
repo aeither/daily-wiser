@@ -1,4 +1,8 @@
-import { dailywiserTokenContractAddresses, getWagmiPublicClient, topUpContractAddresses } from "@/config";
+import {
+  dailywiserTokenContractAddresses,
+  getWagmiPublicClient,
+  topUpContractAddresses,
+} from "@/config";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db/drizzle";
 import {

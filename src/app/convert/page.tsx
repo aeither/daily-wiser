@@ -41,7 +41,40 @@ export default function SwapPage() {
       },
     ],
   });
-
+  const spendCreditsAction = apiReact.user.spendCredits.useMutation({
+    onSuccess(data, variables, context) {
+      mintTokens(
+        {
+          toAddress: address as string,
+          amount: Number(amount),
+          chainId: chainId,
+        },
+        {
+          onSuccess: () => {
+            refetch();
+            toast({
+              title: "Success",
+              description: `${amount} tokens minted successfully!`,
+            });
+          },
+          onError: (error) => {
+            toast({
+              title: "Error",
+              description: `Failed to mint tokens: ${error.message}`,
+              variant: "destructive",
+            });
+          },
+        }
+      );
+    },
+    onError(error, variables, context) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong :(",
+        description: error.message,
+      });
+    },
+  });
   const { mutate: burnEvent2Credits } =
     apiReact.user.burnEvent2Credits.useMutation({
       async onSuccess() {
@@ -100,29 +133,11 @@ export default function SwapPage() {
       return;
     }
 
-    mintTokens(
-      {
-        toAddress: address,
-        amount: Number(amount),
-        chainId: chainId,
-      },
-      {
-        onSuccess: () => {
-          refetch();
-          toast({
-            title: "Success",
-            description: `${amount} tokens minted successfully!`,
-          });
-        },
-        onError: (error) => {
-          toast({
-            title: "Error",
-            description: `Failed to mint tokens: ${error.message}`,
-            variant: "destructive",
-          });
-        },
-      }
-    );
+    const data = await spendCreditsAction.mutateAsync({
+      address: address,
+      creditsToSpend: Number(amount),
+    });
+    console.log("🚀 ~ handleMintTokens ~ data:", data);
   };
 
   const handleBurnTokens = async () => {
