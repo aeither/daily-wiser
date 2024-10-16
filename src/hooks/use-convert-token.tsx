@@ -9,8 +9,8 @@ export function useMintDailywiserToken() {
   const utils = apiReact.useUtils();
 
   return apiReact.web3.mintDailywiserToken.useMutation({
-    onSuccess(data, variables, context) {
-      if (data.status === "success") {
+    onSuccess(data) {
+      if (data.hash) {
         utils.user.getUser.invalidate();
 
         toast({
@@ -18,17 +18,12 @@ export function useMintDailywiserToken() {
           description: "Dailywiser tokens have been successfully minted.",
           action: (
             <ToastAction
-              onClick={() => {
-                // You might want to add a way to view the transaction if possible
-                // For now, we'll just show a success message
-                toast({
-                  title: "Success",
-                  description: "Tokens minted successfully.",
-                });
-              }}
-              altText={"View Details"}
+              onClick={() =>
+                window.open(`${baseUrl}/tx/${data.hash}`, "_blank")
+              }
+              altText="View Transaction"
             >
-              View Details
+              View Transaction
             </ToastAction>
           ),
         });
@@ -49,8 +44,8 @@ export function useBurnDailywiserToken() {
   const utils = apiReact.useUtils();
 
   return apiReact.web3.burnDailywiserToken.useMutation({
-    onSuccess(data, variables, context) {
-      if (data.status === "success") {
+    onSuccess(data) {
+      if (data.hash) {
         utils.user.getUser.invalidate();
 
         toast({
@@ -58,17 +53,12 @@ export function useBurnDailywiserToken() {
           description: "Dailywiser tokens have been successfully burned.",
           action: (
             <ToastAction
-              onClick={() => {
-                // You might want to add a way to view the transaction if possible
-                // For now, we'll just show a success message
-                toast({
-                  title: "Success",
-                  description: "Tokens burned successfully.",
-                });
-              }}
-              altText={"View Details"}
+              onClick={() =>
+                window.open(`${baseUrl}/tx/${data.hash}`, "_blank")
+              }
+              altText="View Transaction"
             >
-              View Details
+              View Transaction
             </ToastAction>
           ),
         });

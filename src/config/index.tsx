@@ -123,7 +123,7 @@ export const feedbackContractAddresses: { [key: string]: `0x${string}` } = {
 export const dailywiserTokenContractAddresses: {
   [key: string]: `0x${string}`;
 } = {
-  [openCampusCodex.id]: "0x0x8760bE217dafe9812d7C44914D90AdB4D4A23985",
+  [openCampusCodex.id]: "0x8760bE217dafe9812d7C44914D90AdB4D4A23985",
   [morphHolesky.id]: "0x9F60d44631027Da12A2b3897641464dB56482626",
   [neoX.id]: "0x",
   [arbitrumSepolia.id]: "0x",

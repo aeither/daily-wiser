@@ -185,14 +185,18 @@ export const web3Router = createTRPCRouter({
         });
 
         // Mint ERC20 tokens
-        await walletClient.writeContract({
+        const mintReceiptHash = await walletClient.writeContract({
           address: dailywiserTokenContractAddresses[chainId],
           abi: DAILYWISER_TOKEN_CONTRACT_ABI,
           functionName: "mint",
-          args: [toAddress, amount],
+          args: [toAddress as `0x${string}`, BigInt(amount)],
         });
 
-        return { status: "success", message: "Tokens minted successfully." };
+        const mintReceipt = await waitForTransactionReceipt(walletClient, {
+          hash: mintReceiptHash,
+        });
+
+        return { hash: mintReceipt.transactionHash };
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
@@ -222,14 +226,18 @@ export const web3Router = createTRPCRouter({
         });
 
         // Burn ERC20 tokens
-        await walletClient.writeContract({
+        const burnReceiptHash = await walletClient.writeContract({
           address: dailywiserTokenContractAddresses[chainId],
           abi: DAILYWISER_TOKEN_CONTRACT_ABI,
           functionName: "burn",
-          args: [amount],
+          args: [BigInt(amount)],
         });
 
-        return { status: "success", message: "Tokens burned successfully." };
+        const burnReceipt = await waitForTransactionReceipt(walletClient, {
+          hash: burnReceiptHash,
+        });
+
+        return { hash: burnReceipt.transactionHash };
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";

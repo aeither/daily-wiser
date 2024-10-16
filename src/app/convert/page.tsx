@@ -1,27 +1,52 @@
-// src/app/page.tsx
-
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { dailywiserTokenContractAddresses } from "@/config";
 import {
   useBurnDailywiserToken,
   useMintDailywiserToken,
 } from "@/hooks/use-convert-token";
+import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 import { useState } from "react";
-import { useAccount } from "wagmi";
+import { formatUnits } from "viem";
+import { useAccount, useReadContracts } from "wagmi";
 
 export default function SwapPage() {
   const [amount, setAmount] = useState<string>("");
   const [isSwappingToTokens, setIsSwappingToTokens] = useState<boolean>(true);
   const [creditsBalance, setCreditsBalance] = useState<number>(1000);
-  const [tokenBalance, setTokenBalance] = useState<number>(500);
-  const { address } = useAccount();
-  const { chain } = useAccount();
+  const { address, chain } = useAccount();
   const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
   const { mutate: burnTokens, isPending: isBurning } = useBurnDailywiserToken();
+
+  const {
+    data: contractData,
+    isError,
+    isLoading,
+    refetch,
+  } = useReadContracts({
+    contracts: [
+      {
+        address: dailywiserTokenContractAddresses[chain!.id],
+        abi: DAILYWISER_TOKEN_CONTRACT_ABI,
+        functionName: "balanceOf",
+        args: [address!],
+      },
+    ],
+  });
+
+  const tokenBalance = (() => {
+    if (contractData && !isError && !isLoading) {
+      const [balanceData] = contractData;
+      if (balanceData?.result) {
+        return formatUnits(balanceData.result, 0);
+      }
+    }
+    return "0";
+  })();
 
   const handleSwap = () => {
     console.log(
@@ -42,13 +67,13 @@ export default function SwapPage() {
 
     mintTokens(
       {
-        toAddress: address as `0x${string}`, // Replace with the address to receive the tokens
+        toAddress: address as `0x${string}`,
         amount: 100,
         chainId: chain.id,
       },
       {
         onSuccess: () => {
-          setTokenBalance((prev) => prev + 100);
+          refetch();
         },
       }
     );
@@ -72,7 +97,7 @@ export default function SwapPage() {
       },
       {
         onSuccess: () => {
-          setTokenBalance((prev) => Math.max(0, prev - 50));
+          refetch();
         },
       }
     );
@@ -88,7 +113,7 @@ export default function SwapPage() {
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
               <span>Credits: {creditsBalance}</span>
-              <span>DWT: {tokenBalance}</span>
+              <span>DWT: {isLoading ? "Loading..." : tokenBalance}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -116,7 +141,6 @@ export default function SwapPage() {
               Swap {isSwappingToTokens ? "Credits to DWT" : "DWT to Credits"}
             </Button>
 
-            {/* Test buttons for minting and burning tokens */}
             <div className="flex space-x-2 mt-4">
               <Button
                 onClick={handleMintTokens}
