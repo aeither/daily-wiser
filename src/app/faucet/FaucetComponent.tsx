@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge"; // Make sure to import the Badge component
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { useMintDailywiserToken } from "@/hooks/use-convert-token";
 import { apiReact } from "@/trpc/react";
 import { ToastAction } from "@radix-ui/react-toast";
 import { useEffect, useState } from "react";
@@ -24,6 +26,7 @@ export default function FaucetComponent() {
   const { address, isConnected, chain } = useAccount();
   const claimMutation = apiReact.web3.claimFaucetToken.useMutation();
   const baseUrl = chain?.blockExplorers?.default.url;
+  const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
 
   // Prove human states
   const [captchaAnswer, setCaptchaAnswer] = useState("");
@@ -69,10 +72,17 @@ export default function FaucetComponent() {
         chainId: chain.id,
         userAddress: address,
       });
+
+      // Mint 25 WISE Tokens
+      mintTokens({
+        toAddress: address,
+        amount: Number(25),
+        chainId: chain.id,
+      });
       console.log("Claim successful:", result.hash);
       toast({
         title: "Claim Successful",
-        description: "Successfully claimed 0.001 EDU!",
+        description: "Successfully claimed 0.001 EDU and 25 WISER tokens!",
         action: (
           <ToastAction
             onClick={() =>
@@ -112,16 +122,21 @@ export default function FaucetComponent() {
     if (isClaiming) return "Claiming...";
     if (claimStatus === "success") return "Claimed Successfully";
     if (claimStatus === "failed") return "Claim Failed";
-    return "Claim 0.001 EDU";
+    return "Claim 0.001 EDU + 25 WISER";
   };
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Claim Your Daily EDU</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>Claim Your Daily Tokens</CardTitle>
+          <Badge variant="secondary" className="ml-2">
+            Now get 25 WISER tokens!
+          </Badge>
+        </div>
         <CardDescription>
-          Connect your wallet and verify you're human to claim 0.001 EDU tokens
-          once per day.
+          Connect your wallet and verify you're human to claim 0.001 EDU and 25
+          WISER tokens once per day.
         </CardDescription>
       </CardHeader>
       <CardContent>

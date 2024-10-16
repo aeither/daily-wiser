@@ -20,7 +20,7 @@ import { apiReact } from "@/trpc/react";
 import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 
 export default function ConvertToken() {
-  const [amount, setAmount] = useState<string>("");
+  const [amount, setAmount] = useState(10);
   const [isConvertingToCredits, setIsConvertingToCredits] =
     useState<boolean>(true);
 
@@ -177,7 +177,7 @@ export default function ConvertToken() {
           address: dailywiserTokenContractAddresses[chainId],
           abi: DAILYWISER_TOKEN_CONTRACT_ABI,
           functionName: "burn",
-          args: [parseUnits(amount, 0)],
+          args: [parseUnits(amount.toString(), 0)],
         });
 
         refetchTokenBalance();
@@ -236,7 +236,7 @@ export default function ConvertToken() {
               type="number"
               placeholder={`Enter ${isConvertingToCredits ? "DailyWiser tokens" : "credits"} amount`}
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => setAmount(Number(e.target.value))}
             />
             <Button
               onClick={handleConvert}
