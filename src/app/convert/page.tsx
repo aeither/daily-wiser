@@ -1,13 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
-import { dailywiserTokenContractAddresses } from "@/config";
-import { useMintDailywiserToken } from "@/hooks/use-convert-token";
-import { apiReact } from "@/trpc/react";
-import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import {
@@ -18,14 +10,26 @@ import {
   useWriteContract,
 } from "wagmi";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import { dailywiserTokenContractAddresses } from "@/config";
+import { useMintDailywiserToken } from "@/hooks/use-convert-token";
+import { apiReact } from "@/trpc/react";
+import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
+
 export default function SwapPage() {
   const [amount, setAmount] = useState<string>("");
   const [isSwappingToTokens, setIsSwappingToTokens] = useState<boolean>(true);
   const [creditsBalance, setCreditsBalance] = useState<number>(1000);
+
   const { address } = useAccount();
   const chainId = useChainId();
-  const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
   const utils = apiReact.useUtils();
+
+  const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
+
   const {
     data: contractData,
     isError,
@@ -41,6 +45,7 @@ export default function SwapPage() {
       },
     ],
   });
+
   const spendCreditsAction = apiReact.user.spendCredits.useMutation({
     onSuccess(data, variables, context) {
       mintTokens(
@@ -75,6 +80,7 @@ export default function SwapPage() {
       });
     },
   });
+
   const { mutate: burnEvent2Credits } =
     apiReact.user.burnEvent2Credits.useMutation({
       async onSuccess() {
@@ -86,6 +92,7 @@ export default function SwapPage() {
         });
       },
     });
+
   const {
     writeContract,
     isPending: isBurning,
@@ -213,7 +220,6 @@ export default function SwapPage() {
               Swap{" "}
               {isSwappingToTokens ? "Credits to WISER" : "WISER to Credits"}
             </Button>
-
             <div className="flex space-x-2 mt-4">
               <Button
                 onClick={handleMintTokens}
