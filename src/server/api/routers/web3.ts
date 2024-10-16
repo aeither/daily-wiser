@@ -1,7 +1,12 @@
-import { certificateContractAddresses, getChainById } from "@/config";
+import {
+  certificateContractAddresses,
+  dailywiserTokenContractAddresses,
+  getChainById,
+} from "@/config";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { GENERATE_CERTIFICATE_COST } from "@/utils/constants";
 import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
+import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 import { TRPCError } from "@trpc/server";
 import { Redis } from "@upstash/redis";
 import { createWalletClient, http, parseEther } from "viem";
@@ -155,6 +160,82 @@ export const web3Router = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: `Failed to claim faucet token: ${errorMessage}`,
+        });
+      }
+    }),
+
+  mintDailywiserToken: publicProcedure
+    .input(
+      z.object({
+        toAddress: z.string(),
+        amount: z.number(),
+        chainId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { toAddress, amount, chainId } = input;
+      try {
+        const ADMIN_PRIVATE_KEY = getAdminPrivateKey();
+        const adminAccount = privateKeyToAccount(ADMIN_PRIVATE_KEY);
+
+        const walletClient = createWalletClient({
+          account: adminAccount,
+          chain: getChainById(chainId),
+          transport: http(),
+        });
+
+        // Mint ERC20 tokens
+        await walletClient.writeContract({
+          address: dailywiserTokenContractAddresses[chainId],
+          abi: DAILYWISER_TOKEN_CONTRACT_ABI,
+          functionName: "mint",
+          args: [toAddress, amount],
+        });
+
+        return { status: "success", message: "Tokens minted successfully." };
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to mint tokens: ${errorMessage}`,
+        });
+      }
+    }),
+
+  burnDailywiserToken: publicProcedure
+    .input(
+      z.object({
+        amount: z.number(),
+        chainId: z.number(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { amount, chainId } = input;
+      try {
+        const ADMIN_PRIVATE_KEY = getAdminPrivateKey();
+        const adminAccount = privateKeyToAccount(ADMIN_PRIVATE_KEY);
+        const walletClient = createWalletClient({
+          account: adminAccount,
+          chain: getChainById(chainId),
+          transport: http(),
+        });
+
+        // Burn ERC20 tokens
+        await walletClient.writeContract({
+          address: dailywiserTokenContractAddresses[chainId],
+          abi: DAILYWISER_TOKEN_CONTRACT_ABI,
+          functionName: "burn",
+          args: [amount],
+        });
+
+        return { status: "success", message: "Tokens burned successfully." };
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to burn tokens: ${errorMessage}`,
         });
       }
     }),
