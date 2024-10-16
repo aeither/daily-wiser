@@ -1,4 +1,4 @@
-import { getWagmiPublicClient, topUpContractAddresses } from "@/config";
+import { dailywiserTokenContractAddresses, getWagmiPublicClient, topUpContractAddresses } from "@/config";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db/drizzle";
 import {
@@ -98,6 +98,79 @@ export const userRouter = createTRPCRouter({
       } catch (error) {
         console.error("Error processing purchase:", error);
         throw new Error("Failed to process purchase");
+      }
+    }),
+
+  burnEvent2Credits: publicProcedure
+    .input(z.object({ txHash: z.string(), chainId: z.number() }))
+    .mutation(async ({ input }) => {
+      try {
+        const publicClient = getWagmiPublicClient(input.chainId);
+        const receipt = await publicClient?.waitForTransactionReceipt({
+          hash: input.txHash as `0x${string}`,
+        });
+        if (!receipt) {
+          throw new Error("Transaction receipt not found");
+        }
+
+        if (!receipt.to) {
+          throw new Error("Transaction 'to' address is undefined");
+        }
+
+        if (
+          receipt.to.toLowerCase() !==
+          dailywiserTokenContractAddresses[input.chainId].toLowerCase()
+        ) {
+          throw new Error("Invalid contract address");
+        }
+
+        if (receipt.logs.length === 0) {
+          throw new Error("No logs found in the transaction");
+        }
+
+        const eventAbi = parseAbiItem(
+          "event Transfer(address indexed from, address indexed to, uint256 value)"
+        );
+        const decodedLog = decodeEventLog({
+          abi: [eventAbi],
+          data: receipt.logs[0].data,
+          topics: receipt.logs[0].topics,
+        });
+
+        const userAddress = decodedLog.args.from.toString();
+        const burnAddress = decodedLog.args.to.toString();
+        const burnedAmount = BigInt(decodedLog.args.value);
+
+        // if (burnAddress.toLowerCase() !== BURN_ADDRESS.toLowerCase()) {
+        //   throw new Error("Invalid burn address");
+        // }
+
+        const creditsReceived = burnedAmount;
+
+        // await db.insert(tokenBurns).values({
+        //   userAddress,
+        //   txHash: input.txHash.toString(),
+        //   burnedAmount: burnedAmount.toString(),
+        //   creditsReceived: creditsReceived.toString(),
+        // });
+
+        await db
+          .update(users)
+          .set({
+            totalCredits: sql`${users.totalCredits} + ${creditsReceived}`,
+            lastActive: new Date(),
+          })
+          .where(eq(users.address, userAddress));
+
+        return {
+          userAddress,
+          burnedAmount: burnedAmount.toString(),
+          creditsReceived: creditsReceived.toString(),
+          message: "Burn event processed successfully",
+        };
+      } catch (error) {
+        console.error("Error processing burn event:", error);
+        throw new Error("Failed to process burn event");
       }
     }),
 

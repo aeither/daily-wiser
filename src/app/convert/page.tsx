@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { dailywiserTokenContractAddresses } from "@/config";
 import { useMintDailywiserToken } from "@/hooks/use-convert-token";
+import { apiReact } from "@/trpc/react";
 import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import {
   useAccount,
   useChainId,
   useReadContracts,
+  useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
 
@@ -23,8 +25,7 @@ export default function SwapPage() {
   const { address } = useAccount();
   const chainId = useChainId();
   const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
-  const { writeContract, isPending: isBurning } = useWriteContract();
-
+  const utils = apiReact.useUtils();
   const {
     data: contractData,
     isError,
@@ -40,6 +41,37 @@ export default function SwapPage() {
       },
     ],
   });
+
+  const { mutate: burnEvent2Credits } =
+    apiReact.user.burnEvent2Credits.useMutation({
+      async onSuccess() {
+        await utils.user.getUser.invalidate();
+        refetch();
+        toast({
+          title: "Credits Purchased",
+          description: "Your credits have been successfully purchased.",
+        });
+      },
+    });
+  const {
+    writeContract,
+    isPending: isBurning,
+    data: hash,
+  } = useWriteContract();
+  const {
+    data: receipt,
+    isSuccess,
+    isLoading: isWaiting,
+  } = useWaitForTransactionReceipt({ hash });
+
+  useEffect(() => {
+    if (isSuccess && receipt && hash && chainId) {
+      burnEvent2Credits({
+        txHash: hash,
+        chainId: chainId,
+      });
+    }
+  }, [isSuccess, receipt, hash, burnEvent2Credits]);
 
   const tokenBalance = (() => {
     if (contractData && !isError && !isLoading) {
@@ -136,7 +168,9 @@ export default function SwapPage() {
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
               <span>Credits: {creditsBalance}</span>
-              <span>WISER Token: {isLoading ? "Loading..." : tokenBalance}</span>
+              <span>
+                WISER Token: {isLoading ? "Loading..." : tokenBalance}
+              </span>
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -161,14 +195,15 @@ export default function SwapPage() {
               onChange={(e) => setAmount(e.target.value)}
             />
             <Button onClick={handleSwap} className="w-full">
-              Swap {isSwappingToTokens ? "Credits to WISER" : "WISER to Credits"}
+              Swap{" "}
+              {isSwappingToTokens ? "Credits to WISER" : "WISER to Credits"}
             </Button>
 
             <div className="flex space-x-2 mt-4">
               <Button
                 onClick={handleMintTokens}
                 className="flex-1"
-                disabled={isMinting || !amount}
+                disabled={isMinting || !amount || isWaiting}
               >
                 {isMinting ? "Minting..." : `Mint ${amount || "0"} Tokens`}
               </Button>
