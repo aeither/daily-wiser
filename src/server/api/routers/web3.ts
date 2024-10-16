@@ -206,47 +206,6 @@ export const web3Router = createTRPCRouter({
         });
       }
     }),
-
-  burnDailywiserToken: publicProcedure
-    .input(
-      z.object({
-        amount: z.number(),
-        chainId: z.number(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      const { amount, chainId } = input;
-      try {
-        const ADMIN_PRIVATE_KEY = getAdminPrivateKey();
-        const adminAccount = privateKeyToAccount(ADMIN_PRIVATE_KEY);
-        const walletClient = createWalletClient({
-          account: adminAccount,
-          chain: getChainById(chainId),
-          transport: http(),
-        });
-
-        // Burn ERC20 tokens
-        const burnReceiptHash = await walletClient.writeContract({
-          address: dailywiserTokenContractAddresses[chainId],
-          abi: DAILYWISER_TOKEN_CONTRACT_ABI,
-          functionName: "burn",
-          args: [BigInt(amount)],
-        });
-
-        const burnReceipt = await waitForTransactionReceipt(walletClient, {
-          hash: burnReceiptHash,
-        });
-
-        return { hash: burnReceipt.transactionHash };
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to burn tokens: ${errorMessage}`,
-        });
-      }
-    }),
 });
 
 export type Web3Router = typeof web3Router;

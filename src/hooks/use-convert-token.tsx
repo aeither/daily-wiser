@@ -37,38 +37,3 @@ export function useMintDailywiserToken() {
     },
   });
 }
-
-export function useBurnDailywiserToken() {
-  const { chain } = useAccount();
-  const baseUrl = chain?.blockExplorers?.default.url;
-  const utils = apiReact.useUtils();
-
-  return apiReact.web3.burnDailywiserToken.useMutation({
-    onSuccess(data) {
-      if (data.hash) {
-        utils.user.getUser.invalidate();
-
-        toast({
-          title: "Tokens Burned",
-          description: "Dailywiser tokens have been successfully burned.",
-          action: (
-            <ToastAction
-              onClick={() =>
-                window.open(`${baseUrl}/tx/${data.hash}`, "_blank")
-              }
-              altText="View Transaction"
-            >
-              View Transaction
-            </ToastAction>
-          ),
-        });
-      }
-    },
-    onError: (error) => {
-      toast({
-        title: "Burning Failed",
-        description: error.message,
-      });
-    },
-  });
-}
