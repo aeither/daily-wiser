@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import {
-  useAccount,
-  useChainId,
-  useReadContracts,
-  useWaitForTransactionReceipt,
-  useWriteContract,
+    useAccount,
+    useChainId,
+    useReadContracts,
+    useWaitForTransactionReceipt,
+    useWriteContract,
 } from "wagmi";
 
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { useMintDailywiserToken } from "@/hooks/use-convert-token";
 import { apiReact } from "@/trpc/react";
 import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 
-export default function TokenCreditSwapPage() {
+export default function ConvertToken() {
   const [amount, setAmount] = useState<string>("");
   const [isConvertingToCredits, setIsConvertingToCredits] =
     useState<boolean>(true);
@@ -131,6 +131,31 @@ export default function TokenCreditSwapPage() {
     return "0";
   })();
 
+  const checkSufficientBalance = () => {
+    const amountNumber = Number(amount);
+    if (isConvertingToCredits) {
+      if (amountNumber > Number(tokenBalance)) {
+        toast({
+          title: "Insufficient Tokens",
+          description:
+            "You don't have enough DailyWiser tokens for this conversion.",
+          variant: "destructive",
+        });
+        return false;
+      }
+    } else {
+      if (amountNumber > Number(user?.totalCredits ?? 0)) {
+        toast({
+          title: "Insufficient Credits",
+          description: "You don't have enough credits for this conversion.",
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleConvert = async () => {
     if (!chainId || !address) {
       toast({
@@ -139,6 +164,10 @@ export default function TokenCreditSwapPage() {
           "Please connect your wallet and ensure you're on a supported network.",
         variant: "destructive",
       });
+      return;
+    }
+
+    if (!checkSufficientBalance()) {
       return;
     }
 
