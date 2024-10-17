@@ -76,7 +76,7 @@ export default function FaucetComponent() {
       // Mint 25 WISE Tokens
       mintTokens({
         toAddress: address,
-        amount: Number(25),
+        amount: "25",
         chainId: chain.id,
       });
       console.log("Claim successful:", result.hash);
