@@ -77,6 +77,14 @@ export const userRouter = createTRPCRouter({
         const userAddress = decodedLog.args.user.toString();
         const ethPaid = String(decodedLog.args.ethPaid);
         const creditsReceived = Number(decodedLog.args.creditsReceived);
+        const MAX_BALANCE_LIMIT = 1_000_000_000;
+        if (
+          Number(users.totalCredits) + Number(creditsReceived) >
+          MAX_BALANCE_LIMIT
+        ) {
+          throw new Error("Max balance limit reached");
+        }
+
         await db.insert(creditPurchases).values({
           userAddress,
           txHash: input.txHash.toString(),
@@ -149,14 +157,21 @@ export const userRouter = createTRPCRouter({
         //   throw new Error("Invalid burn address");
         // }
 
-        const creditsReceived = formatUnits(burnedAmount, 18);
-
         // await db.insert(tokenBurns).values({
         //   userAddress,
         //   txHash: input.txHash.toString(),
         //   burnedAmount: burnedAmount.toString(),
         //   creditsReceived: creditsReceived.toString(),
         // });
+
+        const creditsReceived = formatUnits(burnedAmount, 18);
+        const MAX_BALANCE_LIMIT = 1_000_000_000;
+        if (
+          Number(users.totalCredits) + Number(creditsReceived) >
+          MAX_BALANCE_LIMIT
+        ) {
+          throw new Error("Max balance limit reached");
+        }
 
         await db
           .update(users)
