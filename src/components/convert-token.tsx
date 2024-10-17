@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import {
-    useAccount,
-    useChainId,
-    useReadContracts,
-    useWaitForTransactionReceipt,
-    useWriteContract,
+  useAccount,
+  useChainId,
+  useReadContracts,
+  useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ export default function ConvertToken() {
   const [isConvertingToCredits, setIsConvertingToCredits] =
     useState<boolean>(true);
 
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const chainId = useChainId();
   const utils = apiReact.useUtils();
 
