@@ -13,7 +13,7 @@ import {
 } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { decodeEventLog, parseAbiItem } from "viem";
+import { decodeEventLog, formatUnits, parseAbiItem } from "viem";
 import { z } from "zod";
 
 export const userRouter = createTRPCRouter({
@@ -149,7 +149,7 @@ export const userRouter = createTRPCRouter({
         //   throw new Error("Invalid burn address");
         // }
 
-        const creditsReceived = burnedAmount;
+        const creditsReceived = formatUnits(burnedAmount, 18);
 
         // await db.insert(tokenBurns).values({
         //   userAddress,

@@ -110,6 +110,7 @@ export function CreditPurchaseComponent() {
                   value={credits}
                   onChange={(e) => setCredits(Number(e.target.value))}
                   min="1"
+                  max={20000}
                   className="w-24 text-center"
                 />
                 <span>credits</span>

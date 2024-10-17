@@ -19,8 +19,16 @@ import { useMintDailywiserToken } from "@/hooks/use-convert-token";
 import { apiReact } from "@/trpc/react";
 import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 
+function formatTokenBalance(balance: string): string {
+  const num = Number.parseFloat(balance);
+  if (Number.isInteger(num)) {
+    return num.toString();
+  }
+  return num.toFixed(0);
+}
+
 export default function ConvertToken() {
-  const [amount, setAmount] = useState(10);
+  const [amount, setAmount] = useState<string>("20");
   const [isConvertingToCredits, setIsConvertingToCredits] =
     useState<boolean>(true);
 
@@ -56,7 +64,7 @@ export default function ConvertToken() {
       mintTokens(
         {
           toAddress: address as string,
-          amount: Number(amount),
+          amount: amount,
           chainId: chainId,
         },
         {
@@ -125,7 +133,7 @@ export default function ConvertToken() {
     if (contractData && !isError && !isLoading) {
       const [balanceData] = contractData;
       if (balanceData?.result) {
-        return formatUnits(balanceData.result, 0);
+        return formatTokenBalance(formatUnits(balanceData.result, 18));
       }
     }
     return "0";
@@ -177,7 +185,7 @@ export default function ConvertToken() {
           address: dailywiserTokenContractAddresses[chainId],
           abi: DAILYWISER_TOKEN_CONTRACT_ABI,
           functionName: "burn",
-          args: [parseUnits(amount.toString(), 0)],
+          args: [parseUnits(amount, 18)],
         });
 
         refetchTokenBalance();
@@ -236,7 +244,8 @@ export default function ConvertToken() {
               type="number"
               placeholder={`Enter ${isConvertingToCredits ? "DailyWiser tokens" : "credits"} amount`}
               value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
+              max={20000}
+              onChange={(e) => setAmount(e.target.value)}
             />
             <Button
               onClick={handleConvert}

@@ -9,7 +9,7 @@ import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
 import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 import { TRPCError } from "@trpc/server";
 import { Redis } from "@upstash/redis";
-import { createWalletClient, http, parseEther } from "viem";
+import { createWalletClient, http, parseEther, parseUnits } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { waitForTransactionReceipt } from "viem/actions";
 import { z } from "zod";
@@ -168,7 +168,7 @@ export const web3Router = createTRPCRouter({
     .input(
       z.object({
         toAddress: z.string(),
-        amount: z.number(),
+        amount: z.string(),
         chainId: z.number(),
       })
     )
@@ -189,7 +189,7 @@ export const web3Router = createTRPCRouter({
           address: dailywiserTokenContractAddresses[chainId],
           abi: DAILYWISER_TOKEN_CONTRACT_ABI,
           functionName: "mint",
-          args: [toAddress as `0x${string}`, BigInt(amount)],
+          args: [toAddress as `0x${string}`, parseUnits(amount, 18)],
         });
 
         const mintReceipt = await waitForTransactionReceipt(walletClient, {
