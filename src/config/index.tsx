@@ -128,3 +128,8 @@ export const dailywiserTokenContractAddresses: {
   [neoX.id]: "0x",
   [arbitrumSepolia.id]: "0x",
 };
+
+// Credits: 0xd74a7cc422443ed6606a953b5428305df23b1047;
+// Certificate: 0x1a6fc72588770c6fef0985525930f2337db4dcd8;
+// Feedback: 0xbd0e22ce639acbbb3ef3a1ab0b3a14724ad33505;
+// WISER token: 0x8760be217dafe9812d7c44914d90adb4d4a23985;
