@@ -56,7 +56,7 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold text-purple-800">DailyWiser</h1>
           <p className="text-purple-600">Micro-learning, macro impact!</p>
         </header>
-        {/* <ConditialOCIDComponent /> */}
+        <ConditialOCIDComponent />
         <Link
           href="https://twitter.com/intent/follow?screen_name=DailyWiser_"
           target="_blank"
