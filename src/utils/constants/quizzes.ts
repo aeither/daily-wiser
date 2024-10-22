@@ -169,6 +169,83 @@ export const quizDatas: QuizData[] = [
    * Normal Quiz
    */
   {
+    id: "B1L2O3C4-5K6C7-8H9A10-I11N-12T13E14C15H16",
+    title: "Understanding Blockchain Technology",
+    description:
+      "Explore the fundamental concepts and applications of blockchain technology.",
+    category: "technology",
+    endscreen:
+      "Congratulations on completing this quiz about blockchain technology! You've gained insights into the core concepts, applications, and potential of this revolutionary technology. Keep exploring and stay updated on the evolving world of blockchain!",
+    slides: [
+      {
+        type: "info",
+        content:
+          "Blockchain is a decentralized, distributed ledger technology that records transactions across many computers in a way that ensures security, transparency, and immutability.",
+      },
+      {
+        type: "quiz",
+        content: "What is a key characteristic of blockchain technology?",
+        options: [
+          "Centralized control",
+          "Easy modification of past records",
+          "Decentralized and distributed nature",
+          "Limited to financial transactions only",
+        ],
+        correctAnswer: "Decentralized and distributed nature",
+      },
+      {
+        type: "info",
+        content:
+          "Blockchain uses cryptography to secure transactions, control the creation of additional units, and verify the transfer of assets. Each block in the chain contains a cryptographic hash of the previous block, a timestamp, and transaction data.",
+      },
+      {
+        type: "quiz",
+        content: "What does each block in a blockchain contain?",
+        options: [
+          "Only transaction data",
+          "A cryptographic hash of the previous block, timestamp, and transaction data",
+          "Personal information of users",
+          "The entire history of all transactions",
+        ],
+        correctAnswer:
+          "A cryptographic hash of the previous block, timestamp, and transaction data",
+      },
+      {
+        type: "info",
+        content:
+          "While blockchain is most known for its role in cryptocurrencies like Bitcoin, it has potential applications in various sectors including supply chain management, healthcare, voting systems, and digital identity verification.",
+      },
+      {
+        type: "quiz",
+        content:
+          "Besides cryptocurrencies, in which sector can blockchain technology be applied?",
+        options: [
+          "Only in banking",
+          "Exclusively in social media",
+          "Supply chain management",
+          "Traditional print media",
+        ],
+        correctAnswer: "Supply chain management",
+      },
+      {
+        type: "info",
+        content:
+          "Smart contracts are self-executing contracts with the terms of the agreement directly written into code. They run on blockchain technology and automatically execute when predetermined conditions are met.",
+      },
+      {
+        type: "quiz",
+        content: "What are smart contracts in blockchain technology?",
+        options: [
+          "Legal documents signed electronically",
+          "Contracts that require human intervention to execute",
+          "Self-executing contracts with terms written in code",
+          "Agreements that can be easily modified after creation",
+        ],
+        correctAnswer: "Self-executing contracts with terms written in code",
+      },
+    ],
+  },
+  {
     id: "S1O2L3A4-5N6A7-8Q9U10-I11Z-12A13N14A15T16O17L18Y",
     title: "Anatoly Yakovenko and Solana",
     description:
