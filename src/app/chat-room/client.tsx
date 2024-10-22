@@ -18,10 +18,36 @@ import { CHAT_COST } from "@/utils/constants";
 
 export const maxDuration = 30;
 
+// Custom hook for chat scroll behavior
+function useChatScroll(dependency: any) {
+  const [autoScroll, setAutoScroll] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (autoScroll) {
+      scrollToBottom();
+    }
+  }, [dependency, autoScroll]);
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const atBottom = scrollHeight - scrollTop === clientHeight;
+      setAutoScroll(atBottom);
+    }
+  };
+
+  return { scrollRef, bottomRef, handleScroll };
+}
+
 export default function ChatClientPage() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const botId = useSearchParams().get("botId");
-  const { address } = useAccount();
   const utils = apiReact.useUtils();
   const { data: user } = apiReact.user.getUser.useQuery({
     address: address as string,
@@ -31,10 +57,6 @@ export default function ChatClientPage() {
     { enabled: !!botId }
   );
 
-  // const [sharesSubject, setSharesSubject] = useState("");
-  const [amount, setAmount] = useState("1");
-
-  const ref = useRef<HTMLDivElement>(null);
   const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
     useChat({
       initialMessages: [
@@ -55,22 +77,29 @@ export default function ChatClientPage() {
           const status = response.status;
           switch (status) {
             case 401:
-              // Handle unauthorized
+              toast({
+                title: "Unauthorized",
+                description: "Please log in to continue.",
+              });
               break;
             case 402:
-              // Handle insufficient credits
+              toast({
+                title: "Insufficient Credits",
+                description: "Please add more credits to continue.",
+              });
               break;
             default:
-              // Handle other errors
+              toast({
+                title: "Error",
+                description: "An unexpected error occurred. Please try again.",
+              });
               break;
           }
         }
       },
     });
 
-  useEffect(() => {
-    if (ref.current) ref.current.scrollTo(0, ref.current.scrollHeight);
-  }, [messages]);
+  const { scrollRef, bottomRef, handleScroll } = useChatScroll(messages);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -94,85 +123,86 @@ export default function ChatClientPage() {
   }
 
   return (
-    <>
-      <Suspense>
-        <div
-          className="mx-auto mt-3 w-full max-w-2xl bg-cover bg-center rounded-lg mx-2"
-          style={{ backgroundImage: `url(${publicBot?.imageUrl})` }}
-        >
-          <div className="bg-white bg-opacity-90 p-4 rounded-lg">
-            <h1 className="text-xl font-bold text-center mb-4">
-              {publicBot?.name}
-            </h1>
-            <ScrollArea
-              className="mb-2 h-[400px] rounded-md border p-4"
-              ref={ref}
-            >
-              {messages.map((m) => (
-                <div key={m.id} className="mr-6 whitespace-pre-wrap md:mr-12">
-                  {m.role === "user" && (
-                    <div className="mb-6 flex gap-3">
-                      <Avatar>
-                        <AvatarImage src="" />
-                        <AvatarFallback className="text-sm">U</AvatarFallback>
-                      </Avatar>
-                      <div className="mt-1.5">
-                        <p className="font-semibold">You</p>
-                        <div className="mt-1.5 text-sm text-zinc-700">
-                          {m.content}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {m.role === "assistant" && (
-                    <div className="mb-6 flex gap-3">
-                      <Avatar>
-                        <AvatarImage src={publicBot?.imageUrl ?? ""} />
-                        <AvatarFallback className="bg-emerald-500 text-white">
-                          {publicBot?.name?.charAt(0) || "AI"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="mt-1.5 w-full">
-                        <div className="flex justify-between">
-                          <p className="font-semibold">
-                            {publicBot?.name || "Bot"}
-                          </p>
-                          <CopyToClipboard message={m} className="-mt-1" />
-                        </div>
-                        <div className="mt-2 text-sm text-zinc-700">
-                          {m.content}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </ScrollArea>
-
-            <span>🪄 {CHAT_COST} credits</span>
-
-            <form onSubmit={onSubmit} className="relative">
-              <Input
-                name="message"
-                value={input}
-                onChange={handleInputChange}
-                placeholder="Ask me anything..."
-                className="pr-12 placeholder:italic placeholder:text-zinc-600/75 focus-visible:ring-zinc-500"
-              />
-              <Button
-                size="icon"
-                type="submit"
-                variant="secondary"
-                disabled={isLoading}
-                className="absolute right-1 top-1 h-8 w-10"
-              >
-                <SendHorizontalIcon className="h-5 w-5" />
-              </Button>
-            </form>
-          </div>
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center h-screen">
+          Loading...
         </div>
-      </Suspense>
-    </>
+      }
+    >
+      <div className="mx-auto mt-3 w-full max-w-2xl bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg shadow-lg p-4">
+        <div className="bg-white bg-opacity-90 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-4">
+            <Avatar className="w-12 h-12">
+              <AvatarImage src={publicBot?.imageUrl ?? ""} />
+              <AvatarFallback className="bg-emerald-500 text-white text-lg">
+                {publicBot?.name?.charAt(0) || "AI"}
+              </AvatarFallback>
+            </Avatar>
+            <h1 className="text-2xl font-bold text-center">
+              {publicBot?.name || "AI Assistant"}
+            </h1>
+          </div>
+          <ScrollArea
+            className="mb-4 h-[400px] rounded-md border p-4 bg-gray-50"
+            ref={scrollRef}
+            onScroll={handleScroll}
+          >
+            {messages.map((m) => (
+              <div
+                key={m.id}
+                className={`mb-4 flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[80%] rounded-lg p-3 ${m.role === "user" ? "bg-blue-100" : "bg-white border"}`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-semibold">
+                      {m.role === "user" ? "You" : publicBot?.name || "Bot"}
+                    </p>
+                    {m.role === "assistant" && (
+                      <CopyToClipboard
+                        message={m}
+                        className="text-gray-500 hover:text-gray-700"
+                      />
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                    {m.content}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div ref={bottomRef} />
+          </ScrollArea>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">
+              🪄 {CHAT_COST} credits per message
+            </span>
+            <span className="text-sm text-gray-600">
+              Available credits: {user?.totalCredits || 0}
+            </span>
+          </div>
+          <form onSubmit={onSubmit} className="relative">
+            <Input
+              name="message"
+              value={input}
+              onChange={handleInputChange}
+              placeholder="Ask me anything..."
+              className="pr-12 placeholder:italic placeholder:text-gray-400 focus-visible:ring-blue-500"
+            />
+            <Button
+              size="icon"
+              type="submit"
+              variant="secondary"
+              disabled={isLoading}
+              className="absolute right-1 top-1 h-8 w-10 bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              <SendHorizontalIcon className="h-5 w-5" />
+            </Button>
+          </form>
+        </div>
+      </div>
+    </Suspense>
   );
 }
