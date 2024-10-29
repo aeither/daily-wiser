@@ -56,9 +56,8 @@ Daily Wiser prioritizes an intuitive and seamless user experience:
 Daily Wiser pushes boundaries in blockchain-based education:
 
 1. **Micro-learning Revolution**: Combines AI personalization with blockchain verification for bite-sized, impactful learning experiences.
-2. **Skill Tokenization**: NFT badges on Neo X testnet provide tangible, verifiable proof of acquired knowledge.
-3. **Adaptive AI Curriculum**: Continuously evolving lesson plans based on individual and collective user data.
-4. **Gamified Blockchain Learning**: Seamlessly integrates game mechanics with blockchain technology to make learning both fun and verifiable.
+2. **Adaptive AI Curriculum**: Continuously evolving lesson plans based on individual and collective user data.
+3. **Gamified Blockchain Learning**: Seamlessly integrates game mechanics with blockchain technology to make learning both fun and verifiable.
 
 ## Key Features and Innovations
 
@@ -72,7 +71,6 @@ Daily Wiser leverages advanced AI to enhance the learning experience:
 Utilizing blockchain technology, Daily Wiser offers:
 - NFT Skill Badges as tangible, verifiable proof of accomplishments
 - Smart contracts deployed on multiple addresses for robust functionality
-  (0xd74a7CC422443ed6606a953B5428305Df23b1047, 0x56C66e07f669A04C21Fb376Ead3eFbAE4f9440AC, 0xA2DD26D1e1b87975692ab9efdD84177BC16fcA98)
 - A transparent, immutable record of educational achievements
 
 ### 3. Gamification for Engagement
