@@ -85,7 +85,7 @@ export const dapps: Dapp[] = [
     description:
       "Grasp is the premier educational content platform where educators and creators can share their work and earn on EDU Chain. Powered by Open Campus, the Grasp web3 platform integrates EduFi, enabling users to learn, earn, and be rewarded for academic excellence.",
     shortDescription: "Learn and earn content platform",
-    logo: "https://utfs.io/f/cFAm4yUevVynaUcs9B6JwnhZYG43NXskpA5FCQmtfBcOdoji",
+    logo: "https://utfs.io/f/cFAm4yUevVynNmDtysGtadin9pbHRJwheQ5V8su1qrXDL4EO",
     tags: ["Education", "Content", "EduFi"],
     website: "https://grasp.academy/",
   },
