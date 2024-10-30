@@ -83,7 +83,7 @@ export default function DappPage({ params }: Props) {
 
         {/* Description Section */}
         <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">About</h3>
+          <h3 className="text-xl font-semibold mb-4">What is {dapp.name}?</h3>
           <p className="text-gray-700 leading-relaxed">{dapp.description}</p>
         </div>
 
