@@ -1,5 +1,12 @@
 # Changelog
 
+## 2024-10-30
+
+- WISER Token
+- Tool List
+- Chat Fix
+- Minor Improvements
+
 ## 2024-10-06
 
 - Added Changelog
