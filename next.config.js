@@ -12,6 +12,7 @@ const nextConfig = {
       "gateway.pinata.cloud",
       "ipfs.io",
       "gateway.irys.xyz",
+      "utfs.io",
     ],
   },
   experimental: {

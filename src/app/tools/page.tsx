@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { dapps, tagColors } from "@/utils/constants/dapps";
 import { Github, Globe, Search, Twitter } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -78,13 +77,13 @@ export default function ImprovedProjectList() {
             <Link href={`/tools/${project.id}`} className="flex-grow">
               <CardHeader>
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                    <Image
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden">
+                    <img
                       src={project.logo}
                       alt={`${project.name} logo`}
                       width={48}
                       height={48}
-                      className="object-contain"
+                      className="object-fill"
                     />
                   </div>
                   <div>
