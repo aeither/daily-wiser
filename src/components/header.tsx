@@ -42,6 +42,7 @@ const Header = () => {
     { href: "/", label: "DailyWiser", icon: Sparkles },
     { href: "/select-quiz", label: "Quiz" },
     { href: "/chat", label: "Chat" },
+    { href: "/tools", label: "Tools" },
     { href: "/faucet", label: "Faucet", icon: Droplet },
   ];
 
