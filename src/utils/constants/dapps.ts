@@ -24,6 +24,17 @@ interface Dapp {
 
 export const dapps: Dapp[] = [
   {
+    id: "tinytap",
+    name: "TinyTap",
+    title: "Decentralized Education Platform & Marketplace",
+    description:
+      "TinyTap EDU is revolutionizing education through blockchain technology, creating a decentralized system owned and operated by the community. The platform empowers educators to own and monetize their content through Publisher NFTs while earning EDU tokens, enables students to own their learning materials and records, and provides donors with transparent tracking of their contributions. With over $58B in higher education donations annually, TinyTap ensures funds directly reach educators and learners through blockchain transparency. Educators can earn up to 200% in EDU tokens as rewards, while the Publisher NFT system allows them to sell co-publishing rights globally, extending their impact beyond the classroom. Through EDU DOT events worldwide, TinyTap connects educators, innovators, and ed-tech leaders to shape the future of decentralized education.",
+    shortDescription: "Own and shape the future of decentralized education",
+    logo: "https://utfs.io/f/cFAm4yUevVynzfMNgc9rGNsDKHJOcAmqVxiE8fpgB5vF9Mj3",
+    tags: ["Education", "Content", "NFT", "Gaming"],
+    website: "https://edu.tinytap.com/web3",
+  },
+  {
     id: "stream-bill",
     name: "Stream Bill",
     title: "Real-time Payments for Gig Economy",
