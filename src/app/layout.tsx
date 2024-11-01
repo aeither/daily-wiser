@@ -112,18 +112,24 @@ export default function RootLayout(props: { children: ReactNode }) {
                 disableTransitionOnChange
               >
                 {/* <MyPrivyProvider> */}
-                  <ContextProvider initialState={initialState}>
-                    <Header />
-                    {props.children}
-                    <Toaster />
-                  </ContextProvider>
+                <ContextProvider initialState={initialState}>
+                  <Header />
+                  {props.children}
+                  <Toaster />
+                </ContextProvider>
                 {/* </MyPrivyProvider> */}
               </ThemeProvider>
             </TRPCReactProvider>
           </OCConnectWrapper>
         </body>
       </CSPostHogProvider>
-      <Script src="https://scripts.simpleanalyticscdn.com/latest.js" />
+      {/* <Script src="https://scripts.simpleanalyticscdn.com/latest.js" /> */}
+      <Script
+        defer
+        src="https://cloud.umami.is/script.js"
+        data-website-id="36b5a442-e625-4f7e-b100-4582c7604560"
+        strategy="afterInteractive"
+      />
     </html>
   );
 }
