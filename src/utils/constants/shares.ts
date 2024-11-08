@@ -1,6 +1,3 @@
-export const SHARES_CONTRACT_ADDRESS =
-  "0x3f0987bD62827afEeCBF038D99A3F20dfd7FA146";
-
 export const SHARES_CONTRACT_ABI = [
   {
     type: "function",
