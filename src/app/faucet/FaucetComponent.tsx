@@ -99,16 +99,20 @@ export default function FaucetComponent() {
       console.error("Claim failed:", error);
       if (error.message.includes("You can only claim once per day")) {
         toast({
-          title: "Claim Failed",
-          description:
-            "You can only claim once per day. Please try again later.",
+          title: "Daily Limit Reached",
+          description: "Please wait 24 hours before your next claim.",
+          variant: "destructive",
+        });
+      } else if (error.message.includes("insufficient funds for transfer")) {
+        toast({
+          title: "Faucet Depleted",
+          description: "The faucet is currently out of funds. :(",
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Claim Failed",
-          description:
-            "An error occurred while claiming. Please try again later.",
+          title: "Transaction Failed",
+          description: "Something went wrong. Please refresh and try again.",
           variant: "destructive",
         });
       }
