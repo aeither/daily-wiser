@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge"; // Make sure to import the Badge component
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,9 +14,26 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useMintDailywiserToken } from "@/hooks/use-convert-token";
 import { apiReact } from "@/trpc/react";
+import { useReCaptcha } from "@/utils/captcha";
 import { ToastAction } from "@radix-ui/react-toast";
 import { useEffect, useState } from "react";
+import { createPublicClient, formatEther, http } from "viem";
 import { useAccount } from "wagmi";
+import { mainnet } from "wagmi/chains";
+
+const client = createPublicClient({
+  chain: mainnet,
+  transport: http(),
+});
+
+const getBalance = async (address: `0x${string}`) => {
+  const balance = await client.getBalance({
+    address,
+  });
+  console.log(`Balance: ${formatEther(balance)} ETH`);
+
+  return balance;
+};
 
 export default function FaucetComponent() {
   const [isClaiming, setIsClaiming] = useState(false);
@@ -27,6 +44,7 @@ export default function FaucetComponent() {
   const claimMutation = apiReact.web3.claimFaucetToken.useMutation();
   const baseUrl = chain?.blockExplorers?.default.url;
   const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
+  const { executeReCaptcha } = useReCaptcha();
 
   // Prove human states
   const [captchaAnswer, setCaptchaAnswer] = useState("");
@@ -44,15 +62,69 @@ export default function FaucetComponent() {
     setCaptchaAnswer((num1 + num2).toString());
   };
 
-  const handleCaptchaSubmit = (e: React.FormEvent) => {
+  const verifyRecaptcha = async () => {
+    try {
+      const token = await executeReCaptcha("submit");
+      const response = await fetch("/api/captcha", {
+        method: "POST",
+        body: JSON.stringify({ token }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      return result.success;
+    } catch (error) {
+      console.error("ReCAPTCHA error:", error);
+      return false;
+    }
+  };
+
+  const checkEthBalance = async () => {
+    if (!address) return false;
+    const ethBalance = await getBalance(address);
+    console.log("🚀 ~ checkEthBalance ~ ethBalance:", ethBalance);
+
+    if (!ethBalance) return false;
+    return Number.parseFloat(formatEther(ethBalance)) >= 0.001;
+  };
+
+  const handleCaptchaSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const userAnswer = (e.target as HTMLFormElement).captcha.value;
-    if (userAnswer === captchaAnswer) {
-      setIsHuman(true);
+
+    // Check ETH balance first
+    const hasBalance = await checkEthBalance();
+    if (!hasBalance) {
       toast({
-        title: "Human Verified",
-        description: "You can now claim your tokens.",
+        title: "Insufficient ETH Balance",
+        description:
+          "You need at least 0.001 ETH on Ethereum mainnet to prevent spam.",
+        variant: "destructive",
       });
+      return;
+    }
+
+    // First verify the math equation
+    if (userAnswer === captchaAnswer) {
+      // Then verify with reCAPTCHA
+      const recaptchaSuccess = await verifyRecaptcha();
+
+      if (recaptchaSuccess) {
+        setIsHuman(true);
+        toast({
+          title: "Human Verified",
+          description: "You can now claim your tokens.",
+        });
+      } else {
+        toast({
+          title: "Verification Failed",
+          description: "Please try again.",
+          variant: "destructive",
+        });
+        generateCaptcha();
+      }
     } else {
       toast({
         title: "Verification Failed",
@@ -65,6 +137,17 @@ export default function FaucetComponent() {
 
   const handleClaim = async () => {
     if (!address || !chain || !isHuman) return;
+
+    // Double check ETH balance before claim
+    if (!checkEthBalance()) {
+      toast({
+        title: "Insufficient ETH Balance",
+        description:
+          "You need at least 0.001 ETH on Ethereum mainnet to prevent spam.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsClaiming(true);
     try {
@@ -119,6 +202,7 @@ export default function FaucetComponent() {
       setClaimStatus("failed");
     } finally {
       setIsClaiming(false);
+      setIsHuman(false);
     }
   };
 
@@ -140,13 +224,14 @@ export default function FaucetComponent() {
         </div>
         <CardDescription>
           Connect your wallet and verify you're human to claim 0.001 EDU and 25
-          WISER tokens once per day.
+          WISER tokens once per day. Requires 0.001 ETH on mainnet to prevent
+          spam.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="p-2">
           {isConnected ? (
-            <p className="text-sm text-gray-600 mb-4">Connected: {address}</p>
+            <p className="text-sm text-gray-600">Connected: {address}</p>
           ) : (
             <p className="text-sm text-gray-600 mb-4">
               Please connect your wallet to claim tokens.
