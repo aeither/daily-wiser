@@ -9,9 +9,17 @@ import { CERTIFICATE_CONTRACT_ABI } from "@/utils/constants/certificate";
 import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
 import { TRPCError } from "@trpc/server";
 import { Redis } from "@upstash/redis";
-import { createWalletClient, http, parseEther, parseUnits } from "viem";
+import {
+  createPublicClient,
+  createWalletClient,
+  formatEther,
+  http,
+  parseEther,
+  parseUnits,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { waitForTransactionReceipt } from "viem/actions";
+import { mainnet } from "wagmi/chains";
 import { z } from "zod";
 import { createCaller } from "../root";
 
@@ -45,6 +53,31 @@ const getAdminPrivateKey = () => {
     return `0x${key}` as `0x${string}`;
   }
   return key as `0x${string}`;
+};
+
+const mainnetClient = createPublicClient({
+  chain: mainnet,
+  transport: http(),
+});
+
+const getMainnetBalance = async (address: `0x${string}`) => {
+  try {
+    const balance = await mainnetClient.getBalance({
+      address,
+    });
+    console.log(`Mainnet Balance: ${formatEther(balance)} ETH`);
+    return balance;
+  } catch (error) {
+    console.error("Error fetching mainnet balance:", error);
+    return BigInt(0);
+  }
+};
+
+const checkMainnetBalance = async (address: `0x${string}`) => {
+  if (!address) return false;
+  const ethBalance = await getMainnetBalance(address);
+  if (!ethBalance) return false;
+  return Number.parseFloat(formatEther(ethBalance)) >= 0.001;
 };
 
 export const web3Router = createTRPCRouter({
@@ -118,6 +151,18 @@ export const web3Router = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       const { chainId, userAddress } = input;
+
+      // Check mainnet ETH balance first
+      const hasBalance = await checkMainnetBalance(
+        userAddress as `0x${string}`
+      );
+      if (!hasBalance) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message:
+            "You need at least 0.001 ETH on Ethereum mainnet to prevent spam.",
+        });
+      }
 
       // Check if the user has already claimed within the last 24 hours
       const lastClaimTime = await redis.get(`faucet:${userAddress}`);

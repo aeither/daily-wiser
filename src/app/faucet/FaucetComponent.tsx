@@ -17,27 +17,7 @@ import { apiReact } from "@/trpc/react";
 import { useReCaptcha } from "@/utils/captcha";
 import { ToastAction } from "@radix-ui/react-toast";
 import { useEffect, useState } from "react";
-import { createPublicClient, formatEther, http } from "viem";
 import { useAccount } from "wagmi";
-import { mainnet } from "wagmi/chains";
-
-const mainnetClient = createPublicClient({
-  chain: mainnet,
-  transport: http(),
-});
-
-const getMainnetBalance = async (address: `0x${string}`) => {
-  try {
-    const balance = await mainnetClient.getBalance({
-      address,
-    });
-    console.log(`Mainnet Balance: ${formatEther(balance)} ETH`);
-    return balance;
-  } catch (error) {
-    console.error("Error fetching mainnet balance:", error);
-    return BigInt(0);
-  }
-};
 
 export default function FaucetComponent() {
   const [isClaiming, setIsClaiming] = useState(false);
@@ -85,28 +65,9 @@ export default function FaucetComponent() {
     }
   };
 
-  const checkMainnetBalance = async () => {
-    if (!address) return false;
-    const ethBalance = await getMainnetBalance(address);
-    if (!ethBalance) return false;
-    return Number.parseFloat(formatEther(ethBalance)) >= 0.001;
-  };
-
   const handleCaptchaSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const userAnswer = (e.target as HTMLFormElement).captcha.value;
-
-    // Check mainnet ETH balance first
-    const hasBalance = await checkMainnetBalance();
-    if (!hasBalance) {
-      toast({
-        title: "Insufficient ETH Balance",
-        description:
-          "You need at least 0.001 ETH on Ethereum mainnet to prevent spam.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     if (userAnswer === captchaAnswer) {
       const recaptchaSuccess = await verifyRecaptcha();
@@ -137,18 +98,6 @@ export default function FaucetComponent() {
 
   const handleClaim = async () => {
     if (!address || !chain || !isHuman) return;
-
-    // Double check mainnet balance before claim
-    const hasBalance = await checkMainnetBalance();
-    if (!hasBalance) {
-      toast({
-        title: "Insufficient ETH Balance",
-        description:
-          "You need at least 0.001 ETH on Ethereum mainnet to prevent spam.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     setIsClaiming(true);
     try {
