@@ -9,6 +9,7 @@ import {
   creditPurchases,
   customBots,
   nftMetadata,
+  tokenBurns,
   users,
 } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
@@ -121,23 +122,26 @@ export const userRouter = createTRPCRouter({
         const receipt = await publicClient?.waitForTransactionReceipt({
           hash: input.txHash as `0x${string}`,
         });
+
         if (!receipt) {
-          throw new Error("Transaction receipt not found");
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Transaction receipt not found",
+          });
         }
-
         if (!receipt.to) {
-          throw new Error("Transaction 'to' address is undefined");
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Transaction 'to' address is undefined",
+          });
         }
 
-        if (
-          receipt.to.toLowerCase() !==
-          dailywiserTokenContractAddresses[input.chainId].toLowerCase()
-        ) {
-          throw new Error("Invalid contract address");
-        }
-
-        if (receipt.logs.length === 0) {
-          throw new Error("No logs found in the transaction");
+        const contractAddress = dailywiserTokenContractAddresses[input.chainId];
+        if (receipt.to.toLowerCase() !== contractAddress.toLowerCase()) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid contract address",
+          });
         }
 
         const eventAbi = parseAbiItem(
@@ -149,29 +153,56 @@ export const userRouter = createTRPCRouter({
           topics: receipt.logs[0].topics,
         });
 
-        const userAddress = decodedLog.args.from.toString();
-        const burnAddress = decodedLog.args.to.toString();
-        const burnedAmount = BigInt(decodedLog.args.value);
-
-        // if (burnAddress.toLowerCase() !== BURN_ADDRESS.toLowerCase()) {
-        //   throw new Error("Invalid burn address");
-        // }
-
-        // await db.insert(tokenBurns).values({
-        //   userAddress,
-        //   txHash: input.txHash.toString(),
-        //   burnedAmount: burnedAmount.toString(),
-        //   creditsReceived: creditsReceived.toString(),
-        // });
-
+        const userAddress = decodedLog.args.from;
+        const burnedAmount = decodedLog.args.value;
         const creditsReceived = formatUnits(burnedAmount, 18);
+
+        const existingBurn = await db
+          .select()
+          .from(tokenBurns)
+          .where(eq(tokenBurns.txHash, input.txHash))
+          .limit(1);
+
+        if (existingBurn.length > 0) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Burn event already processed",
+          });
+        }
+
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.address, userAddress))
+          .limit(1);
+
+        const currentCredits = user?.totalCredits ?? "0";
         const MAX_BALANCE_LIMIT = 1_000_000_000;
+
         if (
-          Number(users.totalCredits) + Number(creditsReceived) >
+          Number(currentCredits) + Number(creditsReceived) >
           MAX_BALANCE_LIMIT
         ) {
-          throw new Error("Max balance limit reached");
+          throw new TRPCError({
+            code: "PRECONDITION_FAILED",
+            message: "Max balance limit reached",
+          });
         }
+
+        console.log(
+          "🚀 db.insert(tokenBurns).values({",
+          userAddress,
+          input.txHash,
+          burnedAmount.toString(),
+          creditsReceived
+        );
+
+        await db.insert(tokenBurns).values({
+          userAddress: userAddress,
+          txHash: input.txHash,
+          burnedAmount: burnedAmount.toString(),
+          creditsReceived: creditsReceived,
+        });
 
         await db
           .update(users)
@@ -187,9 +218,13 @@ export const userRouter = createTRPCRouter({
           creditsReceived: creditsReceived.toString(),
           message: "Burn event processed successfully",
         };
-      } catch (error) {
-        console.error("Error processing burn event:", error);
-        throw new Error("Failed to process burn event");
+      } catch (error: any) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `${errorMessage}`,
+        });
       }
     }),
 

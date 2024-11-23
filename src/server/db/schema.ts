@@ -23,6 +23,15 @@ export const creditPurchases = pgTable("credit_purchases", {
   purchasedAt: timestamp("purchased_at", { withTimezone: true }).defaultNow(),
 });
 
+export const tokenBurns = pgTable("token_burns", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  userAddress: text("user_address").references(() => users.address),
+  txHash: text("tx_hash").notNull().unique(),
+  burnedAmount: numeric("burned_amount").notNull(),
+  creditsReceived: numeric("credits_received").notNull(),
+  burnedAt: timestamp("burned_at", { withTimezone: true }).defaultNow(),
+});
+
 export const creditUsage = pgTable("credit_usage", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   userAddress: text("user_address").references(() => users.address),
