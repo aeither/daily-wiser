@@ -48,8 +48,8 @@ export function CreditPurchaseComponent() {
     isSuccess,
     isLoading: isWaiting,
   } = useWaitForTransactionReceipt({ hash });
-  const { mutate: extractEventAction } = apiReact.user.extractEvent.useMutation(
-    {
+  const { mutate: extractEventAction, isPending: isExtracting } =
+    apiReact.user.extractEvent.useMutation({
       async onSuccess() {
         await utils.user.getPurchaseHistory.invalidate();
         await utils.user.getUser.invalidate();
@@ -59,8 +59,7 @@ export function CreditPurchaseComponent() {
           description: "Your credits have been successfully purchased.",
         });
       },
-    }
-  );
+    });
 
   const nativeCurrencySymbol = chain?.nativeCurrency.symbol || "ETH";
 
@@ -125,7 +124,7 @@ export function CreditPurchaseComponent() {
             <Button
               className="w-full bg-primary hover:bg-primary/90"
               onClick={handleBuyCredits}
-              disabled={isPending || isWaiting}
+              disabled={isPending || isWaiting || isExtracting}
             >
               {isWaiting
                 ? "Processing..."

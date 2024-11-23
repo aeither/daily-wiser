@@ -87,25 +87,33 @@ export default function ConvertToken() {
       },
     });
 
-  const { mutate: convertTokensToCredits } =
-    apiReact.user.burnEvent2Credits.useMutation({
-      async onSuccess() {
-        await utils.user.getUser.invalidate();
-        refetchTokenBalance();
-        refetchUser();
-        toast({
-          title: "Credits Received",
-          description:
-            "Your DailyWiser tokens have been successfully converted to credits.",
-        });
-      },
-    });
+  const {
+    mutate: convertTokensToCredits,
+    isPending: isPendingTokensToCredits,
+  } = apiReact.user.burnEvent2Credits.useMutation({
+    async onSuccess() {
+      await utils.user.getUser.invalidate();
+      refetchTokenBalance();
+      refetchUser();
+      toast({
+        title: "Credits Received",
+        description:
+          "Your DailyWiser tokens have been successfully converted to credits.",
+      });
+    },
+  });
 
   const {
     writeContract,
     isPending: isBurning,
     data: hash,
-  } = useWriteContract();
+  } = useWriteContract({
+    mutation: {
+      onSuccess(data, variables, context) {
+        refetchTokenBalance();
+      },
+    },
+  });
   const {
     data: receipt,
     isSuccess,
@@ -179,12 +187,6 @@ export default function ConvertToken() {
           functionName: "burn",
           args: [parseUnits(amount, 18)],
         });
-
-        refetchTokenBalance();
-        toast({
-          title: "Success",
-          description: `${amount} DailyWiser tokens converted to credits successfully!`,
-        });
       } catch (error) {
         toast({
           title: "Error",
@@ -243,9 +245,18 @@ export default function ConvertToken() {
             <Button
               onClick={handleConvert}
               className="w-full"
-              disabled={isPending2Tokens || isBurning || !amount || isWaiting}
+              disabled={
+                isPendingTokensToCredits ||
+                isPending2Tokens ||
+                isBurning ||
+                !amount ||
+                isWaiting
+              }
             >
-              {isPending2Tokens || isBurning || isWaiting
+              {isPendingTokensToCredits ||
+              isPending2Tokens ||
+              isBurning ||
+              isWaiting
                 ? "Converting..."
                 : `Convert ${amount || "0"} ${isConvertingToCredits ? "Tokens to Credits" : "Credits to Tokens"}`}
             </Button>
