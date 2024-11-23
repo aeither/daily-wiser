@@ -21,18 +21,22 @@ import { createPublicClient, formatEther, http } from "viem";
 import { useAccount } from "wagmi";
 import { mainnet } from "wagmi/chains";
 
-const client = createPublicClient({
+const mainnetClient = createPublicClient({
   chain: mainnet,
   transport: http(),
 });
 
-const getBalance = async (address: `0x${string}`) => {
-  const balance = await client.getBalance({
-    address,
-  });
-  console.log(`Balance: ${formatEther(balance)} ETH`);
-
-  return balance;
+const getMainnetBalance = async (address: `0x${string}`) => {
+  try {
+    const balance = await mainnetClient.getBalance({
+      address,
+    });
+    console.log(`Mainnet Balance: ${formatEther(balance)} ETH`);
+    return balance;
+  } catch (error) {
+    console.error("Error fetching mainnet balance:", error);
+    return BigInt(0);
+  }
 };
 
 export default function FaucetComponent() {
@@ -81,11 +85,9 @@ export default function FaucetComponent() {
     }
   };
 
-  const checkEthBalance = async () => {
+  const checkMainnetBalance = async () => {
     if (!address) return false;
-    const ethBalance = await getBalance(address);
-    console.log("🚀 ~ checkEthBalance ~ ethBalance:", ethBalance);
-
+    const ethBalance = await getMainnetBalance(address);
     if (!ethBalance) return false;
     return Number.parseFloat(formatEther(ethBalance)) >= 0.001;
   };
@@ -94,8 +96,8 @@ export default function FaucetComponent() {
     e.preventDefault();
     const userAnswer = (e.target as HTMLFormElement).captcha.value;
 
-    // Check ETH balance first
-    const hasBalance = await checkEthBalance();
+    // Check mainnet ETH balance first
+    const hasBalance = await checkMainnetBalance();
     if (!hasBalance) {
       toast({
         title: "Insufficient ETH Balance",
@@ -106,9 +108,7 @@ export default function FaucetComponent() {
       return;
     }
 
-    // First verify the math equation
     if (userAnswer === captchaAnswer) {
-      // Then verify with reCAPTCHA
       const recaptchaSuccess = await verifyRecaptcha();
 
       if (recaptchaSuccess) {
@@ -138,8 +138,9 @@ export default function FaucetComponent() {
   const handleClaim = async () => {
     if (!address || !chain || !isHuman) return;
 
-    // Double check ETH balance before claim
-    if (!checkEthBalance()) {
+    // Double check mainnet balance before claim
+    const hasBalance = await checkMainnetBalance();
+    if (!hasBalance) {
       toast({
         title: "Insufficient ETH Balance",
         description:
