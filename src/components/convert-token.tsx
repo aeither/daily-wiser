@@ -15,9 +15,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { dailywiserTokenContractAddresses } from "@/config";
-import { useMintDailywiserToken } from "@/hooks/use-convert-token";
 import { apiReact } from "@/trpc/react";
 import { DAILYWISER_TOKEN_CONTRACT_ABI } from "@/utils/constants/dailywisertoken";
+import { ToastAction } from "./ui/toast";
 
 function formatTokenBalance(balance: string): string {
   const num = Number.parseFloat(balance);
@@ -32,11 +32,10 @@ export default function ConvertToken() {
   const [isConvertingToCredits, setIsConvertingToCredits] =
     useState<boolean>(true);
 
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const chainId = useChainId();
   const utils = apiReact.useUtils();
-
-  const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
+  const baseUrl = chain?.blockExplorers?.default.url;
 
   const { data: user, refetch: refetchUser } = apiReact.user.getUser.useQuery(
     { address: address as string },
@@ -59,41 +58,34 @@ export default function ConvertToken() {
     ],
   });
 
-  const convertCreditsToTokens = apiReact.user.spendCredits.useMutation({
-    onSuccess(data, variables, context) {
-      mintTokens(
-        {
-          toAddress: address as string,
-          amount: amount,
-          chainId: chainId,
-        },
-        {
-          onSuccess: () => {
-            refetchTokenBalance();
-            refetchUser();
-            toast({
-              title: "Success",
-              description: `${amount} DailyWiser tokens minted successfully!`,
-            });
-          },
-          onError: (error) => {
-            toast({
-              title: "Error",
-              description: `Failed to mint DailyWiser tokens: ${error.message}`,
-              variant: "destructive",
-            });
-          },
-        }
-      );
-    },
-    onError(error, variables, context) {
-      toast({
-        variant: "destructive",
-        title: "Something went wrong :(",
-        description: error.message,
-      });
-    },
-  });
+  const { mutateAsync: convert2Tokens, isPending: isPending2Tokens } =
+    apiReact.web3.convertCredits2Token.useMutation({
+      onSuccess(data, variables, context) {
+        refetchTokenBalance();
+        refetchUser();
+        toast({
+          title: "Success",
+          description: `${amount} credits converted to tokens successfully!`,
+          action: (
+            <ToastAction
+              onClick={() =>
+                window.open(`${baseUrl}/tx/${data.hash}`, "_blank")
+              }
+              altText={"View Transaction"}
+            >
+              View Transaction
+            </ToastAction>
+          ),
+        });
+      },
+      onError(error, variables, context) {
+        toast({
+          variant: "destructive",
+          title: "Something went wrong :(",
+          description: error.message,
+        });
+      },
+    });
 
   const { mutate: convertTokensToCredits } =
     apiReact.user.burnEvent2Credits.useMutation({
@@ -201,9 +193,10 @@ export default function ConvertToken() {
         });
       }
     } else {
-      await convertCreditsToTokens.mutateAsync({
-        address: address,
-        creditsToSpend: Number(amount),
+      convert2Tokens({
+        userAddress: address,
+        amount: amount,
+        chainId: chainId,
       });
     }
   };
@@ -250,9 +243,9 @@ export default function ConvertToken() {
             <Button
               onClick={handleConvert}
               className="w-full"
-              disabled={isMinting || isBurning || !amount || isWaiting}
+              disabled={isPending2Tokens || isBurning || !amount || isWaiting}
             >
-              {isMinting || isBurning || isWaiting
+              {isPending2Tokens || isBurning || isWaiting
                 ? "Converting..."
                 : `Convert ${amount || "0"} ${isConvertingToCredits ? "Tokens to Credits" : "Credits to Tokens"}`}
             </Button>

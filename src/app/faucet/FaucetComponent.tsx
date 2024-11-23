@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { useMintDailywiserToken } from "@/hooks/use-convert-token";
 import { apiReact } from "@/trpc/react";
 import { useReCaptcha } from "@/utils/captcha";
 import { ToastAction } from "@radix-ui/react-toast";
@@ -27,7 +26,6 @@ export default function FaucetComponent() {
   const { address, isConnected, chain } = useAccount();
   const claimMutation = apiReact.web3.claimFaucetToken.useMutation();
   const baseUrl = chain?.blockExplorers?.default.url;
-  const { mutate: mintTokens, isPending: isMinting } = useMintDailywiserToken();
   const { executeReCaptcha } = useReCaptcha();
 
   // Prove human states
@@ -106,12 +104,6 @@ export default function FaucetComponent() {
         userAddress: address,
       });
 
-      // Mint 25 WISE Tokens
-      mintTokens({
-        toAddress: address,
-        amount: "25",
-        chainId: chain.id,
-      });
       console.log("Claim successful:", result.hash);
       toast({
         title: "Claim Successful",
@@ -145,7 +137,7 @@ export default function FaucetComponent() {
       } else {
         toast({
           title: "Transaction Failed",
-          description: "Something went wrong. Please refresh and try again.",
+          description: error.message,
           variant: "destructive",
         });
       }

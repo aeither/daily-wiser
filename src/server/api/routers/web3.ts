@@ -169,7 +169,6 @@ export const web3Router = createTRPCRouter({
       if (lastClaimTime) {
         const timeElapsed = Date.now() - Number(lastClaimTime);
         if (timeElapsed < 24 * 60 * 60 * 1000) {
-          // 24 hours in milliseconds
           throw new TRPCError({
             code: "TOO_MANY_REQUESTS",
             message: "You can only claim once per day. Please try again later.",
@@ -181,16 +180,37 @@ export const web3Router = createTRPCRouter({
         const FAUCET_PRIVATE_KEY = getFaucetPrivateKey();
         const faucetAccount = privateKeyToAccount(FAUCET_PRIVATE_KEY);
 
-        const walletClient = createWalletClient({
+        const faucetWalletClient = createWalletClient({
           account: faucetAccount,
           chain: getChainById(chainId),
           transport: http(),
         });
 
         // Send 0.001 EDU tokens
-        const txHash = await walletClient.sendTransaction({
+        const txHash = await faucetWalletClient.sendTransaction({
           to: userAddress as `0x${string}`,
           value: parseEther("0.001"),
+        });
+
+        const ADMIN_PRIVATE_KEY = getAdminPrivateKey();
+        const adminAccount = privateKeyToAccount(ADMIN_PRIVATE_KEY);
+
+        const adminWalletClient = createWalletClient({
+          account: adminAccount,
+          chain: getChainById(chainId),
+          transport: http(),
+        });
+
+        // Mint ERC20 tokens
+        const mintReceiptHash = await adminWalletClient.writeContract({
+          address: dailywiserTokenContractAddresses[chainId],
+          abi: DAILYWISER_TOKEN_CONTRACT_ABI,
+          functionName: "mint",
+          args: [userAddress as `0x${string}`, parseUnits("100", 18)], // Mint 100 tokens
+        });
+
+        const mintReceipt = await waitForTransactionReceipt(adminWalletClient, {
+          hash: mintReceiptHash,
         });
 
         // Update the last claim time in Redis
@@ -204,22 +224,30 @@ export const web3Router = createTRPCRouter({
           error instanceof Error ? error.message : "Unknown error";
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to claim faucet token: ${errorMessage}`,
+          message: `Failed to claim tokens: ${errorMessage}`,
         });
       }
     }),
 
-  mintDailywiserToken: publicProcedure
+  convertCredits2Token: publicProcedure
     .input(
       z.object({
-        toAddress: z.string(),
+        userAddress: z.string(),
         amount: z.string(),
         chainId: z.number(),
       })
     )
-    .mutation(async ({ input }) => {
-      const { toAddress, amount, chainId } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { userAddress, amount, chainId } = input;
       try {
+        // Deduct credits first
+        const creditsToSpend = Number(amount);
+        const caller = createCaller(ctx);
+        await caller.user.spendCredits({
+          address: userAddress,
+          creditsToSpend,
+        });
+
         const ADMIN_PRIVATE_KEY = getAdminPrivateKey();
         const adminAccount = privateKeyToAccount(ADMIN_PRIVATE_KEY);
 
@@ -229,12 +257,12 @@ export const web3Router = createTRPCRouter({
           transport: http(),
         });
 
-        // Mint ERC20 tokens
+        // Mint tokens equivalent to credits spent
         const mintReceiptHash = await walletClient.writeContract({
           address: dailywiserTokenContractAddresses[chainId],
           abi: DAILYWISER_TOKEN_CONTRACT_ABI,
           functionName: "mint",
-          args: [toAddress as `0x${string}`, parseUnits(amount, 18)],
+          args: [userAddress as `0x${string}`, parseUnits(amount, 18)],
         });
 
         const mintReceipt = await waitForTransactionReceipt(walletClient, {
@@ -247,7 +275,7 @@ export const web3Router = createTRPCRouter({
           error instanceof Error ? error.message : "Unknown error";
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to mint tokens: ${errorMessage}`,
+          message: `Failed to convert credits to tokens: ${errorMessage}`,
         });
       }
     }),
