@@ -115,3 +115,13 @@ Expanded AI capabilities for even more personalized learning paths
 Mobile app development UX
 Partnerships with educational institutions for content and credential recognition
 Community feaures: leaderboard and friend challenges
+
+## Roadmap
+
+Web3 Education & Onboarding: Interactive Web3 fundamentals quiz module
+
+AI Content Generation System: Personalized learning path generator
+
+Interactive Learning Features: Spaced repetition system, Interactive flashcards, Social learning features
+
+Native Mobile App
